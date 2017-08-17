@@ -3,7 +3,6 @@
   "name": "Fantasy Basketball Helper",
   "version": "0.0",
 
-  // Recommended
   "default_locale": "en",
   "description": "This extension gives Yahoo Fantasy Basketball players extra tools to help them succeed.",
   "icons": {

@@ -1,9 +1,8 @@
+//Extension manifest
 {
-  "manifest_version": 0,
+  "manifest_version": 2,
   "name": "Fantasy Basketball Helper",
-  "version": "0.0",
-
-  "default_locale": "en",
+  "version": "0.1",
   "description": "This extension gives Yahoo Fantasy Basketball players extra tools to help them succeed.",
   "icons": {
       

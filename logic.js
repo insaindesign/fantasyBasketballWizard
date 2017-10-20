@@ -74,3 +74,10 @@ var week = (new Date()).getWeek()
 
 //Handles matchup week
 var fantasyWeek = week - 41
+
+function getNumberOfGamesByTeam() {
+    team = "LAC";
+    weekNumber = 0;
+    console.log(Schedule[team][weekNumber])
+    
+}

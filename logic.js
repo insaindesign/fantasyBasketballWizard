@@ -50,7 +50,7 @@ Schedule["MEM"] = MemphisGrizzlies
 Schedule["MIA"] = MiamiHeat
 Schedule["MIL"] = MilwaukeeBucks
 Schedule["MIN"] = MinnesotaTimberwolves
-Schedule["NO"] = NewOrleansPelicans
+Schedule["NOP"] = NewOrleansPelicans
 Schedule["NYK"] = NewYorkKnicks
 Schedule["OKC"] = OklahomaCityThunder
 Schedule["ORL"] = OrlandoMagic
@@ -75,7 +75,7 @@ var week = (new Date()).getWeek()
 //Handles matchup week
 var fantasyWeek = week - 41
 
-function getNumberOfGamesByTeam() {
+function getNumberOfGamesByTeam(weekNumber, team) {
     team = "LAC";
     weekNumber = 0;
     console.log(Schedule[team][weekNumber])

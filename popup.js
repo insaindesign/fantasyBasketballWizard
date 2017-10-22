@@ -61,7 +61,7 @@ Schedule["Por"] = PortlandTrailBlazers
 Schedule["Sac"] = SacramentoKings
 Schedule["SA"] = SanAntonioSpurs
 Schedule["Tor"] = TorontoRaptors
-Schedule["UTA"] = UtahJazz
+Schedule["Uta"] = UtahJazz
 Schedule["Was"] = WashingtonWizards
 
 
@@ -88,24 +88,53 @@ function render() {
     var info;
     
     
+    
     //init stats table
     table = document.getElementById("statTable0");
     
     //init table dimensions
     num_cols = table.rows[1].cells.length;
     num_rows = table.rows.length;
+    
+    //find player column
+    th = table.rows[2];
+    for (var i = 0; i < th.cells.length; i++){
+        if (th.cells[i].innerText.includes("Player"))
+            player_col = i;
+    }
+    
+    //find fantasy column
+    th = table.rows[2];
+    for (var i = 0; i < th.cells.length; i++){
+        if (th.cells[i].innerText.includes("%"))
+            fantasy_col = i;
+    }
 
-    //replace Rankings headers
+    //replace Fantasy headers
     table.rows[0].cells[6].innerText = "Games";
     //table.rows[1].cells[6].innerText = "Remaining";
     table.rows[1].cells[8].innerText = "Total";
     
-    
-    for (var i = 2; i < num_rows - 3; i++){
-        info = table.rows[i].cells[2].innerText.split(" ")
-        table.rows[i].cells[8].innerText = Schedule[info[info.length - 3]][fantasyWeek]
-        
+    //determine games and replace fantasy col
+    row = 2;
+    info = table.rows[row].cells[player_col].innerText.split(" ");
+    while (info.length > 3){
+        console.log(info)
+        table.rows[row].cells[fantasy_col].innerText = Schedule[info[info.length - 3]][fantasyWeek];
+        row++;
+        info = table.rows[row].cells[player_col].innerText.split(" ");
+        console.log(table.rows[row]);
     }
+    
+    console.log(table.rows[row]);
+    console.log(info);
+    
+    /*for (var i = 2; i < num_rows - 3; i++){
+        info = table.rows[i].cells[player_col].innerText.split(" ")
+        console.log(info)
+        table.rows[i].cells[fantasy_col].innerText = Schedule[info[info.length - 3]][fantasyWeek]
+        
+    }*/
     
     /*//create opponent page url
     url_post = "?date="

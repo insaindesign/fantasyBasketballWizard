@@ -106,11 +106,11 @@ function render() {
     //table.rows[1].cells[6].innerText = "Remaining"; coming soon ;)
     table.rows[1].cells[8].innerText = "Total";
     
-    //determine games and replace fantasy col
+    //read team names, write games
     row = 2;
     totalGames = 0;
     info = table.rows[row].cells[player_col].innerText.split(" ");
-    cellText = cellText = table.rows[row].cells[player_col].innerText;
+    cellText = table.rows[row].cells[player_col].innerText;
     while (!cellText.includes("Starting Lineup Totals")){
         console.log(info)
         if (!cellText.includes("Empty")){

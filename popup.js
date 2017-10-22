@@ -134,4 +134,9 @@ function render() {
     console.log(table.rows[row]);
     console.log(info); 
 }
-render();
+var currentUrl = window.location.href;
+var myTeamRegex = /https?:\/\/basketball[.]fantasysports[.]yahoo[.]com\/nba\/\d{3,7}\/\d{1,2}/;
+var urlMatch = currentUrl.match(myTeamRegex);
+if (currentUrl.indexOf(urlMatch) !== -1) {
+    render();
+}

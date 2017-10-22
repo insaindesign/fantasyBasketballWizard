@@ -1,5 +1,6 @@
-
-
+//Fantasy Basketball Helper
+//popup.js
+//--------------------------------Schedule-------------------------------------
 var Schedule = {}
 
 AtlantaHawks = [3,4,3,3,3,4,2,4,3,4,3,3,3,3,4,4,4,3,4,3,3,4,3,4,1]
@@ -63,7 +64,7 @@ Schedule["SA"] = SanAntonioSpurs
 Schedule["Tor"] = TorontoRaptors
 Schedule["Uta"] = UtahJazz
 Schedule["Was"] = WashingtonWizards
-
+//-----------------------------------------------------------------------------
 
 //get week of year
 Date.prototype.getWeek = function() {
@@ -76,7 +77,7 @@ var week = (new Date()).getWeek();
 //Handles matchup week
 var fantasyWeek = week - 42 - 1;
 
-console.log(fantasyWeek);
+//console.log(fantasyWeek);
 
 function render() {
 
@@ -112,7 +113,7 @@ function render() {
     info = table.rows[row].cells[player_col].innerText.split(" ");
     cellText = table.rows[row].cells[player_col].innerText;
     while (!cellText.includes("Starting Lineup Totals")){
-        console.log(info)
+        //console.log(info)
         if (!cellText.includes("Empty")){
             table.rows[row].cells[fantasy_col].innerText = Schedule[info[info.length - 3]][fantasyWeek];
             totalGames += Schedule[info[info.length - 3]][fantasyWeek];
@@ -123,16 +124,11 @@ function render() {
         }
         row++;
         cellText = table.rows[row].cells[player_col].innerText;
-        
-        console.log(cellText);
-        
-        
+        //console.log(cellText);  
     }
-    
-    console.log("total games " + totalGames);
     table.rows[row].cells[fantasy_col].innerText = totalGames;
-    console.log(table.rows[row]);
-    console.log(info); 
+    //console.log(table.rows[row]);
+    //console.log(info); 
 }
 var currentUrl = window.location.href;
 var myTeamRegex = /https?:\/\/basketball[.]fantasysports[.]yahoo[.]com\/nba\/\d{3,7}\/\d{1,2}/;

@@ -79,7 +79,6 @@ var fantasyWeek = week - 42 - 1;
 console.log(fantasyWeek);
 
 function render() {
-    var info;
 
     //init stats table
     table = document.getElementById("statTable0");
@@ -111,17 +110,29 @@ function render() {
     row = 2;
     totalGames = 0;
     info = table.rows[row].cells[player_col].innerText.split(" ");
-    while (info.length > 3){
+    cellText = cellText = table.rows[row].cells[player_col].innerText;
+    while (!cellText.includes("Starting Lineup Totals")){
         console.log(info)
-        table.rows[row].cells[fantasy_col].innerText = Schedule[info[info.length - 3]][fantasyWeek];
-        totalGames += Schedule[info[info.length - 3]][fantasyWeek];
+        if (!cellText.includes("Empty")){
+            table.rows[row].cells[fantasy_col].innerText = Schedule[info[info.length - 3]][fantasyWeek];
+            totalGames += Schedule[info[info.length - 3]][fantasyWeek];
+            info = table.rows[row].cells[player_col].innerText.split(" ");
+            
+        } else {
+            table.rows[row].cells[fantasy_col].innerText = "-"
+        }
         row++;
-        info = table.rows[row].cells[player_col].innerText.split(" ");
-        console.log(table.rows[row]);
+        cellText = table.rows[row].cells[player_col].innerText;
+        
+        console.log(cellText);
+        
+        
     }
     
+    //find
+    
     console.log("total games " + totalGames);
-    table.rows[16].cells[fantasy_col].innerText = totalGames;
+    table.rows[row].cells[fantasy_col].innerText = totalGames;
     console.log(table.rows[row]);
     console.log(info); 
 }

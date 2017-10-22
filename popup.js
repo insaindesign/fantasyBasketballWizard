@@ -113,6 +113,13 @@ function render() {
     info = table.rows[row].cells[player_col].innerText.split(" ");
     while (info.length > 3){
         console.log(info)
+        if (info[0].includes("Empty")) {
+            table.rows[row].cells[fantasy_col].innerText = "-";
+            row++;
+            info = table.rows[row].cells[player_col].innerText.split(" ");
+            console.log(table.rows[row]);
+            continue;    
+        }
         table.rows[row].cells[fantasy_col].innerText = Schedule[info[info.length - 3]][fantasyWeek];
         totalGames += Schedule[info[info.length - 3]][fantasyWeek];
         row++;
@@ -120,7 +127,8 @@ function render() {
         console.log(table.rows[row]);
     }
     
-    console.log("total games" + totalGames);
+    console.log("total games " + totalGames);
+    table.rows[14][fantasy_col].innerText = totalGames;
     console.log(table.rows[row]);
     console.log(info); 
 }

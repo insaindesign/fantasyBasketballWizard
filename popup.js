@@ -128,7 +128,7 @@ function render() {
     }
     
     console.log("total games " + totalGames);
-    table.rows[14][fantasy_col].innerText = totalGames;
+    table.rows[16].cells[fantasy_col].innerText = totalGames;
     console.log(table.rows[row]);
     console.log(info); 
 }

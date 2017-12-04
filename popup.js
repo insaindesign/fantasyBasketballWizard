@@ -130,7 +130,9 @@ function render() {
         info = table.rows[row].cells[player_col].innerText.split(" ");
         //console.log(cellText);  
     }
+    //add total # of games
     table.rows[row].cells[fantasy_col].innerText = totalGames;
+    table.rows[row].cells[fantasy_col].className = "Alt Ta-end Nowrap Bdrend"
     //console.log(table.rows[row]);
     //console.log(info); 
 }

@@ -96,9 +96,9 @@ function render() {
     }
     
     //find fantasy column
-    th = table.rows[2];
+    th = table.rows[1];
     for (var i = 0; i < th.cells.length; i++){
-        if (th.cells[i].innerText.includes("%"))
+        if (th.cells[i].innerText.includes("% Started"))
             fantasy_col = i;
     }
 

@@ -132,7 +132,7 @@ function render() {
     cellText = table.rows[row].cells[player_col].innerText;
     while (!cellText.includes("Starting Lineup Totals")){
         //console.log(info)
-        if (!cellText.includes("Empty")){
+        if (!cellText.includes("Empty") && !table.rows[row].cells[0].innerText.includes("IL")){
             games = Schedule[info[info.length - 3]][fantasyWeek];
             table.rows[row].cells[fantasy_col].innerText = games;
             table.rows[row].cells[fantasy_col].style.backgroundColor = getColor(games)

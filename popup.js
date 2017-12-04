@@ -103,19 +103,28 @@ function render() {
     table = document.getElementById("statTable0");
     
     //init table dimensions
-    num_cols = table.rows[1].cells.length;
     num_rows = table.rows.length;
     
+    for (var i = 2; i < num_rows; i++){
+        if (!table.rows[i].cells[2].innerText.includes("(Empty)")){
+            first_player_row = i;
+            break;
+        }
+    }
+    
+    console.log(first_player_row)
+    
     //find player column
-    th = table.rows[2];
+    th = table.rows[first_player_row];
     for (var i = 0; i < th.cells.length; i++){
         if (th.cells[i].innerText.includes("Player"))
             player_col = i;
     }
     
     //find fantasy column
-    th = table.rows[2];
-    for (var i = 5; i < th.cells.length; i++){
+    th = table.rows[first_player_row];
+    console.log(th.innerText)
+    for (var i = 6; i < th.cells.length; i++){
         if (th.cells[i].innerText.includes("-")){
             fantasy_col = i + 1;
             break;

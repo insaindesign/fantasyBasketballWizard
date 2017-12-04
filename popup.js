@@ -73,9 +73,12 @@ Date.prototype.getWeek = function() {
     }
 
 var week = (new Date()).getWeek();
-
+elements = document.getElementsByClassName("Block Mbot-xs Fz-xxs F-shade Uppercase");
+versusString = elements[0].innerText;
+arr = versusString.split(" ");
+var fantasyWeek = arr[1]-1;
 //Handles matchup week
-var fantasyWeek = week - 42 - 1;
+//var fantasyWeek = week - 42 - 1;
 
 //console.log(fantasyWeek);
 
@@ -117,13 +120,14 @@ function render() {
         if (!cellText.includes("Empty")){
             table.rows[row].cells[fantasy_col].innerText = Schedule[info[info.length - 3]][fantasyWeek];
             totalGames += Schedule[info[info.length - 3]][fantasyWeek];
-            info = table.rows[row].cells[player_col].innerText.split(" ");
+//
             
         } else {
             table.rows[row].cells[fantasy_col].innerText = "-"
         }
         row++;
         cellText = table.rows[row].cells[player_col].innerText;
+        info = table.rows[row].cells[player_col].innerText.split(" ");
         //console.log(cellText);  
     }
     table.rows[row].cells[fantasy_col].innerText = totalGames;

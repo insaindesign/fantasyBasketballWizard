@@ -114,10 +114,12 @@ function render() {
     }
     
     //find fantasy column
-    th = table.rows[1];
-    for (var i = 0; i < th.cells.length; i++){
-        if (th.cells[i].innerText.includes("% Started"))
-            fantasy_col = i;
+    th = table.rows[2];
+    for (var i = 5; i < th.cells.length; i++){
+        if (th.cells[i].innerText.includes("-")){
+            fantasy_col = i + 1;
+            break;
+        }
     }
 
     //replace Fantasy headers

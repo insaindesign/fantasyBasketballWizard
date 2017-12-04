@@ -82,6 +82,21 @@ var fantasyWeek = arr[1]-1;
 
 //console.log(fantasyWeek);
 
+function getColor(games){
+    if (games > 3){
+        return "#adebad"
+    } else if (games == 3){
+        return "#d8ffcc"
+    } else if (games == 2){
+        return "#ffffcc"
+    } else if (games == 1){
+        return "#ffd6cc"
+    } else {
+        return "white"
+    }
+    
+}
+
 function render() {
 
     //init stats table
@@ -118,8 +133,10 @@ function render() {
     while (!cellText.includes("Starting Lineup Totals")){
         //console.log(info)
         if (!cellText.includes("Empty")){
-            table.rows[row].cells[fantasy_col].innerText = Schedule[info[info.length - 3]][fantasyWeek];
-            totalGames += Schedule[info[info.length - 3]][fantasyWeek];
+            games = Schedule[info[info.length - 3]][fantasyWeek];
+            table.rows[row].cells[fantasy_col].innerText = games;
+            table.rows[row].cells[fantasy_col].style.backgroundColor = getColor(games)
+            totalGames += games;
 //
             
         } else {

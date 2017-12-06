@@ -86,14 +86,14 @@ Date.prototype.getWeek = function() {
 
 var currentUrl = window.location.href;
 var myTeamRegex = /https?:\/\/basketball[.]fantasysports[.]yahoo[.]com\/nba\/\d{3,7}\/\d{1,2}/;
-var urlMatch = currentUrl.match(myTeamRegex);
+var teamURLMatch = currentUrl.match(myTeamRegex);
 var week = (new Date()).getWeek();
 elements = document.getElementsByClassName("Block Mbot-xs Fz-xxs F-shade Uppercase");
 versusString = elements[0].innerText;
 arr = versusString.split(" ");
 var fantasyWeek = arr[1]-1;
 
-function render() {
+function renderTeam() {
 
     //init stats table
     table = document.getElementById("statTable0");
@@ -115,7 +115,7 @@ function render() {
             player_col = i;
     }
     
-    //find fantasy column
+    //find fantasy stats column
     th = table.rows[first_player_row];
     console.log(th.innerText)
     for (var i = 6; i < th.cells.length; i++){
@@ -126,7 +126,23 @@ function render() {
     }
 
     //replace Fantasy headers
-    table.rows[0].cells[6].innerText = "Games";
+    //find Fantasy header column
+    th = table.rows[0];
+    for (var i = 0; i < th.cells.length; i++){
+        if (th.cells[i].innerText.includes("Fantasy")){
+            table.rows[0].cells[i].innerText = "Games";
+            break;
+        }
+    }
+    
+    //find % Started header column
+    th = table.rows[1];
+    for (var i = 0; i < th.cells.length; i++){
+        if (th.cells[i].innerText.includes("% Started")){
+            table.rows[0].cells[i].innerText = "Total";
+            break;
+        }
+    }
     //table.rows[1].cells[6].innerText = "Remaining"; coming soon ;)
     table.rows[1].cells[8].innerText = "Total";
     
@@ -136,7 +152,9 @@ function render() {
     info = table.rows[row].cells[player_col].innerText.split(" ");
     cellText = table.rows[row].cells[player_col].innerText;
     while (!cellText.includes("Starting Lineup Totals")){
+        //if spot is not empty and player isn't IL
         if (!cellText.includes("Empty") && !table.rows[row].cells[0].innerText.includes("IL")){
+            //get player name field
             games = Schedule[info[info.length - 3]][fantasyWeek];
             table.rows[row].cells[fantasy_col].innerText = games;
             table.rows[row].cells[fantasy_col].style.backgroundColor = getColor(games)
@@ -152,6 +170,11 @@ function render() {
     table.rows[row].cells[fantasy_col].innerText = totalGames;
     table.rows[row].cells[fantasy_col].className = "Alt Ta-end Nowrap Bdrend"
 }
-if (currentUrl.indexOf(urlMatch) !== -1) {
-    render();
+if (currentUrl.indexOf(teamURLMatch) !== -1) {
+    renderTeam();
 }
+
+else if (currentUrl.indexOf(teamURLMatch) !== -1) {
+    renderTeam();
+}
+

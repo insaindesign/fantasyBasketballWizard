@@ -209,6 +209,3 @@ function renderTeam() {
 if (currentUrl.indexOf(teamURLMatch) !== -1) {
     renderTeam();
 }
-
-
-

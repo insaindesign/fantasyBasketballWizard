@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Fantasy Basketball Wizard",
-  "version": "1.1",
+  "version": "1.2",
   "description": "Fantasy Basketball Wizard gives Yahoo Fantasy Basketball players extra tools to help them succeed.",
   "browser_action": {
       "default_icon": "icon.png",

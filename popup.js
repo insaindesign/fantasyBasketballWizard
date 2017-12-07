@@ -191,7 +191,11 @@ function renderTeam() {
             table.rows[row].cells[fantasy_col].innerText = games;
             table.rows[row].cells[fantasy_col].style.backgroundColor = getColor(games)
             totalGames += games;  
-        } else {
+        } else if (!cellText.includes("Empty") && table.rows[row].cells[0].innerText.includes("IL")){
+            //add color to IL
+            table.rows[row].cells[fantasy_col].innerText = "";
+            table.rows[row].cells[fantasy_col].style.backgroundColor = "#bcd6ff"
+        }  else {
             table.rows[row].cells[fantasy_col].innerText = "-"
         }
         row++;

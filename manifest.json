@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "name": "Fantasy Basketball Wizard",
-  "version": "1.0",
-  "description": "This extension gives Yahoo Fantasy Basketball players extra tools to help them succeed.",
+  "version": "1.1",
+  "description": "Fantasy Basketball Wizard gives Yahoo Fantasy Basketball players extra tools to help them succeed.",
   "browser_action": {
       "default_icon": "icon.png",
       "default_popup": "popup.html"

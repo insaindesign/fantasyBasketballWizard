@@ -64,6 +64,10 @@ Schedule["SA"] = SanAntonioSpurs
 Schedule["Tor"] = TorontoRaptors
 Schedule["Uta"] = UtahJazz
 Schedule["Was"] = WashingtonWizards
+
+Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"]
+
+
 //-----------------------------------------------------------------------------
 function getColor(games){
     if (games > 3){
@@ -83,6 +87,32 @@ Date.prototype.getWeek = function() {
     var onejan = new Date(this.getFullYear(), 0, 1);
     return Math.ceil((((this - onejan) / 86400000) + onejan.getDay() + 1) / 7);
 }
+
+var contains = function(needle) {
+    var findNaN = needle !== needle;
+    var indexOf;
+    
+    if(!findNaN && typeof Array.prototype.indexOf === 'function') {
+        indexOf = Array.prototype.indexOf;
+    } else {
+        indexOf = function(needle) {
+            var i = -1, index = -1;
+            
+            for(i = 0; i < this.length; i++) {
+                var item = this[i];
+                
+                if((findNaN && item !== item) || item === needle) {
+                    index = i;
+                    break;
+                }
+            }
+            
+            return index;
+        };
+    }
+    
+    return indexOf.call(this, needle) > -1;
+};
 
 var currentUrl = window.location.href;
 var myTeamRegex = /https?:\/\/basketball[.]fantasysports[.]yahoo[.]com\/nba\/\d{3,7}\/\d{1,2}/;
@@ -117,9 +147,8 @@ function renderTeam() {
     
     //find fantasy stats column
     th = table.rows[first_player_row];
-    console.log(th.innerText)
     for (var i = 6; i < th.cells.length; i++){
-        if (th.cells[i].innerText.includes("-")){
+        if (th.cells[i].innerText.includes("-") && th.cells[i].innerText.length < 3){
             fantasy_col = i + 1;
             break;
         }
@@ -139,12 +168,10 @@ function renderTeam() {
     th = table.rows[1];
     for (var i = 0; i < th.cells.length; i++){
         if (th.cells[i].innerText.includes("% Started")){
-            table.rows[0].cells[i].innerText = "Total";
+            table.rows[1].cells[i].innerText = "Total";
             break;
         }
     }
-    //table.rows[1].cells[6].innerText = "Remaining"; coming soon ;)
-    table.rows[1].cells[8].innerText = "Total";
     
     //read team names, write games
     row = 2;
@@ -155,7 +182,12 @@ function renderTeam() {
         //if spot is not empty and player isn't IL
         if (!cellText.includes("Empty") && !table.rows[row].cells[0].innerText.includes("IL")){
             //get player name field
-            games = Schedule[info[info.length - 3]][fantasyWeek];
+            for (var i = info.length - 1; i > 0; i--){
+                if (contains.call(Teams, info[i])){
+                    games = Schedule[info[i]][fantasyWeek];
+                    break;
+                }
+            }
             table.rows[row].cells[fantasy_col].innerText = games;
             table.rows[row].cells[fantasy_col].style.backgroundColor = getColor(games)
             totalGames += games;  
@@ -174,7 +206,5 @@ if (currentUrl.indexOf(teamURLMatch) !== -1) {
     renderTeam();
 }
 
-else if (currentUrl.indexOf(teamURLMatch) !== -1) {
-    renderTeam();
-}
+
 

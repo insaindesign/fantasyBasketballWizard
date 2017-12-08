@@ -1,4 +1,4 @@
-//Fantasy Basketball Helper
+//Fantasy Basketball Wizard
 //popup.js
 //--------------------------------Schedule-------------------------------------
 var Schedule = {}

@@ -9,8 +9,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://basketball.fantasysports.yahoo.com/*"],
+      "matches": ["https://basketball.fantasysports.yahoo.com/nba/*"],
       "js": ["popup.js"]
+    },
+    {
+      "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/players"],
+      "js": ["playersPage.js"]
     }
   ],
   "permissions": [

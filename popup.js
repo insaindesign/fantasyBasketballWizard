@@ -1,4 +1,4 @@
-//Fantasy Basketball Helper
+//Fantasy Basketball Wizard
 //popup.js
 //--------------------------------Schedule-------------------------------------
 var Schedule = {}
@@ -208,6 +208,3 @@ function renderTeam() {
 if (currentUrl.indexOf(teamURLMatch) !== -1) {
     renderTeam();
 }
-
-
-

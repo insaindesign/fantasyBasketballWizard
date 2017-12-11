@@ -69,7 +69,7 @@ Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "H
 
 
 //-----------------------------------------------------------------------------
-function getColor(games){
+var getColor = function(games){
     if (games > 3){
         return "#adebad"
     } else if (games == 3){
@@ -106,7 +106,6 @@ var contains = function(needle) {
                     break;
                 }
             }
-            
             return index;
         };
     }

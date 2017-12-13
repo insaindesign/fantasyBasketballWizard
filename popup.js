@@ -86,7 +86,7 @@ statsButton.addEventListener("click", function() {
 
 
 //-----------------------------------------------------------------------------
-function getColor(games){
+var getColor = function(games){
     if (games > 3){
         return "#adebad"
     } else if (games == 3){
@@ -123,7 +123,6 @@ var contains = function(needle) {
                     break;
                 }
             }
-            
             return index;
         };
     }

@@ -68,6 +68,23 @@ Schedule["Was"] = WashingtonWizards
 Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"]
 
 
+
+var button = document.getElementById("P");
+var statsButton = document.getElementById("S");
+
+button.addEventListener("click", function() {
+    setTimeout(() => {
+        console.log("IT WORKEDDDDD");    
+    }, 2000); //2000 ms = 2 seconds
+})
+
+statsButton.addEventListener("click", function() {
+    console.log("YESSSSSSSSS");
+})
+
+
+
+
 //-----------------------------------------------------------------------------
 function getColor(games){
     if (games > 3){

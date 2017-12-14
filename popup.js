@@ -68,23 +68,6 @@ Schedule["Was"] = WashingtonWizards
 Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"]
 
 
-
-var button = document.getElementById("P");
-var statsButton = document.getElementById("S");
-
-button.addEventListener("click", function() {
-    setTimeout(() => {
-        console.log("IT WORKEDDDDD");    
-    }, 2000); //2000 ms = 2 seconds
-})
-
-statsButton.addEventListener("click", function() {
-    console.log("YESSSSSSSSS");
-})
-
-
-
-
 //-----------------------------------------------------------------------------
 var getColor = function(games){
     if (games > 3){
@@ -222,6 +205,11 @@ function renderTeam() {
     table.rows[row].cells[fantasy_col].innerText = totalGames;
     table.rows[row].cells[fantasy_col].className = "Alt Ta-end Nowrap Bdrend"
 }
+document.getElementById("S").addEventListener("click", function() {
+    setTimeout(() => {
+        renderTeam();
+    }, 750);
+})
 if (currentUrl.indexOf(teamURLMatch) !== -1) {
     renderTeam();
 }

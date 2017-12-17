@@ -127,7 +127,7 @@ var fantasyWeek = arr[1]-1;
 //-----------------------------------------------------------------------------
 renderGames = function() {
     
-    console.log("Fantasy Wizard rendering...")
+    console.log("rendering...")
     
     
     //init stats table
@@ -215,27 +215,82 @@ renderGames = function() {
 
 //Average Stats Tab
 //-----------------------------------------------------------------------------
+countStats = function(){
+    
+    console.log("counting...")
+    //init stats table
+    table = document.getElementById("statTable0");
+    
+    //init table dimensions
+    num_rows = table.rows.length;
+    num_cols = table.rows[2].cells.length;
+    
+    footer = document.createElement("tfoot");
+    stats_week = document.createElement("tr");
+    stats_all = document.createElement("tr");
+    
+    for (var i = 0; i < num_cols; i++){
+        cell = document.createElement("td");
+        cell.innerText = "t";
+        stats_week.appendChild(cell);
+        stats_all.appendChild(cell);
+    }
+    
+    footer.appendChild(stats_week);
+    footer.appendChild(stats_all);
+    //table.appendChild(stats_week);
+    table.appendChild(footer);
+    
+    header_row = table.rows[1];
+    
+    for (var i = 0; i < header_row.cells.length; i++){
+        if (header_row.cells[i].innerText.includes("GP")){
+            gp_col = i;
+            break;
+        }
+    }
+}
 
 
 //Initalize Tab Functionality
 //-----------------------------------------------------------------------------
-var refreshSleepTime = 700;
-document.getElementById("S").addEventListener("click", function() {
-    setTimeout(() => {
-        renderGames();
-    }, refreshSleepTime);
-});
-document.getElementById("P").addEventListener("click", function() {
-    setTimeout(() => {
-        renderGames();
-    }, refreshSleepTime);
-});
-document.getElementById("SPS").addEventListener("click", function() {
-    setTimeout(() => {
-        renderGames();
-    }, refreshSleepTime);
-});
-
+try {
+    document.getElementById("S").addEventListener("click", function() {
+        setTimeout(() => {
+            renderGames();
+        }, 700);
+    })
+}
+catch(err) {
+    console.log(err)
+} try {
+    document.getElementById("P").addEventListener("click", function() {
+        setTimeout(() => {
+            renderGames();
+        }, 700);
+    })
+}
+catch(err) {
+    console.log(err)
+} try {
+    document.getElementById("SPS").addEventListener("click", function() {
+        setTimeout(() => {
+            renderGames();
+        }, 700);
+    })
+}
+catch(err) {
+    console.log(err)
+} try {
+    document.getElementById("AS").addEventListener("click", function() {
+        setTimeout(() => {
+            renderGames();
+        }, 700);
+    })
+}
+catch(err) {
+    console.log(err)
+}
 
 
 if (currentUrl.indexOf(teamURLMatch) !== -1) {

@@ -219,20 +219,21 @@ renderGames = function() {
 
 //Initalize Tab Functionality
 //-----------------------------------------------------------------------------
+var refreshSleepTime = 700;
 document.getElementById("S").addEventListener("click", function() {
     setTimeout(() => {
         renderGames();
-    }, 700);
+    }, refreshSleepTime);
 })
 document.getElementById("P").addEventListener("click", function() {
     setTimeout(() => {
         renderGames();
-    }, 700);
+    }, refreshSleepTime);
 })
 document.getElementById("SPS").addEventListener("click", function() {
     setTimeout(() => {
         renderGames();
-    }, 700);
+    }, refreshSleepTime);
 })
 
 

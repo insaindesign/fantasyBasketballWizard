@@ -9,16 +9,15 @@
   },
   "background": {
     "persistent": true,
-    "scripts": ["background.js"]
+    "scripts": ["js/yahoo/background.js"]
   },
   "content_scripts": [
     {
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*"],
-      "js": ["popup.js"]
+      "js": ["js/yahoo/popup.js"]
     }
   ],
   "permissions": [
-   "activeTab",
-   "tabs"
+   "activeTab"
    ]
 }

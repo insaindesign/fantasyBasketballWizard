@@ -127,7 +127,7 @@ var fantasyWeek = arr[1]-1;
 //-----------------------------------------------------------------------------
 renderGames = function() {
     
-    console.log("rendering...")
+    console.log("Fantasy Wizard rendering...")
     
     
     //init stats table
@@ -224,17 +224,18 @@ document.getElementById("S").addEventListener("click", function() {
     setTimeout(() => {
         renderGames();
     }, refreshSleepTime);
-})
+});
 document.getElementById("P").addEventListener("click", function() {
     setTimeout(() => {
         renderGames();
     }, refreshSleepTime);
-})
+});
 document.getElementById("SPS").addEventListener("click", function() {
     setTimeout(() => {
         renderGames();
     }, refreshSleepTime);
-})
+});
+
 
 
 if (currentUrl.indexOf(teamURLMatch) !== -1) {

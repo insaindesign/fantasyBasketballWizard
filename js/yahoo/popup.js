@@ -254,6 +254,7 @@ countStats = function(){
 
 //Initalize Tab Functionality
 //-----------------------------------------------------------------------------
+var refreshSleepTime = 2000;
 try {
     document.getElementById("S").addEventListener("click", function() {
         setTimeout(() => {
@@ -292,6 +293,34 @@ catch(err) {
     console.log(err)
 }
 
+//-------------Subnav options(stats tab for different ranges)----------------------------
+var subNav = document.getElementById("subnav_S");
+document.getElementById("subnav_S").childNodes[1].addEventListener("click", function() {
+    setTimeout(() => {
+        renderGames();
+    }, refreshSleepTime);
+});
+document.getElementById("subnav_S").childNodes[3].addEventListener("click", function() {
+    setTimeout(() => {
+        renderGames();
+    }, refreshSleepTime);
+});
+document.getElementById("subnav_S").childNodes[5].addEventListener("click", function() {
+    setTimeout(() => {
+        renderGames();
+    }, refreshSleepTime);
+});
+document.getElementById("subnav_S").childNodes[7].addEventListener("click", function() {
+    setTimeout(() => {
+        renderGames();
+    }, refreshSleepTime);
+});
+document.getElementById("subnav_S").childNodes[9].addEventListener("click", function() {
+    setTimeout(() => {
+        renderGames();
+    }, refreshSleepTime);
+});
+//-----------------------------------------------------------------
 
 if (currentUrl.indexOf(teamURLMatch) !== -1) {
     renderGames();

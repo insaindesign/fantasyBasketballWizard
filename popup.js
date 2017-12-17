@@ -67,7 +67,7 @@ Schedule["Was"] = WashingtonWizards
 
 Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"]
 
-
+//Initialize Functions
 //-----------------------------------------------------------------------------
 var getColor = function(games){
     if (games > 3){
@@ -122,13 +122,15 @@ versusString = elements[0].innerText;
 arr = versusString.split(" ");
 var fantasyWeek = arr[1]-1;
 
-function renderTeam() {
+//init stats table
+table = document.getElementById("statTable0");
 
-    //init stats table
-    table = document.getElementById("statTable0");
-    
-    //init table dimensions
-    num_rows = table.rows.length;
+//init table dimensions
+num_rows = table.rows.length;
+
+//Default Stats Tab
+//-----------------------------------------------------------------------------
+renderGames = function() {
     
     for (var i = 2; i < num_rows; i++){
         if (!table.rows[i].cells[2].innerText.includes("(Empty)")){
@@ -205,11 +207,35 @@ function renderTeam() {
     table.rows[row].cells[fantasy_col].innerText = totalGames;
     table.rows[row].cells[fantasy_col].className = "Alt Ta-end Nowrap Bdrend"
 }
+
+countStats = function(){
+    
+}
+
+//Initalize Tab Functionality
+//-----------------------------------------------------------------------------
 document.getElementById("S").addEventListener("click", function() {
     setTimeout(() => {
-        renderTeam();
-    }, 750);
+        renderGames();
+    }, 700);
 })
+document.getElementById("P").addEventListener("click", function() {
+    setTimeout(() => {
+        renderGames();
+    }, 700);
+})
+document.getElementById("AS").addEventListener("click", function() {
+    setTimeout(() => {
+        renderGames();
+    }, 700);
+})
+document.getElementById("SPS").addEventListener("click", function() {
+    setTimeout(() => {
+        renderGames();
+    }, 700);
+})
+
+
 if (currentUrl.indexOf(teamURLMatch) !== -1) {
-    renderTeam();
+    renderGames();
 }

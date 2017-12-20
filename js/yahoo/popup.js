@@ -127,7 +127,7 @@ var fantasyWeek = arr[1]-1;
 //-----------------------------------------------------------------------------
 renderGames = function() {
     
-    console.log("rendering...")
+    console.log("fantasy wizard rendering...")
     
     
     //init stats table

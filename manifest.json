@@ -7,10 +7,6 @@
       "default_icon": "frontend/icon.png",
       "default_popup": "frontend/popup.html"
   },
-  "background": {
-    "persistent": true,
-    "scripts": ["js/yahoo/background.js"]
-  },
   "content_scripts": [
     {
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*"],

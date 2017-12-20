@@ -254,12 +254,12 @@ countStats = function(){
 
 //Initalize Tab Functionality
 //-----------------------------------------------------------------------------
-var refreshSleepTime = 2000;
+var refreshSleepTime = 700;
 try {
     document.getElementById("S").addEventListener("click", function() {
         setTimeout(() => {
             renderGames();
-        }, 700);
+        }, refreshSleepTime);
     })
 }
 catch(err) {
@@ -268,7 +268,7 @@ catch(err) {
     document.getElementById("P").addEventListener("click", function() {
         setTimeout(() => {
             renderGames();
-        }, 700);
+        }, refreshSleepTime);
     })
 }
 catch(err) {
@@ -277,7 +277,7 @@ catch(err) {
     document.getElementById("SPS").addEventListener("click", function() {
         setTimeout(() => {
             renderGames();
-        }, 700);
+        }, refreshSleepTime);
     })
 }
 catch(err) {
@@ -286,7 +286,7 @@ catch(err) {
     document.getElementById("AS").addEventListener("click", function() {
         setTimeout(() => {
             renderGames();
-        }, 700);
+        }, refreshSleepTime);
     })
 }
 catch(err) {
@@ -295,27 +295,32 @@ catch(err) {
 
 //-------------Subnav options(stats tab for different ranges)----------------------------
 var subNav = document.getElementById("subnav_S");
-document.getElementById("subnav_S").childNodes[1].addEventListener("click", function() {
+var today = document.getElementById("subnav_S").childNodes[1];
+var last7 = document.getElementById("subnav_S").childNodes[3];
+var last14 = document.getElementById("subnav_S").childNodes[5];
+var last30 = document.getElementById("subnav_S").childNodes[7];
+var season = document.getElementById("subnav_S").childNodes[9];
+today.addEventListener("click", function() {
     setTimeout(() => {
         renderGames();
     }, refreshSleepTime);
 });
-document.getElementById("subnav_S").childNodes[3].addEventListener("click", function() {
+last7.addEventListener("click", function() {
     setTimeout(() => {
         renderGames();
     }, refreshSleepTime);
 });
-document.getElementById("subnav_S").childNodes[5].addEventListener("click", function() {
+last14.addEventListener("click", function() {
     setTimeout(() => {
         renderGames();
     }, refreshSleepTime);
 });
-document.getElementById("subnav_S").childNodes[7].addEventListener("click", function() {
+last30.addEventListener("click", function() {
     setTimeout(() => {
         renderGames();
     }, refreshSleepTime);
 });
-document.getElementById("subnav_S").childNodes[9].addEventListener("click", function() {
+season.addEventListener("click", function() {
     setTimeout(() => {
         renderGames();
     }, refreshSleepTime);

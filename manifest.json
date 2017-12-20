@@ -15,6 +15,10 @@
     {
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*"],
       "js": ["js/yahoo/popup.js"]
+    },
+    {
+      "matches": ["http://games.espn.com/fba/*"],
+      "js": ["js/espn/espn.js"]
     }
   ],
   "permissions": [

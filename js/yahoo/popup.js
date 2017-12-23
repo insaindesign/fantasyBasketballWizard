@@ -122,12 +122,19 @@ versusString = elements[0].innerText;
 arr = versusString.split(" ");
 var fantasyWeek = arr[1]-1;
 
+S_VIEW = 1
+PS_VIEW = 2
+AS_VIEW = 3
+
+view = S_VIEW
 
 //Default Stats Tab
 //-----------------------------------------------------------------------------
 renderGames = function() {
     
-    console.log("fantasy wizard rendering...")
+    view = S_VIEW;
+    console.log(view)
+    console.log("rendering games...")
     
     
     //init stats table
@@ -150,12 +157,32 @@ renderGames = function() {
             player_col = i;
     }
     
-    //find fantasy stats column
+    fantasy_col = -1
+    //find % Started column
     th = table.rows[first_player_row];
-    for (var i = 6; i < th.cells.length; i++){
-        if (th.cells[i].innerText.includes("-") && th.cells[i].innerText.length < 3){
-            fantasy_col = i + 1;
+    for (var i = 5; i < th.cells.length; i++){
+        //if (th.cells[i].innerText.includes("-") && th.cells[i].innerText.length < 3){
+        if (th.cells[i].innerText.includes("%")){
+            fantasy_col = i;
             break;
+        }
+    }
+    
+    if (fantasy_col == -1){
+        for (var i = 5; i < th.cells.length; i++){
+            if (th.cells[i].innerText.includes("-") && th.cells[i].innerText.length < 3){
+                fantasy_col = i + 1;
+                break;
+            }
+        }
+    }
+    
+    if (fantasy_col == -1){
+        for (var i = 5; i < th.cells.length; i++){
+            if (th.cells[i].innerText.includes("-") && th.cells[i].innerText.length < 3){
+                fantasy_col = i + 1;
+                break;
+            }
         }
     }
 
@@ -177,6 +204,8 @@ renderGames = function() {
             break;
         }
     }
+    
+    fantasy_col = i;
     
     //read team names, write games
     row = 2;
@@ -209,7 +238,11 @@ renderGames = function() {
     }
     //display total number of games and add class
     table.rows[row].cells[fantasy_col].innerText = totalGames;
-    table.rows[row].cells[fantasy_col].className = "Alt Ta-end Nowrap Bdrend"
+    table.rows[row].cells[fantasy_col].className = "Alt Ta-end Nowrap Bdrend";
+}
+
+round_float = function(num, round_to=3){
+    return parseFloat(String(num)).toFixed(round_to);
 }
 
 
@@ -217,38 +250,158 @@ renderGames = function() {
 //-----------------------------------------------------------------------------
 countStats = function(){
     
-    console.log("counting...")
+    view = AS_VIEW;
+    console.log(view);
+    console.log("counting stats...")
+    
     //init stats table
     table = document.getElementById("statTable0");
     
     //init table dimensions
     num_rows = table.rows.length;
-    num_cols = table.rows[2].cells.length;
+    num_cols = table.rows[2].cells.length - 2;
     
+    //append new row(s) to table
     footer = document.createElement("tfoot");
     stats_week = document.createElement("tr");
     stats_all = document.createElement("tr");
     
     for (var i = 0; i < num_cols; i++){
-        cell = document.createElement("td");
-        cell.innerText = "t";
-        stats_week.appendChild(cell);
-        stats_all.appendChild(cell);
+        cell1 = document.createElement("td");
+        //cell1.innerText = "t";
+        cell1.className = "Alt Ta-end"
+        cell2 = document.createElement("td");
+        //cell2.innerText = "t";
+        cell2.className = "Alt Ta-end";
+        stats_week.appendChild(cell1);
+        stats_all.appendChild(cell2);
     }
+    
+    
+    /*
+    //add help
+    stats_week.cells[0].innerText = "?"
+    stats_all.cells[0].innerText = "?"
+    
+    stats_all.cells[0].classList.add("tooltip");
+    text = document.createElement("span");
+    text.className = "tooltiptext";
+    stats_all.cells[0].appendChild(text);*/
+    
+    //add new row labels
+    stats_week.cells[1].innerText = "Projected Weekly Averages"
+    stats_all.cells[1].innerText = "Team Totals"
+    
+    stats_week.cells[1].style.fontWeight = 'bold';
+    stats_all.cells[1].style.fontWeight = 'bold';
+    
+    stats_week.cells[1].className = "sum";
+    stats_all.cells[1].className = "sum";
+    
     
     footer.appendChild(stats_week);
     footer.appendChild(stats_all);
-    //table.appendChild(stats_week);
     table.appendChild(footer);
     
     header_row = table.rows[1];
-    
+    //find Gp col -- last col before "counting" stats
     for (var i = 0; i < header_row.cells.length; i++){
         if (header_row.cells[i].innerText.includes("GP")){
             gp_col = i;
             break;
         }
     }
+    
+    row = 2;
+    cellText = table.rows[row].cells[1].innerText;
+    num = 0;
+    den = 0;
+    
+    //init column to start with
+    col = gp_col + 1;
+    
+    header_cell = table.rows[1].cells[col].innerText;
+    
+    while (header_cell.length > 0){
+        //column is (x/y)
+        if (header_cell.includes("/")){
+            while (!cellText.includes("Projected Weekly Averages")){
+                values = table.rows[row].cells[col].innerText.split("/");
+                if (!isNaN(values[0]) && values[0].length > 0){
+                    num += parseFloat(values[0]);
+                    den += parseFloat(values[1]);
+                }
+                row++;
+                cellText = table.rows[row].cells[1].innerText;
+            }
+            
+            stats_all.cells[col-1].innerText = round_float(num, 1) + "/" + round_float(den, 1);
+            stats_all.cells[col-1].classList.add("F-faded");
+            stats_all.cells[col-1].classList.add("Bdrend");
+            
+                    }
+        //column is %
+        else if (header_cell.includes("%")) {
+            while (!cellText.includes("Projected Weekly Averages")){
+                value = table.rows[row].cells[col].innerText;
+                if (!isNaN(value) && value.length > 0){
+                    num += parseFloat(value);
+                    den += 1;
+                }
+                row++;
+                cellText = table.rows[row].cells[1].innerText;
+            }
+            
+            avg = String(round_float(num / den));
+            if (avg.includes(".")){
+                avg = "." + avg.split(".")[1]
+            }
+            stats_all.cells[col-1].innerText = avg;
+            stats_all.cells[col-1].classList.add("Bdrend");
+
+        }
+        else {
+            while (!cellText.includes("Projected Weekly Averages")){
+                value = table.rows[row].cells[col].innerText;
+                if (!isNaN(value) && value.length > 0){
+                    num += parseFloat(value);
+                }
+                row++;
+                cellText = table.rows[row].cells[1].innerText;
+            }
+
+            stats_all.cells[col-1].innerText = round_float(num, 1);
+            stats_all.cells[col-1].classList.add("Bdrend");
+        }
+        
+        cellText = table.rows[2].cells[1].innerText;
+        num = 0;
+        den = 0;
+        row = 2;
+        col++;
+        header_cell = table.rows[1].cells[col].innerText;
+    }
+    
+    console.log("done")
+
+    /*while (!cellText.includes("Projected Weekly Averages")){
+        console.log(table.rows[row].cells[col].innerText);
+        
+        if (table.rows[row].cells[col].innerText.includes("/")){
+            values = table.rows[row].cells[col].innerText.split("/");
+            //console.log(values)
+            if (!isNaN(values[0])){
+                num += parseFloat(values[0]);
+                den += parseFloat(values[1]);
+            }
+        }
+        
+        row++;
+        cellText = table.rows[row].cells[1].innerText;
+    }
+    
+    table.rows[row].cells[col-1].innerText = String(num) + "/" + String(den);*/
+    
 }
 
 
@@ -287,44 +440,55 @@ catch(err) {
         setTimeout(() => {
             renderGames();
         }, refreshSleepTime);
+    });
+    document.getElementById("AS").addEventListener("click", function() {
+        setTimeout(() => {
+            countStats();
+        }, refreshSleepTime);
     })
+    
 }
 catch(err) {
     console.log(err)
 }
 
-//-------------Subnav options(stats tab for different ranges)----------------------------
-var subNav = document.getElementById("subnav_S");
-var today = document.getElementById("subnav_S").childNodes[1];
-var last7 = document.getElementById("subnav_S").childNodes[3];
-var last14 = document.getElementById("subnav_S").childNodes[5];
-var last30 = document.getElementById("subnav_S").childNodes[7];
-var season = document.getElementById("subnav_S").childNodes[9];
-today.addEventListener("click", function() {
-    setTimeout(() => {
-        renderGames();
-    }, refreshSleepTime);
-});
-last7.addEventListener("click", function() {
-    setTimeout(() => {
-        renderGames();
-    }, refreshSleepTime);
-});
-last14.addEventListener("click", function() {
-    setTimeout(() => {
-        renderGames();
-    }, refreshSleepTime);
-});
-last30.addEventListener("click", function() {
-    setTimeout(() => {
-        renderGames();
-    }, refreshSleepTime);
-});
-season.addEventListener("click", function() {
-    setTimeout(() => {
-        renderGames();
-    }, refreshSleepTime);
-});
+//-------------Subnav options (stats tab for different ranges)----------------------------
+try {
+    var subNav = document.getElementById("subnav_S");
+    var today = document.getElementById("subnav_S").childNodes[1];
+    var last7 = document.getElementById("subnav_S").childNodes[3];
+    var last14 = document.getElementById("subnav_S").childNodes[5];
+    var last30 = document.getElementById("subnav_S").childNodes[7];
+    var season = document.getElementById("subnav_S").childNodes[9];
+    today.addEventListener("click", function() {
+        setTimeout(() => {
+            renderGames();
+        }, refreshSleepTime);
+    });
+    last7.addEventListener("click", function() {
+        setTimeout(() => {
+            renderGames();
+        }, refreshSleepTime);
+    });
+    last14.addEventListener("click", function() {
+        setTimeout(() => {
+            renderGames();
+        }, refreshSleepTime);
+    });
+    last30.addEventListener("click", function() {
+        setTimeout(() => {
+            renderGames();
+        }, refreshSleepTime);
+    });
+    season.addEventListener("click", function() {
+        setTimeout(() => {
+            renderGames();
+        }, refreshSleepTime);
+    });
+}
+catch(err) {
+    console.log(err)
+}
 //-----------------------------------------------------------------
 
 if (currentUrl.indexOf(teamURLMatch) !== -1) {

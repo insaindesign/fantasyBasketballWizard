@@ -339,7 +339,18 @@ countStats = function(){
             stats_all.cells[col-1].classList.add("F-faded");
             stats_all.cells[col-1].classList.add("Bdrend");
             
-                    }
+            if ((header_cell.includes("FGM/A") && table.rows[1].cells[col+1].innerText.includes("FG%")) ||
+                (header_cell.includes("FTM/A") && table.rows[1].cells[col+1].innerText.includes("FT%"))){
+                avg = String(round_float(num / den));
+                if (avg.includes(".")){
+                    avg = "." + avg.split(".")[1]
+                }
+                stats_all.cells[col].innerText = avg;
+                stats_all.cells[col].classList.add("Bdrend");
+                col++;
+            }
+            
+        }
         //column is %
         else if (header_cell.includes("%")) {
             while (!cellText.includes("Projected Weekly Averages")){

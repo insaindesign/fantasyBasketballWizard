@@ -130,6 +130,9 @@ var get_first_row = function(){
 var games_isset = false;
 var AS_isset = false;
 
+var games_id = "games";
+var avg_stats_id = "avg";
+
 var currentUrl = window.location.href;
 var myTeamRegex = /https?:\/\/basketball[.]fantasysports[.]yahoo[.]com\/nba\/\d{3,7}\/\d{1,2}/;
 var teamURLMatch = currentUrl.match(myTeamRegex);
@@ -151,19 +154,9 @@ this_view = S_VIEW;
 //-----------------------------------------------------------------------------
 renderGames = function(from_view) {
     
-    if (from_view != 0){
-        console.log("from: ", from_view);
-        console.log("this: ", this_view)
-        if (from_view == this_view){
-            console.log("same view!");
-            return;
-        }
-        
-        if (from_view != -1){
-            console.log("not default");
-            this_view = from_view;
-        }
-        
+    if (document.getElementById(games_id) != null){
+        console.log("no changes");
+        return;
     }
     
     console.log("rendering games...")
@@ -212,6 +205,7 @@ renderGames = function(from_view) {
     for (var i = 0; i < th.cells.length; i++){
         if (th.cells[i].innerText.includes("Fantasy")){
             table.rows[0].cells[i].innerText = "Games";
+            table.rows[0].cells[i].id = games_id;
             break;
         }
     }
@@ -262,6 +256,7 @@ renderGames = function(from_view) {
     }
     //display total number of games and add class
     table.rows[row].cells[fantasy_col].innerText = totalGames;
+    table.rows[row].cells[fantasy_col].id = "games";
     table.rows[row].cells[fantasy_col].className = "Alt Ta-end Nowrap Bdrend";
     
     games_isset = true;
@@ -277,7 +272,8 @@ round_float = function(num, round_to=3){
 //-----------------------------------------------------------------------------
 countStats = function(){
     
-    if (AS_isset){
+    if (document.getElementById(avg_stats_id) != null){
+        console.log("no changes");
         return;
     }
     
@@ -315,6 +311,7 @@ countStats = function(){
         stats_all.appendChild(cell2);
     }
     
+    stats_all.id = avg_stats_id;
     
     /*
     //add help
@@ -391,7 +388,6 @@ countStats = function(){
     header_cell = table.rows[1].cells[col].innerText;
     
     while (header_cell.length > 0){
-        console.log(header_cell);
         //column is (x/y)
         if (header_cell.includes("/")){
             if (!table.rows[2].cells[col].innerText.includes("/")){
@@ -417,7 +413,7 @@ countStats = function(){
                 write = col - 1;
             }
             
-            console.log(round_float(num, 1) + "/" + round_float(den, 1));
+            //console.log(round_float(num, 1) + "/" + round_float(den, 1));
             stats_all.cells[write].innerText = round_float(num, 1) + "/" + round_float(den, 1);
             stats_all.cells[write].classList.add("F-faded");
             stats_all.cells[write].classList.add("Bdrend");
@@ -436,7 +432,7 @@ countStats = function(){
                     write = col;
                 }
                 
-                console.log(avg);
+                //console.log(avg);
                 stats_all.cells[write].innerText = avg;
                 stats_all.cells[write].classList.add("Bdrend");
                 col++;
@@ -467,7 +463,7 @@ countStats = function(){
                 write = col - 1;
             }
             
-            console.log(avg);
+            //console.log(avg);
             stats_all.cells[write].innerText = avg;
             stats_all.cells[write].classList.add("Bdrend");
 
@@ -488,7 +484,7 @@ countStats = function(){
                 write = col - 1;
             }
             
-            console.log(round_float(num, 1));
+            //console.log(round_float(num, 1));
             stats_all.cells[write].innerText = round_float(num, 1);
             stats_all.cells[write].classList.add("Bdrend");
         }
@@ -531,7 +527,7 @@ countStats = function(){
 
 //Initalize Tab Functionality
 //-----------------------------------------------------------------------------
-var refreshSleepTime = 700;
+var refreshSleepTime = 800;
 try {
     document.getElementById("S").addEventListener("click", function() {
         setTimeout(() => {

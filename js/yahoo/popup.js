@@ -113,6 +113,23 @@ var contains = function(needle) {
     return indexOf.call(this, needle) > -1;
 };
 
+var get_first_row = function(){
+    //init stats table
+    table = document.getElementById("statTable0");
+    
+    //init table dimensions
+    num_rows = table.rows.length;
+    
+    for (var i = 2; i < num_rows; i++){
+        if (!table.rows[i].cells[2].innerText.includes("(Empty)")){
+            return i;
+        }
+    }
+}
+
+var games_isset = false;
+var AS_isset = false;
+
 var currentUrl = window.location.href;
 var myTeamRegex = /https?:\/\/basketball[.]fantasysports[.]yahoo[.]com\/nba\/\d{3,7}\/\d{1,2}/;
 var teamURLMatch = currentUrl.match(myTeamRegex);
@@ -122,18 +139,33 @@ versusString = elements[0].innerText;
 arr = versusString.split(" ");
 var fantasyWeek = arr[1]-1;
 
-S_VIEW = 1
-PS_VIEW = 2
-AS_VIEW = 3
+week_row_name = "Projected Week Totals";
 
-view = S_VIEW
+S_VIEW = 0;
+P_VIEW = 1;
+AS_VIEW = 2;
+
+this_view = S_VIEW;
 
 //Default Stats Tab
 //-----------------------------------------------------------------------------
-renderGames = function() {
+renderGames = function(from_view) {
     
-    view = S_VIEW;
-    console.log(view)
+    if (from_view != 0){
+        console.log("from: ", from_view);
+        console.log("this: ", this_view)
+        if (from_view == this_view){
+            console.log("same view!");
+            return;
+        }
+        
+        if (from_view != -1){
+            console.log("not default");
+            this_view = from_view;
+        }
+        
+    }
+    
     console.log("rendering games...")
     
     
@@ -143,12 +175,7 @@ renderGames = function() {
     //init table dimensions
     num_rows = table.rows.length;
     
-    for (var i = 2; i < num_rows; i++){
-        if (!table.rows[i].cells[2].innerText.includes("(Empty)")){
-            first_player_row = i;
-            break;
-        }
-    }
+    first_player_row = get_first_row();
     
     //find player column
     th = table.rows[first_player_row];
@@ -164,6 +191,7 @@ renderGames = function() {
         //if (th.cells[i].innerText.includes("-") && th.cells[i].innerText.length < 3){
         if (th.cells[i].innerText.includes("%")){
             fantasy_col = i;
+            //console.log("found!", i);
             break;
         }
     }
@@ -177,14 +205,6 @@ renderGames = function() {
         }
     }
     
-    if (fantasy_col == -1){
-        for (var i = 5; i < th.cells.length; i++){
-            if (th.cells[i].innerText.includes("-") && th.cells[i].innerText.length < 3){
-                fantasy_col = i + 1;
-                break;
-            }
-        }
-    }
 
     //replace Fantasy headers
     //find Fantasy header column
@@ -205,7 +225,10 @@ renderGames = function() {
         }
     }
     
-    fantasy_col = i;
+    if (fantasy_col == -1){
+        fantasy_col = i;
+    }
+    
     
     //read team names, write games
     row = 2;
@@ -234,21 +257,29 @@ renderGames = function() {
         }
         row++;
         cellText = table.rows[row].cells[player_col].innerText;
+        //console.log(cellText);
         info = table.rows[row].cells[player_col].innerText.split(" ");
     }
     //display total number of games and add class
     table.rows[row].cells[fantasy_col].innerText = totalGames;
     table.rows[row].cells[fantasy_col].className = "Alt Ta-end Nowrap Bdrend";
+    
+    games_isset = true;
 }
 
 round_float = function(num, round_to=3){
     return parseFloat(String(num)).toFixed(round_to);
+
 }
 
 
 //Average Stats Tab
 //-----------------------------------------------------------------------------
 countStats = function(){
+    
+    if (AS_isset){
+        return;
+    }
     
     view = AS_VIEW;
     console.log(view);
@@ -259,7 +290,14 @@ countStats = function(){
     
     //init table dimensions
     num_rows = table.rows.length;
-    num_cols = table.rows[2].cells.length - 2;
+    
+    if (table.rows[1].innerText.includes("Action")){
+        num_cols = table.rows[1].cells.length;
+    }
+    else {
+        num_cols = table.rows[1].cells.length - 2;
+    }
+    
     
     //append new row(s) to table
     footer = document.createElement("tfoot");
@@ -289,8 +327,8 @@ countStats = function(){
     stats_all.cells[0].appendChild(text);*/
     
     //add new row labels
-    stats_week.cells[1].innerText = "Projected Weekly Averages"
-    stats_all.cells[1].innerText = "Team Totals"
+    stats_week.cells[1].innerText = week_row_name;
+    stats_all.cells[1].innerText = "Average Totals";
     
     stats_week.cells[1].style.fontWeight = 'bold';
     stats_all.cells[1].style.fontWeight = 'bold';
@@ -312,32 +350,78 @@ countStats = function(){
         }
     }
     
+    //find games col -- last col before "counting" stats
+    for (var i = 0; i < header_row.cells.length; i++){
+        if (header_row.cells[i].innerText.includes("Total")){
+            games_col = i;
+            break;
+        }
+    }
+    
     row = 2;
     cellText = table.rows[row].cells[1].innerText;
     num = 0;
     den = 0;
+    num_week = 0;
+    den_week = 0;
     
     //init column to start with
-    col = gp_col + 1;
+    for (var i = 0; i < header_row.cells.length; i++){
+        if (header_row.cells[i].innerText.includes("Total")){
+            games_col = i;
+            break;
+        }
+    }
     
+    first_player_row = get_first_row();
+    
+    /*
+    //find 2 columns after mins
+    th = table.rows[first_player_row];
+    for (var i = 0; i < th.cells.length; i++){
+        if (th.cells[i].innerText.includes(":")){
+            col = i + 2;
+            break;
+        }
+    }*/
+    
+    col = gp_col + 1;
+    offset = false;
+    write = 0;
     header_cell = table.rows[1].cells[col].innerText;
     
     while (header_cell.length > 0){
+        console.log(header_cell);
         //column is (x/y)
         if (header_cell.includes("/")){
-            while (!cellText.includes("Projected Weekly Averages")){
-                values = table.rows[row].cells[col].innerText.split("/");
+            if (!table.rows[2].cells[col].innerText.includes("/")){
+                offset = true;
+                console.log("offset");
+                //col++;
+            }
+            while (!cellText.includes(week_row_name)){
+                values = table.rows[row].cells[col+offset].innerText.split("/");
                 if (!isNaN(values[0]) && values[0].length > 0){
                     num += parseFloat(values[0]);
                     den += parseFloat(values[1]);
+                    //num_week = parseFloat(values[0]);
+                    
                 }
                 row++;
                 cellText = table.rows[row].cells[1].innerText;
             }
             
-            stats_all.cells[col-1].innerText = round_float(num, 1) + "/" + round_float(den, 1);
-            stats_all.cells[col-1].classList.add("F-faded");
-            stats_all.cells[col-1].classList.add("Bdrend");
+            if (offset){
+                write = col + 1;
+            } else {
+                write = col - 1;
+            }
+            
+            console.log(round_float(num, 1) + "/" + round_float(den, 1));
+            stats_all.cells[write].innerText = round_float(num, 1) + "/" + round_float(den, 1);
+            stats_all.cells[write].classList.add("F-faded");
+            stats_all.cells[write].classList.add("Bdrend");
+            
             
             if ((header_cell.includes("FGM/A") && table.rows[1].cells[col+1].innerText.includes("FG%")) ||
                 (header_cell.includes("FTM/A") && table.rows[1].cells[col+1].innerText.includes("FT%"))){
@@ -345,16 +429,25 @@ countStats = function(){
                 if (avg.includes(".")){
                     avg = "." + avg.split(".")[1]
                 }
-                stats_all.cells[col].innerText = avg;
-                stats_all.cells[col].classList.add("Bdrend");
+                
+                if (offset){
+                    write = col + 2;
+                } else {
+                    write = col;
+                }
+                
+                console.log(avg);
+                stats_all.cells[write].innerText = avg;
+                stats_all.cells[write].classList.add("Bdrend");
                 col++;
             }
             
         }
         //column is %
         else if (header_cell.includes("%")) {
-            while (!cellText.includes("Projected Weekly Averages")){
-                value = table.rows[row].cells[col].innerText;
+            console.log("%!");
+            while (!cellText.includes(week_row_name)){
+                value = table.rows[row].cells[col+offset].innerText;
                 if (!isNaN(value) && value.length > 0){
                     num += parseFloat(value);
                     den += 1;
@@ -367,13 +460,21 @@ countStats = function(){
             if (avg.includes(".")){
                 avg = "." + avg.split(".")[1]
             }
-            stats_all.cells[col-1].innerText = avg;
-            stats_all.cells[col-1].classList.add("Bdrend");
+            
+            if (offset){
+                write = col + 1;
+            } else {
+                write = col - 1;
+            }
+            
+            console.log(avg);
+            stats_all.cells[write].innerText = avg;
+            stats_all.cells[write].classList.add("Bdrend");
 
         }
         else {
-            while (!cellText.includes("Projected Weekly Averages")){
-                value = table.rows[row].cells[col].innerText;
+            while (!cellText.includes(week_row_name)){
+                value = table.rows[row].cells[col+offset].innerText;
                 if (!isNaN(value) && value.length > 0){
                     num += parseFloat(value);
                 }
@@ -381,16 +482,26 @@ countStats = function(){
                 cellText = table.rows[row].cells[1].innerText;
             }
 
-            stats_all.cells[col-1].innerText = round_float(num, 1);
-            stats_all.cells[col-1].classList.add("Bdrend");
+            if (offset){
+                write = col + 1;
+            } else {
+                write = col - 1;
+            }
+            
+            console.log(round_float(num, 1));
+            stats_all.cells[write].innerText = round_float(num, 1);
+            stats_all.cells[write].classList.add("Bdrend");
         }
         
         cellText = table.rows[2].cells[1].innerText;
         num = 0;
         den = 0;
+        num_week = 0;
+        den_week = 0;
         row = 2;
         col++;
         header_cell = table.rows[1].cells[col].innerText;
+        console.log(header_cell);
     }
     
     console.log("done")
@@ -413,6 +524,8 @@ countStats = function(){
     
     table.rows[row].cells[col-1].innerText = String(num) + "/" + String(den);*/
     
+    AS_isset = true;
+    
 }
 
 
@@ -422,7 +535,7 @@ var refreshSleepTime = 700;
 try {
     document.getElementById("S").addEventListener("click", function() {
         setTimeout(() => {
-            renderGames();
+            renderGames(0);
         }, refreshSleepTime);
     })
 }
@@ -431,7 +544,7 @@ catch(err) {
 } try {
     document.getElementById("P").addEventListener("click", function() {
         setTimeout(() => {
-            renderGames();
+            renderGames(1);
         }, refreshSleepTime);
     })
 }
@@ -449,7 +562,7 @@ catch(err) {
 } try {
     document.getElementById("AS").addEventListener("click", function() {
         setTimeout(() => {
-            renderGames();
+            renderGames(2);
         }, refreshSleepTime);
     });
     document.getElementById("AS").addEventListener("click", function() {
@@ -463,45 +576,9 @@ catch(err) {
     console.log(err)
 }
 
-//-------------Subnav options (stats tab for different ranges)----------------------------
-try {
-    var subNav = document.getElementById("subnav_S");
-    var today = document.getElementById("subnav_S").childNodes[1];
-    var last7 = document.getElementById("subnav_S").childNodes[3];
-    var last14 = document.getElementById("subnav_S").childNodes[5];
-    var last30 = document.getElementById("subnav_S").childNodes[7];
-    var season = document.getElementById("subnav_S").childNodes[9];
-    today.addEventListener("click", function() {
-        setTimeout(() => {
-            renderGames();
-        }, refreshSleepTime);
-    });
-    last7.addEventListener("click", function() {
-        setTimeout(() => {
-            renderGames();
-        }, refreshSleepTime);
-    });
-    last14.addEventListener("click", function() {
-        setTimeout(() => {
-            renderGames();
-        }, refreshSleepTime);
-    });
-    last30.addEventListener("click", function() {
-        setTimeout(() => {
-            renderGames();
-        }, refreshSleepTime);
-    });
-    season.addEventListener("click", function() {
-        setTimeout(() => {
-            renderGames();
-        }, refreshSleepTime);
-    });
-}
-catch(err) {
-    console.log(err)
-}
+
 //-----------------------------------------------------------------
 
 if (currentUrl.indexOf(teamURLMatch) !== -1) {
-    renderGames();
+    renderGames(-1);
 }

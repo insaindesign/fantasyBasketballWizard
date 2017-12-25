@@ -75,13 +75,6 @@ var highColor = "#adebad";
 var whiteColor = "white";
 var borderColor = "#e7e7e7";
 
-
-//get week of year
-Date.prototype.getWeek = function() {
-    var onejan = new Date(this.getFullYear(), 0, 1);
-    return Math.ceil((((this - onejan) / 86400000) + onejan.getDay() + 1) / 7);
-}
-
 //determine color based on number of games
 function getColor(games){
     if (games > 3){
@@ -96,17 +89,33 @@ function getColor(games){
         return whiteColor;
     }
 }
+
+function getYahooWeekIndex() {
+    date = new Date();
+    if (date.getFullYear() == 2017) {
+        return 9;
+    }
+    else {
+        //do some logic to determine the yahoo week number
+        //and then subtract 1 to get the index
+        return 9;
+    }
+}
+
 function renderGames() {
     var table = document.getElementById("buzzindextable");
     var gpHeader = document.createElement("th");
     var gpCell = table.rows[0].appendChild(gpHeader);
+    var gpTip = document.createElement("div");
+    gpTip.setAttribute("style", "text-align: right; color: #757575");
+    document.getElementById("Buzz Index Navigation").appendChild(gpTip);
     var team;
-    var weekNum = 9;
+    var weekNum = getYahooWeekIndex();
     var numGames;
     var rows = table.rows;
     var playerInfo;
 
-    gpHeader.innerText = "GP";
+    gpHeader.innerText = "G*";
 
     //go through rows of table
     for(var i=1; i<rows.length; i++) {
@@ -129,5 +138,17 @@ function renderGames() {
         newCell.innerText = numGames;
         newCell.style.backgroundColor = getColor(numGames);
     }
+    gpCell.addEventListener("mouseover", function() {
+        gpTip.innerText="*Games this week";
+    });
+    gpCell.addEventListener("mouseout", function () {
+        gpTip.innerText="";
+    });
+    gpTip.addEventListener("mouseover", function() {
+        gpTip.innerText="*Games this week";
+    });
+    gpTip.addEventListener("mouseout", function () {
+        gpTip.innerText="";
+    });
 }
 renderGames();

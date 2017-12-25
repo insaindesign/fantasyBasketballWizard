@@ -18,7 +18,7 @@
     },
     {
       "matches": ["http://games.espn.com/fba/*"],
-      "js": ["js/espn/espn.js"]
+      "js": ["js/jquery-3.2.1.min.js", "js/espn/espn.js"]
     }
   ],
   "permissions": [

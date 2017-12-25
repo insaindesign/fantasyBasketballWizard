@@ -67,21 +67,23 @@ Schedule["Was"] = WashingtonWizards;
 
 Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"];
 
-
 //--------Colors-----------
-var lowColor = "#ffffcc";
+var lowColor = "#FF9E9A";
 var medColor = "#d8ffcc";
 var highColor = "#adebad";
 var whiteColor = "white";
 var borderColor = "#e7e7e7";
 
-
-//get week of year
-Date.prototype.getWeek = function() {
-    var onejan = new Date(this.getFullYear(), 0, 1);
-    return Math.ceil((((this - onejan) / 86400000) + onejan.getDay() + 1) / 7);
+//check values from that <td> to values from the Teams array to find the team abbreviation
+function getTeamFromInfo(playerInfo) {
+    for(var j=0; j<Teams.length; j++) {
+        if(Teams.includes(playerInfo[j])) {
+            var team = playerInfo[j];
+            break;
+        }
+    }
+    return team;
 }
-
 //determine color based on number of games
 function getColor(games){
     if (games > 3){
@@ -96,31 +98,41 @@ function getColor(games){
         return whiteColor;
     }
 }
+
+function getYahooWeekIndex() {
+    date = new Date();
+    if (date.getFullYear() == 2017) {
+        return 9;
+    }
+    else {
+        //do some logic to determine the yahoo week number
+        //and then subtract 1 to get the index
+        return 9;
+    }
+}
+
 function renderGames() {
     var table = document.getElementsByClassName("Tst-table Table")[0];
     var newCell;
     var gpHeader = document.createElement("th");
+    gpHeader.innerText= "G*";
     var gpCell = table.rows[0].appendChild(gpHeader);
+    var gpTip = document.createElement("div");
+    gpTip.setAttribute("style", "text-align: right; color: #757575");
+    document.getElementsByClassName("Hd No-p")[1].appendChild(gpTip);
     var team;
-    var weekNum = 9;
+    var weekNum = getYahooWeekIndex();
     var numGames;
     var rows = table.rows;
     var playerInfo;
 
-    gpHeader.innerText = "GP";
-    
     //go through rows of table
     for(var i=1; i<rows.length; i++) {
+
         //grab all text from the <td> that includes the team/player name
         playerInfo = rows[i].cells[1].innerText.split(" ");
-
-        //check values from that <td> to values from the Teams array to find the team abbreviation
-        for(var j=0; j<Teams.length; j++) {
-            if(Teams.includes(playerInfo[j])) {
-                team = playerInfo[j];
-                break;
-            }
-        }
+        
+        team = getTeamFromInfo(playerInfo);
 
         //create new cell and fill with proper attributes/data
         newCell = rows[i].insertCell(9);
@@ -130,5 +142,19 @@ function renderGames() {
         newCell.innerText = numGames;
         newCell.style.backgroundColor = getColor(numGames);
     }
+
+    gpCell.addEventListener("mouseover", function() {
+        gpTip.innerText="*Games this week";
+    });
+    gpCell.addEventListener("mouseout", function () {
+        gpTip.innerText="";
+    });
+    gpTip.addEventListener("mouseover", function() {
+        gpTip.innerText="*Games this week";
+    });
+    gpTip.addEventListener("mouseout", function () {
+        gpTip.innerText="";
+    });
 }
+
 renderGames();

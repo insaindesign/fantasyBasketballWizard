@@ -186,7 +186,6 @@ renderGames = function(from_view) {
         //if (th.cells[i].innerText.includes("-") && th.cells[i].innerText.length < 3){
         if (th.cells[i].innerText.includes("%")){
             fantasy_col = i;
-            //console.log("found!", i);
             break;
         }
     }
@@ -221,6 +220,19 @@ renderGames = function(from_view) {
         }
     }
     
+    //on average stats tab
+    if (fantasy_col == -1 && !document.getElementById("subnav_AS").className.includes("Hidden")){
+        //find games column
+        th = table.rows[first_player_row];
+        for (var i = 2; i < th.cells.length; i++){
+            if (th.cells[i].innerText.includes(":") && !th.cells[i].innerText.includes("m")){
+                fantasy_col = i - 1;
+                break;
+            }
+        }
+
+    }
+    
     if (fantasy_col == -1){
         fantasy_col = i;
     }
@@ -252,16 +264,27 @@ renderGames = function(from_view) {
             table.rows[row].cells[fantasy_col].innerText = "-"
         }
         row++;
-        cellText = table.rows[row].cells[player_col].innerText;
-        //console.log(cellText);
-        info = table.rows[row].cells[player_col].innerText.split(" ");
+        try{
+            cellText = table.rows[row].cells[player_col].innerText;
+            //console.log(cellText);
+            info = table.rows[row].cells[player_col].innerText.split(" ");
+        }
+        catch(err){
+            console.log("error finishing reads");
+            break;
+        }
+        
     }
-    //display total number of games and add class
-    table.rows[row].cells[fantasy_col].innerText = totalGames;
-    table.rows[row].cells[fantasy_col].id = "games";
-    table.rows[row].cells[fantasy_col].className = "Alt Ta-end Nowrap Bdrend";
     
-    games_isset = true;
+    try{
+        //display total number of games and add class
+        table.rows[row].cells[fantasy_col].innerText = totalGames;
+        table.rows[row].cells[fantasy_col].id = "games";
+        table.rows[row].cells[fantasy_col].className = "Alt Ta-end Nowrap Bdrend";
+    }
+    catch(err){
+        console.log("error writing");
+    }
 }
 
 round_float = function(num, round_to=3){
@@ -273,6 +296,10 @@ round_float = function(num, round_to=3){
 //Average Stats Tab
 //-----------------------------------------------------------------------------
 countStats = function(){
+    
+    if (document.getElementById("subnav_AS").className.includes("Hidden")){
+        return;
+    }
     
     if (document.getElementById(avg_stats_id) != null){
         console.log("no changes");
@@ -349,13 +376,6 @@ countStats = function(){
         }
     }
     
-    //find games col -- last col before "counting" stats
-    for (var i = 0; i < header_row.cells.length; i++){
-        if (header_row.cells[i].innerText.includes("Total")){
-            games_col = i;
-            break;
-        }
-    }
     
     row = 2;
     cellText = table.rows[row].cells[1].innerText;
@@ -363,6 +383,9 @@ countStats = function(){
     den = 0;
     num_week = 0;
     den_week = 0;
+    
+    weekly_num = 0;
+    weekly_den = 0;
     
     //init column to start with
     for (var i = 0; i < header_row.cells.length; i++){
@@ -374,24 +397,18 @@ countStats = function(){
     
     first_player_row = get_first_row();
     
-    /*
-    //find 2 columns after mins
-    th = table.rows[first_player_row];
-    for (var i = 0; i < th.cells.length; i++){
-        if (th.cells[i].innerText.includes(":")){
-            col = i + 2;
-            break;
-        }
-    }*/
     
     //find games column
     th = table.rows[first_player_row];
-    for (var i = 0; i < th.cells.length; i++){
-        if (th.cells[i].innerText.includes(":")){
+    for (var i = 2; i < th.cells.length; i++){
+        if (th.cells[i].innerText.includes(":") && !th.cells[i].innerText.includes("m")){
             games_col = i - 1;
             break;
         }
     }
+    
+    
+    console.log("col: ", games_col);
     
     col = gp_col + 1;
     offset = false;
@@ -408,9 +425,15 @@ countStats = function(){
             }
             while (!cellText.includes(week_row_name)){
                 values = table.rows[row].cells[col+offset].innerText.split("/");
+                games_row = table.rows[row].cells[games_col].innerText;
                 if (!isNaN(values[0]) && values[0].length > 0){
                     num += parseFloat(values[0]);
                     den += parseFloat(values[1]);
+                    if (!isNaN(games_row) && games_row.length > 0){
+                        weekly_num += parseFloat(values[0]) * games_row;
+                        weekly_den += parseFloat(values[1]) * games_row;
+                    }
+                    console.log("week: ", weekly_num);
                     //num_week = parseFloat(values[0]);
                     
                 }
@@ -428,13 +451,22 @@ countStats = function(){
             stats_all.cells[write].innerText = round_float(num, 1) + "/" + round_float(den, 1);
             stats_all.cells[write].classList.add("F-faded");
             stats_all.cells[write].classList.add("Bdrend");
+            stats_week.cells[write].innerText = round_float(weekly_num, 1) + "/" + round_float(weekly_den, 1);
+            stats_week.cells[write].classList.add("F-faded");
+            stats_week.cells[write].classList.add("Bdrend");
             
+
             
             if ((header_cell.includes("FGM/A") && table.rows[1].cells[col+1].innerText.includes("FG%")) ||
                 (header_cell.includes("FTM/A") && table.rows[1].cells[col+1].innerText.includes("FT%"))){
                 avg = String(round_float(num / den));
+                weekly_avg = String(round_float(weekly_num / weekly_den));
                 if (avg.includes(".")){
                     avg = "." + avg.split(".")[1]
+                }
+                
+                if (weekly_avg.includes(".")){
+                    weekly_avg = "." + weekly_avg.split(".")[1]
                 }
                 
                 if (offset){
@@ -446,6 +478,8 @@ countStats = function(){
                 //console.log(avg);
                 stats_all.cells[write].innerText = avg;
                 stats_all.cells[write].classList.add("Bdrend");
+                stats_week.cells[write].innerText = weekly_avg;
+                stats_week.cells[write].classList.add("Bdrend");
                 col++;
             }
             
@@ -485,6 +519,7 @@ countStats = function(){
                 value = table.rows[row].cells[col+offset].innerText;
                 games_row = table.rows[row].cells[games_col].innerText;
                 //console.log(games_row);
+                console.log(games_col);
                 if (!isNaN(value) && value.length > 0){
                     num += parseFloat(value);
                     if (!isNaN(games_row) && games_row.length > 0){
@@ -511,7 +546,9 @@ countStats = function(){
             
             weekly_stats = 0;
         }
-        
+    
+        weekly_num = 0;
+        weekly_den = 0;
         cellText = table.rows[2].cells[1].innerText;
         num = 0;
         den = 0;
@@ -594,9 +631,15 @@ catch(err) {
     console.log(err)
 }
 
+render = function(){
+    renderGames();
+    countStats();
+}
 
 //-----------------------------------------------------------------
 
 if (currentUrl.indexOf(teamURLMatch) !== -1) {
-    renderGames(-1);
+    render();
+    //renderGames();
+    //countStats();
 }

@@ -67,6 +67,8 @@ Schedule["Was"] = WashingtonWizards
 
 Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"]
 
+
+
 //Initialize Functions
 //-----------------------------------------------------------------------------
 var getColor = function(games){
@@ -244,7 +246,7 @@ renderGames = function(from_view) {
             totalGames += games;  
         } else if (!cellText.includes("Empty") && table.rows[row].cells[0].innerText.includes("IL")){
             //add color to IL
-            table.rows[row].cells[fantasy_col].innerText = "";
+            table.rows[row].cells[fantasy_col].innerText = "-";
             table.rows[row].cells[fantasy_col].style.backgroundColor = "#bcd6ff"
         }  else {
             table.rows[row].cells[fantasy_col].innerText = "-"
@@ -382,6 +384,15 @@ countStats = function(){
         }
     }*/
     
+    //find games column
+    th = table.rows[first_player_row];
+    for (var i = 0; i < th.cells.length; i++){
+        if (th.cells[i].innerText.includes(":")){
+            games_col = i - 1;
+            break;
+        }
+    }
+    
     col = gp_col + 1;
     offset = false;
     write = 0;
@@ -441,7 +452,7 @@ countStats = function(){
         }
         //column is %
         else if (header_cell.includes("%")) {
-            console.log("%!");
+            //console.log("%!");
             while (!cellText.includes(week_row_name)){
                 value = table.rows[row].cells[col+offset].innerText;
                 if (!isNaN(value) && value.length > 0){
@@ -469,10 +480,17 @@ countStats = function(){
 
         }
         else {
+            weekly_stats = 0;
             while (!cellText.includes(week_row_name)){
                 value = table.rows[row].cells[col+offset].innerText;
+                games_row = table.rows[row].cells[games_col].innerText;
+                //console.log(games_row);
                 if (!isNaN(value) && value.length > 0){
                     num += parseFloat(value);
+                    if (!isNaN(games_row) && games_row.length > 0){
+                        weekly_stats += (parseFloat(value) * parseFloat(games_row));
+                    }
+                    
                 }
                 row++;
                 cellText = table.rows[row].cells[1].innerText;
@@ -487,6 +505,11 @@ countStats = function(){
             //console.log(round_float(num, 1));
             stats_all.cells[write].innerText = round_float(num, 1);
             stats_all.cells[write].classList.add("Bdrend");
+            
+            stats_week.cells[write].innerText = round_float(weekly_stats, 1);
+            stats_week.cells[write].classList.add("Bdrend");
+            
+            weekly_stats = 0;
         }
         
         cellText = table.rows[2].cells[1].innerText;
@@ -497,7 +520,6 @@ countStats = function(){
         row = 2;
         col++;
         header_cell = table.rows[1].cells[col].innerText;
-        console.log(header_cell);
     }
     
     console.log("done")

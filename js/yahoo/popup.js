@@ -310,6 +310,8 @@ countStats = function(){
     console.log(view);
     console.log("counting stats...")
     
+    init_AS_subnav();
+    
     //init stats table
     table = document.getElementById("statTable0");
     
@@ -408,8 +410,6 @@ countStats = function(){
     }
     
     
-    console.log("col: ", games_col);
-    
     col = gp_col + 1;
     offset = false;
     write = 0;
@@ -433,7 +433,6 @@ countStats = function(){
                         weekly_num += parseFloat(values[0]) * games_row;
                         weekly_den += parseFloat(values[1]) * games_row;
                     }
-                    console.log("week: ", weekly_num);
                     //num_week = parseFloat(values[0]);
                     
                 }
@@ -450,10 +449,10 @@ countStats = function(){
             //console.log(round_float(num, 1) + "/" + round_float(den, 1));
             stats_all.cells[write].innerText = round_float(num, 1) + "/" + round_float(den, 1);
             stats_all.cells[write].classList.add("F-faded");
-            stats_all.cells[write].classList.add("Bdrend");
+            //stats_all.cells[write].classList.add("Bdrend");
             stats_week.cells[write].innerText = round_float(weekly_num, 1) + "/" + round_float(weekly_den, 1);
             stats_week.cells[write].classList.add("F-faded");
-            stats_week.cells[write].classList.add("Bdrend");
+            //stats_week.cells[write].classList.add("Bdrend");
             
 
             
@@ -477,9 +476,9 @@ countStats = function(){
                 
                 //console.log(avg);
                 stats_all.cells[write].innerText = avg;
-                stats_all.cells[write].classList.add("Bdrend");
+                //stats_all.cells[write].classList.add("Bdrend");
                 stats_week.cells[write].innerText = weekly_avg;
-                stats_week.cells[write].classList.add("Bdrend");
+                //stats_week.cells[write].classList.add("Bdrend");
                 col++;
             }
             
@@ -518,8 +517,6 @@ countStats = function(){
             while (!cellText.includes(week_row_name)){
                 value = table.rows[row].cells[col+offset].innerText;
                 games_row = table.rows[row].cells[games_col].innerText;
-                //console.log(games_row);
-                console.log(games_col);
                 if (!isNaN(value) && value.length > 0){
                     num += parseFloat(value);
                     if (!isNaN(games_row) && games_row.length > 0){
@@ -539,10 +536,10 @@ countStats = function(){
             
             //console.log(round_float(num, 1));
             stats_all.cells[write].innerText = round_float(num, 1);
-            stats_all.cells[write].classList.add("Bdrend");
+            //stats_all.cells[write].classList.add("Bdrend");
             
             stats_week.cells[write].innerText = round_float(weekly_stats, 1);
-            stats_week.cells[write].classList.add("Bdrend");
+            //stats_week.cells[write].classList.add("Bdrend");
             
             weekly_stats = 0;
         }
@@ -581,6 +578,50 @@ countStats = function(){
     
     AS_isset = true;
     
+}
+
+var init_AS_subnav = function(){
+    try {
+        var subNav = document.getElementById("subnav_AS");
+        var today = document.getElementById("subnav_AS").childNodes[1];
+        var last7 = document.getElementById("subnav_AS").childNodes[3];
+        var last14 = document.getElementById("subnav_AS").childNodes[5];
+        var last30 = document.getElementById("subnav_AS").childNodes[7];
+        var season = document.getElementById("subnav_AS").childNodes[9];
+        today.addEventListener("click", function() {
+            setTimeout(() => {
+                renderGames();
+                countStats();
+            }, refreshSleepTime);
+        });
+        last7.addEventListener("click", function() {
+            setTimeout(() => {
+                renderGames();
+                countStats();
+            }, refreshSleepTime);
+        });
+        last14.addEventListener("click", function() {
+            setTimeout(() => {
+                renderGames();
+                countStats();
+            }, refreshSleepTime);
+        });
+        last30.addEventListener("click", function() {
+            setTimeout(() => {
+                renderGames();
+                countStats();
+            }, refreshSleepTime);
+        });
+        season.addEventListener("click", function() {
+            setTimeout(() => {
+                renderGames();
+                countStats();
+            }, refreshSleepTime);
+        });
+}
+catch(err) {
+    console.log(err)
+}
 }
 
 

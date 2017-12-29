@@ -312,6 +312,36 @@ renderGames = function()
     previousDateOnHtml = newDateOnHtml;
 }
 
+var refreshSleepTime = 700;
+
+// Event listener for when a date in the top navigation bar with black background is clicked - Today, Weekday, Month Date
+document.getElementsByClassName( "games-dates-mod" )[0].addEventListener( "click" , function() {
+    setTimeout( () => {
+        renderGames();
+    }, refreshSleepTime );
+});
+
+// Event listener for navigating between 'Month Date', 'Last 7', 'Last 15', 'Last 30',
+// '2018 Season', '2017', '2018 Projections'
+$('div' ).on( 'click', ' .playertablefiltersmenucontainer', function( event ) {
+    event.stopPropagation();
+    var thisText = $( this ).text();
+    if( 
+        thisText != "Last 7" &&
+        thisText != "Last 15" &&
+        thisText != "Last 30" &&
+        thisText != "2018 Season" &&
+        thisText != "2017" &&
+        thisText != "2018 Projections"
+      )
+    {
+        dateRanges = true;
+        setTimeout( () => {
+            renderGames();
+        }, refreshSleepTime );
+    }
+});
+
 if( currentUrl.indexOf( teamUrlMatch ) !== -1 )
 {
     renderGames();

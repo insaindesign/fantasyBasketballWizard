@@ -66,3 +66,12 @@ Schedule["SA"]   =  SanAntonioSpurs;
 Schedule["Tor"]  =  TorontoRaptors;
 Schedule["Utah"] =  UtahJazz;
 Schedule["Wsh"]  =  WashingtonWizards;
+
+var currentUrl = window.location.href;
+var espnMyTeamRegex = /http:\/\/?games[.]espn[.]com\/fba\/clubhouse\?leagueId=\d{1,10}&teamId=\d{1,2}&seasonId=\d{4}/;
+var teamUrlMatch = currentUrl.match( espnMyTeamRegex );
+
+
+if( currentUrl.indexOf( teamUrlMatch ) !== -1 )
+{
+}

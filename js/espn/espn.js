@@ -89,6 +89,21 @@ renderGames = function()
         getPlayerTableSectionHeader[i].appendChild( newHeader );
     }
     // End of 'GAMES' header
+    
+        // 'TOTAL' subheader
+    var getPlayerTableBgRowSubhead = document.getElementsByClassName( "playerTableBgRowSubhead" );
+    for( var i = 0; i < getPlayerTableBgRowSubhead.length; i++ )
+    {
+        var newSubHeader = document.createElement( "td" );
+        var newSectionLeadingSpacer = document.createElement( "td" );
+        newSubHeader.className = "playertableData";
+        newSubHeader.title = "Number of games for this week";
+        newSubHeader.innerHTML = "TOTAL";
+        newSectionLeadingSpacer.className = "sectionLeadingSpacer";
+        getPlayerTableBgRowSubhead[i].appendChild( newSectionLeadingSpacer );
+        getPlayerTableBgRowSubhead[i].appendChild( newSubHeader );
+    }
+    // End of 'TOTAL' subheader
 }
 
 if( currentUrl.indexOf( teamUrlMatch ) !== -1 )

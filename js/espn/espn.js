@@ -66,6 +66,9 @@ Schedule["Tor"]  =  TorontoRaptors;
 Schedule["Utah"] =  UtahJazz;
 Schedule["Wsh"]  =  WashingtonWizards;
 
+// getBackgroundColor - returns the background color associated with
+// the number of games.
+// games - The number of games
 getBackgroundColor = function( games ){
     if (games > 3){
         return "#adebad";
@@ -80,7 +83,7 @@ getBackgroundColor = function( games ){
     }
 }
 
-// getSelectedDate() - returns the date that is currently selected
+// getSelectedDate - returns the date that is currently selected.
 // Returns either 'Today' or a date with ( Month (abbreviated) Day ) format
 getSelectedDate = function()
 {
@@ -89,12 +92,15 @@ getSelectedDate = function()
     return selectedDateContent;
 }
 
+// getTodaysDate - returns today's date by returning a new Date object.
 getTodaysDate = function()
 {
     var todaysDate = new Date();
     return todaysDate;
 }
 
+// getNbaWeek - returns the NBA week relative to the actual date.
+// pDate - The date to compare
 // Note: Month is 0-based. January = 0, December = 11.
 getNbaWeek = function( pDate )
 {
@@ -125,6 +131,9 @@ getNbaWeek = function( pDate )
     else if( ( pDate >= new Date( 2018, 3, 9 ) ) && ( pDate < new Date( 2018, 3, 16 ) ) ){ return 25; }
 }
 
+// setYourLineUpDateFormat - returns a Date object with the month and date as inputs
+// pMonth - Month as a string
+// pDate - Date as a string
 setYourLineUpDateFormat = function( pMonth, pDate )
 {
     if( pMonth == "Oct" ){ return new Date( 2017, 9, pDate ); }
@@ -144,6 +153,12 @@ var previousDateOnHtml = previousDateOn[0].innerHTML;
 var initialLoad = true;
 var dateRanges = false;
 
+// renderGames - the main function containing the logic to add:
+// 1) 'GAMES' header
+// 2) 'TOTAL' subheader
+// 3) The number of games per week for a player
+//    i) '--' for empty player row
+// 4) Total number of games for the entire team for the week
 renderGames = function()
 {
     console.log("Fantasy Wizard rendering...");
@@ -313,15 +328,16 @@ renderGames = function()
 
 var refreshSleepTime = 700;
 
-// Event listener for when a date in the top navigation bar with black background is clicked - Today, Weekday, Month Date
+// Event listener for when a date in the top navigation bar with the 
+// black background is clicked - Today, Weekday, Month Date
 document.getElementsByClassName( "games-dates-mod" )[0].addEventListener( "click" , function() {
     setTimeout( () => {
         renderGames();
     }, refreshSleepTime );
 });
 
-// Event listener for navigating between 'Month Date', 'Last 7', 'Last 15', 'Last 30',
-// '2018 Season', '2017', '2018 Projections'
+// Event listener for navigating between 'Month Date', 'Last 7',
+// 'Last 15', 'Last 30', '2018 Season', '2017', '2018 Projections'
 $('div' ).on( 'click', ' .playertablefiltersmenucontainer', function( event ) {
     event.stopPropagation();
     var thisText = $( this ).text();
@@ -341,6 +357,8 @@ $('div' ).on( 'click', ' .playertablefiltersmenucontainer', function( event ) {
     }
 });
 
+// Launch the main function to add content if the current URL
+// matches the regex for ESPN
 if( currentUrl.indexOf( teamUrlMatch ) !== -1 )
 {
     renderGames();

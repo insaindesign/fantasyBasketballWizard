@@ -71,7 +71,27 @@ var currentUrl = window.location.href;
 var espnMyTeamRegex = /http:\/\/?games[.]espn[.]com\/fba\/clubhouse\?leagueId=\d{1,10}&teamId=\d{1,2}&seasonId=\d{4}/;
 var teamUrlMatch = currentUrl.match( espnMyTeamRegex );
 
+renderGames = function()
+{
+    console.log( "Fantasy Wizard rendering..." );  
+
+    // 'GAMES' header
+    var getPlayerTableSectionHeader = document.getElementsByClassName( "playertableSectionHeader" );
+    for( var i = 0; i < getPlayerTableSectionHeader.length; i++ )
+    {
+        var newHeader = document.createElement( "th" );
+        var newSectionLeadingSpacer = document.createElement( "td" );
+        newHeader.innerHTML = "GAMES";
+        newHeader.colSpan = 1;
+        newSectionLeadingSpacer.className = "sectionLeadingSpacer";
+
+        getPlayerTableSectionHeader[i].appendChild( newSectionLeadingSpacer );
+        getPlayerTableSectionHeader[i].appendChild( newHeader );
+    }
+    // End of 'GAMES' header
+}
 
 if( currentUrl.indexOf( teamUrlMatch ) !== -1 )
 {
+    renderGames();
 }

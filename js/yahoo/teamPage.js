@@ -1,5 +1,5 @@
 //Fantasy Basketball Wizard
-//popup.js
+//teamPage.js
 //--------------------------------Schedule-------------------------------------
 var Schedule = {}
 

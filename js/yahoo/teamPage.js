@@ -444,7 +444,7 @@ countStats = function(){
         //column is (x/y)
         if (header_cell.includes("/")){
             console.log("col: ", col);
-            while (!cellText.includes(week_row_name)){
+            while (!cellText.includes(week_row_name) && !cellText.includes("Injured")){
                 values = table.rows[row].cells[col+offset].innerText.split("/");
                 games_row = table.rows[row].cells[games_col].innerText;
                 if (!isNaN(values[0]) && values[0].length > 0){
@@ -534,7 +534,7 @@ countStats = function(){
         else {
             console.log("col: ", col);
             weekly_stats = 0;
-            while (!cellText.includes(week_row_name)){
+            while (!cellText.includes(week_row_name) && !cellText.includes("Injured")){
                 value = table.rows[row].cells[col+offset].innerText;
                 games_row = table.rows[row].cells[games_col].innerText;
                 if (!isNaN(value) && value.length > 0){

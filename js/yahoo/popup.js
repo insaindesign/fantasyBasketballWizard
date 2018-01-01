@@ -129,6 +129,19 @@ var get_first_row = function(){
     }
 }
 
+var get_label_col = function(){
+    //init stats table
+    table = document.getElementById("statTable0");
+    
+    //init table dimensions
+    if (table.rows[get_first_row()].cells[1].innerText.includes("layer Note")){
+        return 1;
+    } else {
+        return 2;
+    }
+    
+}
+
 var games_isset = false;
 var AS_isset = false;
 
@@ -307,7 +320,6 @@ countStats = function(){
     }
     
     view = AS_VIEW;
-    console.log(view);
     console.log("counting stats...")
     
     init_AS_subnav();
@@ -319,29 +331,34 @@ countStats = function(){
     num_rows = table.rows.length;
     
     if (table.rows[1].innerText.includes("Action")){
-        num_cols = table.rows[1].cells.length;
+        num_cols = table.rows[2].cells.length;
     }
     else {
-        num_cols = table.rows[1].cells.length - 2;
+        num_cols = table.rows[2].cells.length;
     }
     
+    console.log("cols: ", num_cols);
     
     //append new row(s) to table
     footer = document.createElement("tfoot");
     stats_week = document.createElement("tr");
     stats_all = document.createElement("tr");
     
-    for (var i = 0; i < num_cols; i++){
-        cell1 = document.createElement("td");
-        //cell1.innerText = "t";
-        cell1.className = "Alt Ta-end"
-        cell2 = document.createElement("td");
-        //cell2.innerText = "t";
-        cell2.className = "Alt Ta-end";
-        stats_week.appendChild(cell1);
-        stats_all.appendChild(cell2);
-    }
+    first_player_row = get_first_row();
     
+    //assign cells to bottom rows
+    th = table.rows[first_player_row];
+    for (var i = 0; i < th.cells.length; i++){
+            cell1 = document.createElement("td");
+            cell1.className = th.cells[i].className;
+            cell1.innerText = i;
+            cell2 = document.createElement("td");
+            cell2.className = th.cells[i].className;
+            cell2.innerText = i;
+            stats_week.appendChild(cell1);
+            stats_all.appendChild(cell2);
+    }
+
     stats_all.id = avg_stats_id;
     
     /*
@@ -354,15 +371,17 @@ countStats = function(){
     text.className = "tooltiptext";
     stats_all.cells[0].appendChild(text);*/
     
+    label_col = get_label_col();
+    
     //add new row labels
-    stats_week.cells[1].innerText = week_row_name;
-    stats_all.cells[1].innerText = "Average Totals";
+    stats_week.cells[label_col].innerText = week_row_name;
+    stats_all.cells[label_col].innerText = "Average Totals";
     
     stats_week.cells[1].style.fontWeight = 'bold';
     stats_all.cells[1].style.fontWeight = 'bold';
     
-    stats_week.cells[1].className = "sum";
-    stats_all.cells[1].className = "sum";
+    //stats_week.cells[1].className = "sum";
+    //stats_all.cells[1].className = "sum";
     
     
     footer.appendChild(stats_week);
@@ -379,8 +398,8 @@ countStats = function(){
     }
     
     
-    row = 2;
-    cellText = table.rows[row].cells[1].innerText;
+    row = get_first_row();
+    cellText = table.rows[row].cells[get_label_col()].innerText;
     num = 0;
     den = 0;
     num_week = 0;
@@ -389,73 +408,70 @@ countStats = function(){
     weekly_num = 0;
     weekly_den = 0;
     
-    //init column to start with
-    for (var i = 0; i < header_row.cells.length; i++){
-        if (header_row.cells[i].innerText.includes("Total")){
-            games_col = i;
-            break;
-        }
-    }
-    
-    first_player_row = get_first_row();
     
     
     //find games column
-    th = table.rows[first_player_row];
+    th = table.rows[row];
     for (var i = 2; i < th.cells.length; i++){
-        if (th.cells[i].innerText.includes(":") && !th.cells[i].innerText.includes("m")){
+        if (th.cells[i].innerText.includes(":") && !th.cells[i].innerText.includes("m") && !th.cells[i].innerText.includes("Q")){
             games_col = i - 1;
+            col = i + 1;
             break;
         }
     }
     
     
-    col = gp_col + 1;
+    //col = gp_col + 1;
     offset = false;
     write = 0;
     header_cell = table.rows[1].cells[col].innerText;
     
+    //on opponent page
+    if (document.getElementsByClassName("F-icon Fz-xs F-trade T-action-icon-trade").length > 1){
+        offset = true;
+        console.log("offset");
+    } else {
+        console.log("not offset");
+    }
+
+    
     while (header_cell.length > 0){
+        console.log("col: ", table.rows[1].cells[col].innerText);
         //column is (x/y)
         if (header_cell.includes("/")){
-            if (!table.rows[2].cells[col].innerText.includes("/")){
-                offset = true;
-                console.log("offset");
-                //col++;
-            }
+            console.log("col: ", col);
             while (!cellText.includes(week_row_name)){
                 values = table.rows[row].cells[col+offset].innerText.split("/");
                 games_row = table.rows[row].cells[games_col].innerText;
                 if (!isNaN(values[0]) && values[0].length > 0){
                     num += parseFloat(values[0]);
                     den += parseFloat(values[1]);
+                    console.log("num: ", values[0]);
                     if (!isNaN(games_row) && games_row.length > 0){
                         weekly_num += parseFloat(values[0]) * games_row;
                         weekly_den += parseFloat(values[1]) * games_row;
                     }
-                    //num_week = parseFloat(values[0]);
                     
                 }
                 row++;
-                cellText = table.rows[row].cells[1].innerText;
+                cellText = table.rows[row].cells[get_label_col()].innerText;
             }
+            
             
             if (offset){
                 write = col + 1;
             } else {
-                write = col - 1;
+                write = col;
             }
             
-            //console.log(round_float(num, 1) + "/" + round_float(den, 1));
-            stats_all.cells[write].innerText = round_float(num, 1) + "/" + round_float(den, 1);
-            stats_all.cells[write].classList.add("F-faded");
-            //stats_all.cells[write].classList.add("Bdrend");
-            stats_week.cells[write].innerText = round_float(weekly_num, 1) + "/" + round_float(weekly_den, 1);
-            stats_week.cells[write].classList.add("F-faded");
-            //stats_week.cells[write].classList.add("Bdrend");
+            stats_all.cells[write].innerText = round_float(num, 1)+"/"+round_float(den, 1);
+            stats_week.cells[write].innerText = round_float(weekly_num, 1)+"/"+round_float(weekly_den, 1);
+            
+            console.log("/ stats: ", round_float(num, 1));
+            console.log("/ stats: ", round_float(den, 1));
             
 
-            
+            //calculate % based on shooting volume
             if ((header_cell.includes("FGM/A") && table.rows[1].cells[col+1].innerText.includes("FG%")) ||
                 (header_cell.includes("FTM/A") && table.rows[1].cells[col+1].innerText.includes("FT%"))){
                 avg = String(round_float(num / den));
@@ -471,29 +487,30 @@ countStats = function(){
                 if (offset){
                     write = col + 2;
                 } else {
-                    write = col;
+                    write = col + 1;
                 }
+                
+                console.log("shooting % detected");
                 
                 //console.log(avg);
                 stats_all.cells[write].innerText = avg;
-                //stats_all.cells[write].classList.add("Bdrend");
                 stats_week.cells[write].innerText = weekly_avg;
-                //stats_week.cells[write].classList.add("Bdrend");
                 col++;
             }
+            
             
         }
         //column is %
         else if (header_cell.includes("%")) {
-            //console.log("%!");
+            console.log("%!");
             while (!cellText.includes(week_row_name)){
-                value = table.rows[row].cells[col+offset].innerText;
+                value = table.rows[row].cells[col].innerText;
                 if (!isNaN(value) && value.length > 0){
                     num += parseFloat(value);
                     den += 1;
                 }
                 row++;
-                cellText = table.rows[row].cells[1].innerText;
+                cellText = table.rows[row].cells[get_label_col()].innerText;
             }
             
             avg = String(round_float(num / den));
@@ -501,80 +518,63 @@ countStats = function(){
                 avg = "." + avg.split(".")[1]
             }
             
-            if (offset){
-                write = col + 1;
-            } else {
-                write = col - 1;
-            }
+            write = col;
             
             //console.log(avg);
-            stats_all.cells[write].innerText = avg;
-            stats_all.cells[write].classList.add("Bdrend");
+            
+            //write stats
+            //stats_all.cells[write].innerText = avg;
+            //stats_all.cells[write].classList.add("Bdrend");
 
         }
         else {
+            console.log("col: ", col);
             weekly_stats = 0;
             while (!cellText.includes(week_row_name)){
                 value = table.rows[row].cells[col+offset].innerText;
                 games_row = table.rows[row].cells[games_col].innerText;
                 if (!isNaN(value) && value.length > 0){
                     num += parseFloat(value);
+                    console.log("else val: ", value);
                     if (!isNaN(games_row) && games_row.length > 0){
                         weekly_stats += (parseFloat(value) * parseFloat(games_row));
                     }
                     
                 }
                 row++;
-                cellText = table.rows[row].cells[1].innerText;
+                cellText = table.rows[row].cells[get_label_col()].innerText;
             }
 
             if (offset){
                 write = col + 1;
             } else {
-                write = col - 1;
+                write = col;
             }
             
-            //console.log(round_float(num, 1));
             stats_all.cells[write].innerText = round_float(num, 1);
-            //stats_all.cells[write].classList.add("Bdrend");
-            
             stats_week.cells[write].innerText = round_float(weekly_stats, 1);
-            //stats_week.cells[write].classList.add("Bdrend");
+            
+            console.log("stats: ", round_float(num, 1));
             
             weekly_stats = 0;
+            
+            
         }
     
         weekly_num = 0;
         weekly_den = 0;
-        cellText = table.rows[2].cells[1].innerText;
+        cellText = table.rows[get_first_row()].cells[get_label_col()].innerText;
         num = 0;
         den = 0;
         num_week = 0;
         den_week = 0;
-        row = 2;
+        row = get_first_row();
         col++;
         header_cell = table.rows[1].cells[col].innerText;
+        
     }
     
     console.log("done")
-
-    /*while (!cellText.includes("Projected Weekly Averages")){
-        console.log(table.rows[row].cells[col].innerText);
-        
-        if (table.rows[row].cells[col].innerText.includes("/")){
-            values = table.rows[row].cells[col].innerText.split("/");
-            //console.log(values)
-            if (!isNaN(values[0])){
-                num += parseFloat(values[0]);
-                den += parseFloat(values[1]);
-            }
-        }
-        
-        row++;
-        cellText = table.rows[row].cells[1].innerText;
-    }
-    
-    table.rows[row].cells[col-1].innerText = String(num) + "/" + String(den);*/
     
     AS_isset = true;
     

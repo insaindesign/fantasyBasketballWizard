@@ -7,14 +7,18 @@
       "default_icon": "frontend/icon.png",
       "default_popup": "frontend/popup.html"
   },
-  "background": {
-    "persistent": true,
-    "scripts": ["js/yahoo/background.js"]
-  },
   "content_scripts": [
     {
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*"],
-      "js": ["js/yahoo/popup.js"]
+      "js": ["js/yahoo/teamPage.js"]
+    },
+    {
+      "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/research"],
+      "js": ["js/yahoo/researchPage.js"]
+    },
+    {
+      "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/buzzindex*"],
+      "js": ["js/yahoo/transactionTrendsPage.js"]
     }
   ],
   "permissions": [

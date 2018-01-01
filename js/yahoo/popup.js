@@ -424,15 +424,19 @@ countStats = function(){
     //col = gp_col + 1;
     offset = false;
     write = 0;
-    header_cell = table.rows[1].cells[col].innerText;
     
     //on opponent page
     if (document.getElementsByClassName("F-icon Fz-xs F-trade T-action-icon-trade").length > 1){
         offset = true;
         console.log("offset");
     } else {
+        col++;
         console.log("not offset");
     }
+    
+    header_cell = table.rows[1].cells[col].innerText;
+    
+   
 
     
     while (header_cell.length > 0){

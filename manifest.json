@@ -10,7 +10,7 @@
   "content_scripts": [
     {
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*"],
-      "js": ["js/yahoo/popup.js"]
+      "js": ["js/yahoo/teamPage.js"]
     },
     {
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/research"],

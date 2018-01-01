@@ -351,10 +351,10 @@ countStats = function(){
     for (var i = 0; i < th.cells.length; i++){
             cell1 = document.createElement("td");
             cell1.className = th.cells[i].className;
-            cell1.innerText = i;
+            //cell1.innerText = i;
             cell2 = document.createElement("td");
             cell2.className = th.cells[i].className;
-            cell2.innerText = i;
+            //cell2.innerText = i;
             stats_week.appendChild(cell1);
             stats_all.appendChild(cell2);
     }

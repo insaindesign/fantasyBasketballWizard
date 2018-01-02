@@ -445,18 +445,21 @@ countStats = function(){
         if (header_cell.includes("/")){
             console.log("col: ", col);
             while (!cellText.includes(week_row_name)){
-                values = table.rows[row].cells[col+offset].innerText.split("/");
-                games_row = table.rows[row].cells[games_col].innerText;
-                if (!isNaN(values[0]) && values[0].length > 0){
-                    num += parseFloat(values[0]);
-                    den += parseFloat(values[1]);
-                    console.log("num: ", values[0]);
-                    if (!isNaN(games_row) && games_row.length > 0){
-                        weekly_num += parseFloat(values[0]) * games_row;
-                        weekly_den += parseFloat(values[1]) * games_row;
+                if (!cellText.includes("Injured")){
+                    values = table.rows[row].cells[col+offset].innerText.split("/");
+                    games_row = table.rows[row].cells[games_col].innerText;
+                    if (!isNaN(values[0]) && values[0].length > 0){
+                        num += parseFloat(values[0]);
+                        den += parseFloat(values[1]);
+                        console.log("num: ", values[0]);
+                        if (!isNaN(games_row) && games_row.length > 0){
+                            weekly_num += parseFloat(values[0]) * games_row;
+                            weekly_den += parseFloat(values[1]) * games_row;
+                        }
+                        
                     }
-                    
                 }
+                
                 row++;
                 cellText = table.rows[row].cells[get_label_col()].innerText;
             }
@@ -535,15 +538,17 @@ countStats = function(){
             console.log("col: ", col);
             weekly_stats = 0;
             while (!cellText.includes(week_row_name)){
-                value = table.rows[row].cells[col+offset].innerText;
-                games_row = table.rows[row].cells[games_col].innerText;
-                if (!isNaN(value) && value.length > 0){
-                    num += parseFloat(value);
-                    console.log("else val: ", value);
-                    if (!isNaN(games_row) && games_row.length > 0){
-                        weekly_stats += (parseFloat(value) * parseFloat(games_row));
+                if (!cellText.includes("Injured")){
+                    value = table.rows[row].cells[col+offset].innerText;
+                    games_row = table.rows[row].cells[games_col].innerText;
+                    if (!isNaN(value) && value.length > 0){
+                        num += parseFloat(value);
+                        console.log("else val: ", value);
+                        if (!isNaN(games_row) && games_row.length > 0){
+                            weekly_stats += (parseFloat(value) * parseFloat(games_row));
+                        }
+                        
                     }
-                    
                 }
                 row++;
                 cellText = table.rows[row].cells[get_label_col()].innerText;

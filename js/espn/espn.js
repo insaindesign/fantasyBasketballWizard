@@ -145,9 +145,6 @@ setYourLineUpDateFormat = function( pMonth, pDate )
     else if( pMonth == "Apr" ){ return new Date( 2018, 3, pDate ); }
 }
 
-var currentUrl = window.location.href;
-var espnMyTeamRegex = /http:\/\/?games[.]espn[.]com\/fba\/clubhouse\?leagueId=\d{1,10}&teamId=\d{1,2}&seasonId=\d{4}/;
-var teamUrlMatch = currentUrl.match( espnMyTeamRegex );
 var previousDateOn = document.getElementsByClassName( "date-on" );
 var previousDateOnHtml = previousDateOn[0].innerHTML;
 var initialLoad = true;
@@ -417,9 +414,6 @@ $('div' ).on( 'click', ' .playertablefiltersmenucontainer', function( event ) {
     }
 });
 
-// Launch the main function to add content if the current URL
-// matches the regex for ESPN
-if( currentUrl.indexOf( teamUrlMatch ) !== -1 )
-{
+$( document ).ready( function(){
     renderGames();
-}
+});

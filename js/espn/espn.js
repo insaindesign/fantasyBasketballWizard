@@ -155,7 +155,7 @@ var dailyLockLeague = false;
 // 1) 'GAMES' header
 // 2) 'TOTAL' subheader
 // 3) The number of games per week for a player
-//    i) '--' for empty player row
+//    i) '--' for empty player row or free agents
 // 4) Total number of games for the entire team for the week
 renderGames = function()
 {

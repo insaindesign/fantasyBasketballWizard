@@ -152,6 +152,7 @@ var previousDateOn = document.getElementsByClassName( "date-on" );
 var previousDateOnHtml = previousDateOn[0].innerHTML;
 var initialLoad = true;
 var dateRanges = false;
+var dailyLockLeague = false;
 
 // renderGames - the main function containing the logic to add:
 // 1) 'GAMES' header
@@ -171,7 +172,6 @@ renderGames = function()
     if( ( previousDateOnHtml != newDateOnHtml ) || initialLoad || dateRanges )
     {
         initialLoad = false;
-        
         // Counter for the total number of games for the entire team for that week
         var totalGames = 0;
         
@@ -230,9 +230,14 @@ renderGames = function()
                 var splitPlayerTableBgRow0Items = dataHtml.split( "," );
                 var teamName = splitPlayerTableBgRow0Items[1].substring( 1, splitPlayerTableBgRow0Items[1].indexOf( "&" ) );
                 var selectedDate = getSelectedDate();
-                
-                if( selectedDate.indexOf( "Today" ) != -1 )
+
+                if( teamName == "FA" )
                 {
+                    numberOfGames.innerHTML = "--";
+                }
+                else if( selectedDate.indexOf( "Today" ) != -1 )
+                {
+                    dailyLockLeague = true;
                     var todaysDate = getTodaysDate();
                     var nbaWeek = getNbaWeek( todaysDate );
                     var games = Schedule[teamName][nbaWeek-1]; 
@@ -240,13 +245,36 @@ renderGames = function()
                     numberOfGames.style.backgroundColor = getBackgroundColor( games );
                     numberOfGames.innerHTML = games;
                 }
-                else
+                else if( selectedDate.indexOf( "This Week" ) != -1 )
+                {
+                    dailyLockLeague = false;
+                    var todaysDate = getTodaysDate();
+                    var nbaWeek = getNbaWeek( todaysDate );
+                    var games = Schedule[teamName][nbaWeek-1]; 
+                    totalGames += games;
+                    numberOfGames.style.backgroundColor = getBackgroundColor( games );
+                    numberOfGames.innerHTML = games;
+                }
+                else if( dailyLockLeague )
                 {
                     var splitSelectedDate = selectedDate.split( ' ' );
                     var selectedMonth = splitSelectedDate[1];
                     var selectedDate = splitSelectedDate[2];
                     var date = setYourLineUpDateFormat( selectedMonth, selectedDate );
                     // Subtract 1 from nbaWeek because NBA weeks start counting at 1, where arrays are 0-based
+                    var nbaWeek = getNbaWeek( date );
+                    var games = Schedule[teamName][nbaWeek-1];
+                    totalGames += games;
+                    numberOfGames.style.backgroundColor = getBackgroundColor( games );
+                    numberOfGames.innerHTML = games;
+                }
+                else if ( !dailyLockLeague )
+                {
+                    var splitSelectedDateLong = selectedDate.split( '(' );
+                    var splitSelectedDate = splitSelectedDateLong[1].split( ' ' );
+                    var selectedMonth = splitSelectedDate[0];
+                    var selectedDate = splitSelectedDate[1];
+                    var date = setYourLineUpDateFormat( selectedMonth, selectedDate );
                     var nbaWeek = getNbaWeek( date );
                     var games = Schedule[teamName][nbaWeek-1];
                     totalGames += games;
@@ -285,8 +313,13 @@ renderGames = function()
                 var teamName = splitPlayerTableBgRow1Items[1].substring( 1, splitPlayerTableBgRow1Items[1].indexOf( "&" ) );
                 var selectedDate = getSelectedDate();
 
-                if( selectedDate.indexOf( "Today" ) != -1 )
+                if( teamName == "FA" )
                 {
+                    numberOfGames.innerHTML = "--";
+                }
+                else if( selectedDate.indexOf( "Today" ) != -1 )
+                {
+                    dailyLockLeague = true;
                     var todaysDate = getTodaysDate();
                     var nbaWeek = getNbaWeek( todaysDate );
                     var games = Schedule[teamName][nbaWeek-1];
@@ -294,11 +327,34 @@ renderGames = function()
                     numberOfGames.style.backgroundColor = getBackgroundColor( games );
                     numberOfGames.innerHTML = games;
                 }
-                else
+                else if( selectedDate.indexOf( "This Week" ) != -1 )
+                {
+                    dailyLockLeague = false;
+                    var todaysDate = getTodaysDate();
+                    var nbaWeek = getNbaWeek( todaysDate );
+                    var games = Schedule[teamName][nbaWeek-1];
+                    totalGames += games;
+                    numberOfGames.style.backgroundColor = getBackgroundColor( games );
+                    numberOfGames.innerHTML = games;
+                }
+                else if( dailyLockLeague )
                 {
                     var splitSelectedDate = selectedDate.split( ' ' );
                     var selectedMonth = splitSelectedDate[1];
                     var selectedDate = splitSelectedDate[2];
+                    var date = setYourLineUpDateFormat( selectedMonth, selectedDate );
+                    var nbaWeek = getNbaWeek( date );
+                    var games = Schedule[teamName][nbaWeek-1];
+                    totalGames += games;
+                    numberOfGames.style.backgroundColor = getBackgroundColor( games );
+                    numberOfGames.innerHTML = games;
+                }
+                else if( !dailyLockLeague )
+                {
+                    var splitSelectedDateLong = selectedDate.split( '(' );
+                    var splitSelectedDate = splitSelectedDateLong[1].split( ' ' );
+                    var selectedMonth = splitSelectedDate[0];
+                    var selectedDate = splitSelectedDate[1];
                     var date = setYourLineUpDateFormat( selectedMonth, selectedDate );
                     var nbaWeek = getNbaWeek( date );
                     var games = Schedule[teamName][nbaWeek-1];

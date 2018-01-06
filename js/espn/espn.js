@@ -370,13 +370,17 @@ renderGames = function()
         
         // Calculate total number of games for the whole team
         var rowTotals = document.getElementsByClassName( "playerTableBgRowTotals" );
-        var gamesTotal = document.createElement( "td" );
-        var totalsSectionLeadingSpace = document.createElement( "td" );
-        gamesTotal.title = "The whole team's number of games for the week";
-        totalsSectionLeadingSpace.className = "sectionLeadingSpacer";
-        gamesTotal.innerHTML = totalGames;
-        rowTotals[0].appendChild( totalsSectionLeadingSpace );
-        rowTotals[0].appendChild( gamesTotal );
+        // Check if the 'TOTALS' row exist
+        if( rowTotals.length > 0 )
+        {
+            var gamesTotal = document.createElement( "td" );
+            var totalsSectionLeadingSpace = document.createElement( "td" );
+            gamesTotal.title = "The whole team's number of games for the week";
+            totalsSectionLeadingSpace.className = "sectionLeadingSpacer";
+            gamesTotal.innerHTML = totalGames;
+            rowTotals[0].appendChild( totalsSectionLeadingSpace );
+            rowTotals[0].appendChild( gamesTotal );
+        }
         dateRanges = false;
     }
     previousDateOnHtml = newDateOnHtml;

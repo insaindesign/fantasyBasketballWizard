@@ -217,7 +217,12 @@ renderGames = function()
 
             // The HTML of the current player
             var dataHtml = playerTableBgRow0Items[i].innerHTML;
-
+            var injuryReserved = false;
+  
+            if( dataHtml.indexOf( "IR</td>" ) != -1 )
+            {
+                injuryReserved = true;
+            }
             if( dataHtml.indexOf( "<td>&nbsp;</td>" ) != -1 ) // Conditional - Empty row
             {
                 numberOfGames.innerText = "--";
@@ -238,7 +243,12 @@ renderGames = function()
                     var todaysDate = getTodaysDate();
                     var nbaWeek = getNbaWeek( todaysDate );
                     var games = Schedule[teamName][nbaWeek-1]; 
-                    totalGames += games;
+
+                    if( !injuryReserved )
+                    {
+                        totalGames += games;
+                    }
+   
                     numberOfGames.style.backgroundColor = getBackgroundColor( games );
                     numberOfGames.innerHTML = games;
                 }
@@ -248,7 +258,12 @@ renderGames = function()
                     var todaysDate = getTodaysDate();
                     var nbaWeek = getNbaWeek( todaysDate );
                     var games = Schedule[teamName][nbaWeek-1]; 
-                    totalGames += games;
+
+                    if( !injuryReserved )
+                    {
+                        totalGames += games;
+                    }
+   
                     numberOfGames.style.backgroundColor = getBackgroundColor( games );
                     numberOfGames.innerHTML = games;
                 }
@@ -261,7 +276,12 @@ renderGames = function()
                     // Subtract 1 from nbaWeek because NBA weeks start counting at 1, where arrays are 0-based
                     var nbaWeek = getNbaWeek( date );
                     var games = Schedule[teamName][nbaWeek-1];
-                    totalGames += games;
+
+                    if( !injuryReserved )
+                    {
+                        totalGames += games;
+                    }
+   
                     numberOfGames.style.backgroundColor = getBackgroundColor( games );
                     numberOfGames.innerHTML = games;
                 }
@@ -274,7 +294,12 @@ renderGames = function()
                     var date = setYourLineUpDateFormat( selectedMonth, selectedDate );
                     var nbaWeek = getNbaWeek( date );
                     var games = Schedule[teamName][nbaWeek-1];
-                    totalGames += games;
+
+                    if( !injuryReserved )
+                    {
+                        totalGames += games;
+                    }
+   
                     numberOfGames.style.backgroundColor = getBackgroundColor( games );
                     numberOfGames.innerHTML = games;
                 }
@@ -297,8 +322,13 @@ renderGames = function()
             numberOfGames.className = "playertableStat";
             
             var dataHtml = playerTableBgRow1Items[i].innerHTML;
+            var injuryReserved = false;
 
-            if( dataHtml.indexOf( "<td>&nbsp;</td>") != -1 )
+            if( dataHtml.indexOf( "IR</td>" ) != -1 )
+            {
+                injuryReserved = true;
+            }
+            if( dataHtml.indexOf( "<td>&nbsp;</td>" ) != -1 )
             {
                 // Add logic to clean up and add an empty cell
                 numberOfGames.innerHTML = "--";
@@ -320,7 +350,12 @@ renderGames = function()
                     var todaysDate = getTodaysDate();
                     var nbaWeek = getNbaWeek( todaysDate );
                     var games = Schedule[teamName][nbaWeek-1];
-                    totalGames += games;
+     
+                    if( !injuryReserved )
+                    {
+                        totalGames += games;
+                    }
+
                     numberOfGames.style.backgroundColor = getBackgroundColor( games );
                     numberOfGames.innerHTML = games;
                 }
@@ -330,7 +365,12 @@ renderGames = function()
                     var todaysDate = getTodaysDate();
                     var nbaWeek = getNbaWeek( todaysDate );
                     var games = Schedule[teamName][nbaWeek-1];
-                    totalGames += games;
+
+                    if( !injuryReserved )
+                    {
+                        totalGames += games;
+                    }
+   
                     numberOfGames.style.backgroundColor = getBackgroundColor( games );
                     numberOfGames.innerHTML = games;
                 }
@@ -342,7 +382,12 @@ renderGames = function()
                     var date = setYourLineUpDateFormat( selectedMonth, selectedDate );
                     var nbaWeek = getNbaWeek( date );
                     var games = Schedule[teamName][nbaWeek-1];
-                    totalGames += games;
+
+                    if( !injuryReserved )
+                    {
+                        totalGames += games;
+                    }
+   
                     numberOfGames.style.backgroundColor = getBackgroundColor( games );
                     numberOfGames.innerHTML = games;
                 }
@@ -355,7 +400,12 @@ renderGames = function()
                     var date = setYourLineUpDateFormat( selectedMonth, selectedDate );
                     var nbaWeek = getNbaWeek( date );
                     var games = Schedule[teamName][nbaWeek-1];
-                    totalGames += games;
+
+                    if( !injuryReserved )
+                    {
+                        totalGames += games;
+                    }
+   
                     numberOfGames.style.backgroundColor = getBackgroundColor( games );
                     numberOfGames.innerHTML = games;
                 }

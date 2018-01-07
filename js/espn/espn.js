@@ -202,13 +202,11 @@ renderGames = function()
             getPlayerTableBgRowSubhead[i].appendChild( newSubHeader );
         }
         // End of 'TOTAL' subheader
-        
-        
-        // Players with background 0
+          
         // Creates an entry in the table for the number of games played by the player
         // for the respective week or a '--' for an empty row
-        var playerTableBgRow0Items = document.getElementsByClassName( "playerTableBgRow0" );
-        for( var i = 0; i < playerTableBgRow0Items.length; i++ )
+        var playerArray = document.getElementsByClassName( "pncPlayerRow" );
+        for( var i = 0; i < playerArray.length; i++ )
         {
             var numberOfGames = document.createElement( "td" );
             var newSectionLeadingSpacer = document.createElement( "td" );
@@ -216,7 +214,7 @@ renderGames = function()
             newSectionLeadingSpacer.className = "sectionLeadingSpacer";
 
             // The HTML of the current player
-            var dataHtml = playerTableBgRow0Items[i].innerHTML;
+            var dataHtml = playerArray[i].innerHTML;
             var injuryReserved = false;
   
             if( dataHtml.indexOf( "IR</td>" ) != -1 )
@@ -229,8 +227,8 @@ renderGames = function()
             }
             else if( dataHtml.indexOf( "</a>" ) != -1 ) // Conditional - Contains a link, so a player exists in the row
             {
-                var splitPlayerTableBgRow0Items = dataHtml.split( "," );
-                var teamName = splitPlayerTableBgRow0Items[1].substring( 1, splitPlayerTableBgRow0Items[1].indexOf( "&" ) );
+                var splitDataHtml = dataHtml.split( "," );
+                var teamName = splitDataHtml[1].substring( 1, splitDataHtml[1].indexOf( "&" ) );
                 var selectedDate = getSelectedDate();
 
                 if( teamName == "FA" )
@@ -304,116 +302,10 @@ renderGames = function()
                     numberOfGames.innerHTML = games;
                 }
             }
-            playerTableBgRow0Items[i].appendChild( newSectionLeadingSpacer );
-            playerTableBgRow0Items[i].appendChild( numberOfGames );
+            playerArray[i].appendChild( newSectionLeadingSpacer );
+            playerArray[i].appendChild( numberOfGames );
         }
-        // End of players with background 0
-        
-        
-        // Players with background 1
-        // Creates an entry in the table for the number of games played by the player
-        // for the respective week or a '--' for an empty row
-        var playerTableBgRow1Items = document.getElementsByClassName( "playerTableBgRow1" );
-        for( var i = 0; i < playerTableBgRow1Items.length; i++ )
-        {
-            var newSectionLeadingSpacer = document.createElement( "td" );
-            var numberOfGames = document.createElement( "td" );
-            newSectionLeadingSpacer.className = "sectionLeadingSpacer";
-            numberOfGames.className = "playertableStat";
-            
-            var dataHtml = playerTableBgRow1Items[i].innerHTML;
-            var injuryReserved = false;
-
-            if( dataHtml.indexOf( "IR</td>" ) != -1 )
-            {
-                injuryReserved = true;
-            }
-            if( dataHtml.indexOf( "<td>&nbsp;</td>" ) != -1 )
-            {
-                // Add logic to clean up and add an empty cell
-                numberOfGames.innerHTML = "--";
-            }
-            else if ( dataHtml.indexOf( "</a>" ) != -1 )
-            {
-                var splitPlayerTableBgRow1Items = dataHtml.split( "," );
-                // Start substring at 1 because of the leading space
-                var teamName = splitPlayerTableBgRow1Items[1].substring( 1, splitPlayerTableBgRow1Items[1].indexOf( "&" ) );
-                var selectedDate = getSelectedDate();
-
-                if( teamName == "FA" )
-                {
-                    numberOfGames.innerHTML = "--";
-                }
-                else if( selectedDate.indexOf( "Today" ) != -1 )
-                {
-                    dailyLockLeague = true;
-                    var todaysDate = getTodaysDate();
-                    var nbaWeek = getNbaWeek( todaysDate );
-                    var games = Schedule[teamName][nbaWeek-1];
-     
-                    if( !injuryReserved )
-                    {
-                        totalGames += games;
-                    }
-
-                    numberOfGames.style.backgroundColor = getBackgroundColor( games );
-                    numberOfGames.innerHTML = games;
-                }
-                else if( selectedDate.indexOf( "This Week" ) != -1 )
-                {
-                    dailyLockLeague = false;
-                    var todaysDate = getTodaysDate();
-                    var nbaWeek = getNbaWeek( todaysDate );
-                    var games = Schedule[teamName][nbaWeek-1];
-
-                    if( !injuryReserved )
-                    {
-                        totalGames += games;
-                    }
-   
-                    numberOfGames.style.backgroundColor = getBackgroundColor( games );
-                    numberOfGames.innerHTML = games;
-                }
-                else if( dailyLockLeague )
-                {
-                    var splitSelectedDate = selectedDate.split( ' ' );
-                    var selectedMonth = splitSelectedDate[1];
-                    var selectedDate = splitSelectedDate[2];
-                    var date = setYourLineUpDateFormat( selectedMonth, selectedDate );
-                    var nbaWeek = getNbaWeek( date );
-                    var games = Schedule[teamName][nbaWeek-1];
-
-                    if( !injuryReserved )
-                    {
-                        totalGames += games;
-                    }
-   
-                    numberOfGames.style.backgroundColor = getBackgroundColor( games );
-                    numberOfGames.innerHTML = games;
-                }
-                else if( !dailyLockLeague )
-                {
-                    var splitSelectedDateLong = selectedDate.split( '(' );
-                    var splitSelectedDate = splitSelectedDateLong[1].split( ' ' );
-                    var selectedMonth = splitSelectedDate[0];
-                    var selectedDate = splitSelectedDate[1];
-                    var date = setYourLineUpDateFormat( selectedMonth, selectedDate );
-                    var nbaWeek = getNbaWeek( date );
-                    var games = Schedule[teamName][nbaWeek-1];
-
-                    if( !injuryReserved )
-                    {
-                        totalGames += games;
-                    }
-   
-                    numberOfGames.style.backgroundColor = getBackgroundColor( games );
-                    numberOfGames.innerHTML = games;
-                }
-            }
-            playerTableBgRow1Items[i].appendChild( newSectionLeadingSpacer );
-            playerTableBgRow1Items[i].appendChild( numberOfGames );
-        }
-        // End of players with background 1
+        // End of players array
         
         // Calculate total number of games for the whole team
         var rowTotals = document.getElementsByClassName( "playerTableBgRowTotals" );

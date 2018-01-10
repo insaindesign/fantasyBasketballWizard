@@ -123,7 +123,7 @@ var get_first_row = function(){
     num_rows = table.rows.length;
     
     for (var i = 2; i < num_rows; i++){
-        if (!table.rows[i].cells[2].innerText.includes("(Empty)")){
+        if (!table.rows[i].cells[1].innerText.includes("(Empty)") && !table.rows[i].cells[2].innerText.includes("(Empty)")){
             return i;
         }
     }
@@ -188,8 +188,10 @@ renderGames = function(from_view) {
     //find player column
     th = table.rows[first_player_row];
     for (var i = 0; i < th.cells.length; i++){
-        if (th.cells[i].innerText.includes("Player"))
+        if (th.cells[i].innerText.includes("Player")){
             player_col = i;
+            break;
+        }
     }
     
     fantasy_col = -1

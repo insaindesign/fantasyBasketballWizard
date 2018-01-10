@@ -260,7 +260,7 @@ renderGames = function(from_view) {
     cellText = table.rows[row].cells[player_col].innerText;
     while (!cellText.includes("Starting Lineup Totals")){
         //if spot is not empty and player isn't IL
-        if (!cellText.includes("Empty") && !table.rows[row].cells[0].innerText.includes("IL")){
+        if (!cellText.includes("Empty") && !table.rows[row].cells[0].innerText.includes("IL") && !table.rows[row].innerText.includes("Injured")){
             //get player name field
             for (var i = info.length - 1; i > 0; i--){
                 if (contains.call(Teams, info[i])){
@@ -271,7 +271,7 @@ renderGames = function(from_view) {
             table.rows[row].cells[fantasy_col].innerText = games;
             table.rows[row].cells[fantasy_col].style.backgroundColor = getColor(games)
             totalGames += games;  
-        } else if (!cellText.includes("Empty") && table.rows[row].cells[0].innerText.includes("IL")){
+        } else if (!cellText.includes("Empty") && table.rows[row].cells[0].innerText.includes("IL") || table.rows[row].innerText.includes("Injured")){
             //add color to IL
             table.rows[row].cells[fantasy_col].innerText = "-";
             table.rows[row].cells[fantasy_col].style.backgroundColor = "#bcd6ff"

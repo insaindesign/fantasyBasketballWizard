@@ -10,4 +10,7 @@ class TestView(APIView):
     def get(self, request):
         test = Test.objects.all()
         serializer = TestSerializer(test, many=True)
+        # you can return an http response with html to display a page
         return Response(serializer.data)
+    def post(self, request):
+        #post request

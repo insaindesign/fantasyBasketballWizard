@@ -218,15 +218,16 @@ addGamesForPlayers = function( mode, includeTotal )
 
         // The HTML of the current player
         var dataHtml = playerArray[i].innerHTML;
-        var injuryReserved = false;
+        var injured = false;
 
-        // Injury reserved
-        if( ( mode == "My Team" ) && dataHtml.indexOf( "IR</td>" ) != -1 )
+        // Injured players
+        if( ( mode == "My Team" ) && ( ( dataHtml.indexOf( "IR</td>" ) != -1 ) || ( dataHtml.indexOf( ">O</span>") != -1 ) ) ) 
         {
-            injuryReserved = true;
+            console.log( "Found injured ");
+            injured = true;
         }
         // Conditional - Empty row
-        if( ( mode == "My Team" ) && dataHtml.indexOf( "<td>&nbsp;</td>" ) != -1 )
+        if( ( mode == "My Team" ) && ( ( dataHtml.indexOf( "<td>&nbsp;</td>" ) != -1 ) || ( dataHtml.indexOf( ">O</span>") != -1 ) ) )
         {
             numberOfGames.innerText = "--";
         }
@@ -251,7 +252,8 @@ addGamesForPlayers = function( mode, includeTotal )
                     var nbaWeek = getNbaWeek( todaysDate );
                     var games = Schedule[teamName][nbaWeek-1]; 
 
-                    if( !injuryReserved )
+                    // Count the total count of games for the week for not 'O' out players
+                    if( !injured )
                     {
                         totalGames += games;
                     }
@@ -266,7 +268,7 @@ addGamesForPlayers = function( mode, includeTotal )
                     var nbaWeek = getNbaWeek( todaysDate );
                     var games = Schedule[teamName][nbaWeek-1]; 
 
-                    if( !injuryReserved )
+                    if( !injured )
                     {
                         totalGames += games;
                     }
@@ -284,7 +286,7 @@ addGamesForPlayers = function( mode, includeTotal )
                     var nbaWeek = getNbaWeek( date );
                     var games = Schedule[teamName][nbaWeek-1];
 
-                    if( !injuryReserved )
+                    if( !injured )
                     {
                         totalGames += games;
                     }
@@ -302,7 +304,7 @@ addGamesForPlayers = function( mode, includeTotal )
                     var nbaWeek = getNbaWeek( date );
                     var games = Schedule[teamName][nbaWeek-1];
 
-                    if( !injuryReserved )
+                    if( !injured )
                     {
                         totalGames += games;
                     }

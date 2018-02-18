@@ -1,0 +1,14 @@
+.DS_Store
+backend/db.sqlite3
+backend/fantasyBasketballWizard/__pycache__/__init__.cpython-35.pyc
+backend/fantasyBasketballWizard/__pycache__/settings.cpython-35.pyc
+backend/fantasyBasketballWizard/__pycache__/urls.cpython-35.pyc
+backend/fantasyBasketballWizard/__pycache__/wsgi.cpython-35.pyc
+backend/wizard/__pycache__/__init__.cpython-35.pyc
+backend/wizard/__pycache__/admin.cpython-35.pyc
+backend/wizard/__pycache__/apps.cpython-35.pyc
+backend/wizard/__pycache__/models.cpython-35.pyc
+backend/wizard/__pycache__/serializers.cpython-35.pyc
+backend/wizard/__pycache__/views.cpython-35.pyc
+backend/wizard/migrations/__pycache__/0001_initial.cpython-35.pyc
+backend/wizard/migrations/__pycache__/__init__.cpython-35.pyc

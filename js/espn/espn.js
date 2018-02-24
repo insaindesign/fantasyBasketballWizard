@@ -207,12 +207,8 @@ addTotalSubheader = function()
 
 /*
     addGamesForPlayers - adds the number of games for the week for a player.
-    
-    mode - What mode the roster is loaded for.
-    includeTotal - Boolean type. For distinguishing between adding the total
-    for roster or not for free agents.
 */
-addGamesForPlayers = function( mode, includeTotal )
+addGamesForPlayers = function()
 {
     var totalGames = 0;
     // Creates an entry in the table for the number of games played by the player
@@ -230,12 +226,12 @@ addGamesForPlayers = function( mode, includeTotal )
         var injured = false;
 
         // Injured players
-        if( ( mode == "My Team" ) && ( ( dataHtml.indexOf( "IR</td>" ) != -1 ) || ( dataHtml.indexOf( ">O</span>") != -1 ) ) ) 
+        if( ( pageType == "Roster" ) && ( ( dataHtml.indexOf( "IR</td>" ) != -1 ) || ( dataHtml.indexOf( ">O</span>") != -1 ) ) ) 
         {
             injured = true;
         }
         // Conditional - Empty row
-        if( ( mode == "My Team" ) && ( ( dataHtml.indexOf( "<td>&nbsp;</td>" ) != -1 ) || ( dataHtml.indexOf( ">O</span>") != -1 ) ) )
+        if( ( pageType == "Roster" ) && ( ( dataHtml.indexOf( "<td>&nbsp;</td>" ) != -1 ) || ( dataHtml.indexOf( ">O</span>") != -1 ) ) )
         {
             numberOfGames.innerText = "--";
         }
@@ -245,7 +241,7 @@ addGamesForPlayers = function( mode, includeTotal )
             var splitDataHtml = dataHtml.split( "," );
             var teamName = splitDataHtml[1].substring( 1, splitDataHtml[1].indexOf( "&" ) );
             
-            if( mode == "My Team" )
+            if( pageType == "Roster" )
             {
                 var selectedDate = getSelectedDate();
 
@@ -321,7 +317,7 @@ addGamesForPlayers = function( mode, includeTotal )
                     numberOfGames.innerHTML = games;
                 }
             }
-            else if( mode == "Free Agents" )
+            else if( pageType == "Free Agents" )
             {
                 var todaysDate = getTodaysDate();
                 var nbaWeek = getNbaWeek( todaysDate );
@@ -336,7 +332,7 @@ addGamesForPlayers = function( mode, includeTotal )
     }
     // End of players array
     
-    if( includeTotal )
+    if( pageType == "Roster" )
     {
         // Calculate total number of games for the whole team
         var rowTotals = document.getElementsByClassName( "playerTableBgRowTotals" );
@@ -374,7 +370,7 @@ myTeamRoster = function()
         
         addTotalSubheader();
         
-        addGamesForPlayers( "My Team", true );
+        addGamesForPlayers();
 
         dateRanges = false;
     }

@@ -66,6 +66,15 @@ Schedule["Tor"]  =  TorontoRaptors;
 Schedule["Utah"] =  UtahJazz;
 Schedule["Wsh"]  =  WashingtonWizards;
 
+var gamesOnElements = document.getElementsByClassName( "games-on" );
+var pageType = gamesOnElements[0].innerText;
+var gamesOnSubheader = "";
+
+if( gamesOnElements.length == 2 )
+{
+    pageType = gamesOnElements[1].innerText;
+}
+
 /* 
     getBackgroundColor - returns the background color associated with
     the number of games.
@@ -373,11 +382,14 @@ myTeamRoster = function()
     previousDateOnHtml = newDateOnHtml;
 }
 
-var previousDateOn = document.getElementsByClassName( "date-on" );
-var previousDateOnHtml = previousDateOn[0].innerHTML;
-var initialLoad = true;
-var dateRanges = false;
-var dailyLockLeague = false;
+if( pageType == "Roster")
+{
+    var previousDateOn = document.getElementsByClassName( "date-on" );
+    var previousDateOnHtml = previousDateOn[0].innerHTML;
+    var initialLoad = true;
+    var dateRanges = false;
+    var dailyLockLeague = false;
+}
 
 /*
     renderGames - the main function containing the logic to add:
@@ -387,11 +399,11 @@ var dailyLockLeague = false;
         i) '--' for empty player row or free agents
     4) Total number of games for the entire team for the week
 */
-renderGames = function( mode )
+renderGames = function()
 {
     console.log("Fantasy Wizard rendering...");
 
-    if( mode == "Roster" )
+    if( pageType == "Roster" )
     {
         myTeamRoster();
     }
@@ -403,40 +415,23 @@ var refreshSleepTime = 700;
     Event listener for when a date in the top navigation bar with the 
     black background is clicked - Today, Weekday, Month Date
 */
-document.getElementsByClassName( "games-dates-mod" )[0].addEventListener( "click" , function() {
-    var tabOnElements = document.getElementsByClassName( "games-on" );
-    var tabOnHeader = tabOnElements[0].innerText;
-    var tabOnSubheader = "";
-    
-    if( tabOnElements.length == 2 )
-    {
-        tabOnSubheader = tabOnElements[1].innerText;
-    }
-    
-    setTimeout( () => {
-        renderGames( "Roster" );
-    }, refreshSleepTime );
-});
+if( pageType == "Roster" )
+{
+    document.getElementsByClassName( "games-dates-mod" )[0].addEventListener( "click" , function() {
+        setTimeout( () => {
+            renderGames();
+        }, refreshSleepTime );
+    });
+}
 
 /*
     Event listener for navigating between 'Month Date', 'Last 7',
     'Last 15', 'Last 30', '2018 Season', '2017', '2018 Projections'
 */
 $('div' ).on( 'click', ' .playertablefiltersmenucontainer', function( event ) {
-    var tabOnElements = document.getElementsByClassName( "games-on" );
-    var tabOnHeader = tabOnElements[0].innerText;
-    var tabOnSubheader = "";
-    
-    if( tabOnElements.length == 2 )
-    {
-        tabOnSubheader = tabOnElements[1].innerText;
-    }
-    
     event.stopPropagation();
     var thisText = $( this ).text();
-    if( 
-      ( tabOnHeader == "Roster" ||
-        tabOnSubheader == "Roster" ) &&
+    if( pageType == "Roster" &&
         thisText != "Last 7" &&
         thisText != "Last 15" &&
         thisText != "Last 30" &&
@@ -447,7 +442,7 @@ $('div' ).on( 'click', ' .playertablefiltersmenucontainer', function( event ) {
     {
         dateRanges = true;
         setTimeout( () => {
-            renderGames( "Roster" );
+            renderGames();
         }, refreshSleepTime );
     }
 });
@@ -456,15 +451,5 @@ $('div' ).on( 'click', ' .playertablefiltersmenucontainer', function( event ) {
     Main load of calling render games when the document is ready.
 */
 $( document ).ready( function(){
-    // Used to find what page it is currently on
-    var tabOnElements = document.getElementsByClassName( "games-on" );
-    var tabOnHeader = tabOnElements[0].innerText;
-    var tabOnSubheader = "";
-    
-    if( tabOnElements.length == 2 )
-    {
-        tabOnSubheader = tabOnElements[1].innerText;
-    }
-    
-    renderGames( "Roster" );
+    renderGames();
 });

@@ -232,7 +232,6 @@ addGamesForPlayers = function( mode, includeTotal )
         // Injured players
         if( ( mode == "My Team" ) && ( ( dataHtml.indexOf( "IR</td>" ) != -1 ) || ( dataHtml.indexOf( ">O</span>") != -1 ) ) ) 
         {
-            console.log( "Found injured ");
             injured = true;
         }
         // Conditional - Empty row

@@ -144,8 +144,6 @@ var get_label_col = function(){
     
 }
 
-var games_isset = false;
-var AS_isset = false;
 
 var games_id = "games";
 var avg_stats_id = "avg";
@@ -190,7 +188,7 @@ renderGames = function(from_view) {
     //find player column
     th = table.rows[first_player_row];
     for (var i = 0; i < th.cells.length; i++){
-        if (th.cells[i].innerText.includes("Player")){
+        if (th.cells[i].innerText.includes("layer")){
             player_col = i;
             break;
         }
@@ -247,7 +245,6 @@ renderGames = function(from_view) {
                 break;
             }
         }
-
     }
     
     if (fantasy_col == -1){
@@ -530,12 +527,6 @@ countStats = function(){
             }
             
             write = col;
-            
-            //console.log(avg);
-            
-            //write stats
-            //stats_all.cells[write].innerText = avg;
-            //stats_all.cells[write].classList.add("Bdrend");
 
         }
         else {
@@ -570,8 +561,7 @@ countStats = function(){
             console.log("stats: ", round_float(num, 1));
             
             weekly_stats = 0;
-            
-            
+
         }
     
         weekly_num = 0;
@@ -586,10 +576,6 @@ countStats = function(){
         header_cell = table.rows[1].cells[col].innerText;
         
     }
-    
-    console.log("done")
-    
-    AS_isset = true;
     
 }
 

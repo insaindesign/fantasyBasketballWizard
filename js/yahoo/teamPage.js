@@ -362,16 +362,7 @@ countStats = function(){
 
     stats_all.id = avg_stats_id;
     
-    /*
-    //add help
-    stats_week.cells[0].innerText = "?"
-    stats_all.cells[0].innerText = "?"
-    
-    stats_all.cells[0].classList.add("tooltip");
-    text = document.createElement("span");
-    text.className = "tooltiptext";
-    stats_all.cells[0].appendChild(text);*/
-    
+  
     label_col = get_label_col();
     
     //add new row labels
@@ -421,13 +412,15 @@ countStats = function(){
         }
     }
     
+    console.log("counting col: ", col);
+    
     
     //col = gp_col + 1;
     offset = false;
     write = 0;
     
     //on opponent page
-    if (document.getElementsByClassName("F-icon Fz-xs F-trade T-action-icon-trade").length > 1){
+    if (document.getElementsByClassName("F-icon Fz-xs F-trade T-action-icon-trade").length > 1 || document.getElementsByClassName("noactiondt-tradedeadlinepassed F-icon Fz-xs F-disabled T-action-icon-disabled-trade").length > 1){
         offset = true;
         console.log("offset");
     } else {
@@ -436,9 +429,8 @@ countStats = function(){
     }
     
     header_cell = table.rows[1].cells[col].innerText;
-    
-   
 
+    console.log("header cell: ", header_cell);
     
     while (header_cell.length > 0){
         console.log("col: ", table.rows[1].cells[col].innerText);
@@ -527,6 +519,8 @@ countStats = function(){
             }
             
             write = col;
+            
+        
 
         }
         else {

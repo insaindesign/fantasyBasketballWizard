@@ -144,8 +144,6 @@ var get_label_col = function(){
     
 }
 
-var games_isset = false;
-var AS_isset = false;
 
 var games_id = "games";
 var avg_stats_id = "avg";
@@ -190,7 +188,7 @@ renderGames = function(from_view) {
     //find player column
     th = table.rows[first_player_row];
     for (var i = 0; i < th.cells.length; i++){
-        if (th.cells[i].innerText.includes("Player")){
+        if (th.cells[i].innerText.includes("layer")){
             player_col = i;
             break;
         }
@@ -247,7 +245,6 @@ renderGames = function(from_view) {
                 break;
             }
         }
-
     }
     
     if (fantasy_col == -1){
@@ -365,16 +362,7 @@ countStats = function(){
 
     stats_all.id = avg_stats_id;
     
-    /*
-    //add help
-    stats_week.cells[0].innerText = "?"
-    stats_all.cells[0].innerText = "?"
-    
-    stats_all.cells[0].classList.add("tooltip");
-    text = document.createElement("span");
-    text.className = "tooltiptext";
-    stats_all.cells[0].appendChild(text);*/
-    
+  
     label_col = get_label_col();
     
     //add new row labels
@@ -424,13 +412,15 @@ countStats = function(){
         }
     }
     
+    console.log("counting col: ", col);
+    
     
     //col = gp_col + 1;
     offset = false;
     write = 0;
     
     //on opponent page
-    if (document.getElementsByClassName("F-icon Fz-xs F-trade T-action-icon-trade").length > 1){
+    if (document.getElementsByClassName("F-icon Fz-xs F-trade T-action-icon-trade").length > 1 || document.getElementsByClassName("noactiondt-tradedeadlinepassed F-icon Fz-xs F-disabled T-action-icon-disabled-trade").length > 1){
         offset = true;
         console.log("offset");
     } else {
@@ -439,9 +429,8 @@ countStats = function(){
     }
     
     header_cell = table.rows[1].cells[col].innerText;
-    
-   
 
+    console.log("header cell: ", header_cell);
     
     while (header_cell.length > 0){
         console.log("col: ", table.rows[1].cells[col].innerText);
@@ -531,11 +520,7 @@ countStats = function(){
             
             write = col;
             
-            //console.log(avg);
-            
-            //write stats
-            //stats_all.cells[write].innerText = avg;
-            //stats_all.cells[write].classList.add("Bdrend");
+        
 
         }
         else {
@@ -570,8 +555,7 @@ countStats = function(){
             console.log("stats: ", round_float(num, 1));
             
             weekly_stats = 0;
-            
-            
+
         }
     
         weekly_num = 0;
@@ -586,10 +570,6 @@ countStats = function(){
         header_cell = table.rows[1].cells[col].innerText;
         
     }
-    
-    console.log("done")
-    
-    AS_isset = true;
     
 }
 

@@ -76,6 +76,17 @@ var highColor = "#adebad";
 var whiteColor = "white";
 var borderColor = "#e7e7e7";
 
+//main function that initializes everything. 
+function init() {
+    renderGames();
+    addDropDown();
+    var dropdown = document.getElementById("dropdown");
+    dropdown.addEventListener("change", function() {
+        var weekNum = getWeekNumFromDropdown();
+        resetGames(weekNum-1);
+    });
+}
+
 //check values from that <td> to values from the Teams array to find the team abbreviation
 function getTeamFromInfo(playerInfo) {
     for(var j=0; j<Teams.length; j++) {
@@ -122,6 +133,8 @@ function getColor(games){
     }
 }
 
+//TODO: for next season, this needs to be revised to get the correct week index;
+//gets the index for the schedule grid from the week number
 function getYahooWeekIndex() {
     date = new Date();
     if (date.getFullYear() == 2017) {
@@ -134,6 +147,45 @@ function getYahooWeekIndex() {
     }
 }
 
+//returns selected week number in drop down
+function getWeekNumFromDropdown() {
+    var dropdown = document.getElementById("dropdown");
+    return dropdown.options[dropdown.selectedIndex].value;
+}
+
+//adds a drop down of weeks for user to select
+function addDropDown() {
+    var select = document.createElement("select");
+    select.setAttribute("id", "dropdown");
+    for(var i=1; i<=24; i++) {
+        var option = document.createElement("option");
+        option.setAttribute("value", i);
+        option.innerText = "Week " + i;
+        select.appendChild(option);
+    }
+    console.log(select);
+    var div = document.createElement("div");
+    div.innerText = "wk";
+    div.setAttribute("class", "navtarget");
+    select.style.cssFloat ="right";
+    document.getElementsByClassName("Nav-h Py-med No-brdbot Tst-pos-nav")[0].appendChild(select);
+
+
+}
+
+//sets the number of games in the games column for the new week selected by the user
+function resetGames(weekNum) {
+    var gameColumn = document.getElementsByClassName("gameColumn");
+    var rows = document.getElementsByClassName("Tst-table Table")[0].rows;
+    var playerInfo;
+    for(var i=1; i<rows.length; i++) {
+        playerInfo = rows[i].cells[1].innerText.split(" ");
+        team = getTeamFromInfo(playerInfo);
+        gameColumn[i].innerText = Schedule[team][weekNum];
+    }
+}
+
+//initial appending of new colum for current week with games
 function renderGames() {
     var table = document.getElementsByClassName("Tst-table Table")[0];
     var newCell;
@@ -151,7 +203,7 @@ function renderGames() {
 
     //go through rows of table
     for(var i=1; i<rows.length; i++) {
-
+        
         //grab all text from the <td> that includes the team/player name
         playerInfo = rows[i].cells[1].innerText.split(" ");
         
@@ -164,6 +216,7 @@ function renderGames() {
         numGames = Schedule[team][weekNum];
         newCell.innerText = numGames;
         newCell.style.backgroundColor = getColor(numGames);
+        newCell.setAttribute("class", "gameColumn");
     }
 
     gpCell.addEventListener("mouseover", function() {
@@ -180,4 +233,4 @@ function renderGames() {
     });
 }
 
-renderGames();
+init();

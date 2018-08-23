@@ -21,7 +21,7 @@ from wizard import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('test/', views.TestView.as_view()),
+    path('gamesRemaining/', views.GamesRemaining.as_view()), #this maps that url to our games remaining class
 
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)

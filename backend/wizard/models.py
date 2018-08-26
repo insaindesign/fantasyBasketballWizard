@@ -5,7 +5,8 @@ from django.db import models
 # get converted and stored in the database using some type of save method.
 # they extend the class Model which is a django base model.
 # we need to design these properly to store the schedule and other statistic info
-class YahooStats(models.Model):
+class YahooUse(models.Model):
+    
     myTeamUses = models.IntegerField()
     averageStatUses = models.IntegerField()
     ResearchPageUses = models.IntegerField()
@@ -27,5 +28,11 @@ class Day(models.Model):
 class Team(models.Model):
     teamName = models.CharField(max_length=15)
     teamCity = models.CharField(max_length=25)
+class Game(models.Model):
+    time = models.TimeField()
+    date = models.DateField()
+    roadTeam = models.ForeignKey(Team,related_name='roadTeam',on_delete=models.CASCADE)
+    homeTeam = models.ForeignKey(Team,related_name='homeTeam',on_delete=models.CASCADE)
+
 
     

@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Week
-from .models import YahooStats
+from .models import YahooUse
 from .serializers import YahooStatsSerializer
 
 # Create your views here.

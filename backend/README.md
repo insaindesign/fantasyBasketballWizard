@@ -1,5 +1,5 @@
 ---Recommended way to install Django--
-1. pip install django==1.0.4
+1. pip3 install django==1.0.4
 
 ---Run Server---
 navigate to backend/ in the terminal and run   python3 manage.py runserver

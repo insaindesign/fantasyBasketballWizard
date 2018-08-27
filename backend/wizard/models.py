@@ -40,7 +40,7 @@ class Week(models.Model):
     endDate = models.DateField()
 
     def __str__(self):
-        return "Week " + self.weekNum + " " + self.startDate + "-" + self.endDate
+        return "Week " + str(self.weekNum) + ": " + str(self.startDate) + " through " + str(self.endDate)
 
 class Day(models.Model):
     date = models.DateField(primary_key=True)

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from .utils.scheduler import DataLoader
 from .models import Week
 from .models import YahooUse
 from .serializers import *
@@ -32,11 +33,7 @@ class GamesRemaining(APIView):
 
 class AllTeams(APIView):
     def get(self, request):
-        serializer = TeamSerializer(Team.objects.all(), many=True)
-        query = request.GET.get("q")
-        if query:
-            print(query)
-        return Response(serializer.data)
+        return Response(TeamSerializer(Team.objects.all(), many=True).data)
 
 class TotalGamesToday(APIView):
     def get(self, request):
@@ -50,3 +47,13 @@ class GamesThisWeek(APIView):
     def get(self, request):
         teamAcronym = request.GET.get("teamAcronym")
         return Response(serializer.data)
+
+class LoadTeams(APIView):
+    def get(self, request):
+        DataLoader.loadTeams()
+        return Response()
+
+class LoadWeeks(APIView):
+    def get(self, request):
+        DataLoader.loadWeeks()
+        return Response()

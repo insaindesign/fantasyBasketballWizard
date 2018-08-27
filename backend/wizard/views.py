@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Week
 from .models import YahooUse
-from .serializers import YahooStatsSerializer
+from .serializers import *
 
 # Create your views here.
 # ignore
@@ -22,7 +22,31 @@ class TestView(APIView):
 class GamesRemaining(APIView):
     #gets called on a get request to this class. 
     def get(self, request):
-        query = request.GET.get("q") # gets parameter "q" from request
-        print(query)
-        serializer = YahooStatsSerializer(YahooStats.objects.all(), many=True)
+        teamAcronym = request.GET.get("teamAcronym") # gets parameter "teamAcronym" from request
+        date = request.GET.get("date") 
+        numGames = self.getNumberOfGames(teamAcronym, date)
+        return Response(numGames)
+    def getNumberOfGames(self, teamAcronym, date):
+        #perform logic here to determine number of games as of date for teamacronym
+        return 2
+
+class AllTeams(APIView):
+    def get(self, request):
+        serializer = TeamSerializer(Team.objects.all(), many=True)
+        query = request.GET.get("q")
+        if query:
+            print(query)
+        return Response(serializer.data)
+
+class TotalGamesToday(APIView):
+    def get(self, request):
+        requestDate = request.GET.get("date")
+        print(requestDate)
+        day = Day.objects.filter(date=requestDate)
+        serializer = DaySerializer(day, many=True)
+        return Response(serializer.data)
+
+class GamesThisWeek(APIView):
+    def get(self, request):
+        teamAcronym = request.GET.get("teamAcronym")
         return Response(serializer.data)

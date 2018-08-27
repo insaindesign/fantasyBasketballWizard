@@ -4,20 +4,17 @@
     <head>
     </head>
     <body>
-        <button onclick="myFunction()">Click me</button>
-        <script>
-            function myFunction() {
-                const Http = new XMLHttpRequest();
-                const url='http://localhost:8000/gamesRemaining/?format=json&q=one/';
-                Http.open("GET", url);
-                Http.send();
-            
-                Http.onreadystatechange=(e)=>{
-                    console.log(Http)
-                }
-                Http.response
-            }
-        </script>
-        <script src="/unit.js"></script>
+        <button onclick="gamesRemaining()">Click me</button>
+        <div>
+            <button onclick="getAllTeams()">Get All Teams</button> 
+            <div id="teamsDiv"></div> 
+        </div>
+        <div>
+            <button onclick="gamesToday()">Games Today</button>
+            <div id="gamesTodayDiv"></div>
+        </div>
+
+
+        <script src="unit.js"></script>
     </body>
 </html>

@@ -42,10 +42,10 @@ class TotalGamesToday(APIView):
         requestDate = request.GET.get("date")
         d = requestDate.split("-")#"2018-1-1"
         gameDate = datetime.date(int(d[0]),int(d[1]),int(d[2]))
-        games = Game.objects.filter(date=gameDate)
-        
-        serializer = GameSerializer(games, many=True)
-        return Response(serializer.data)
+        games = Game.objects.filter(date=gameDate).count()
+        print(games)
+        #serializer = GameSerializer(games, many=True)
+        return Response(games)
 
 class GamesThisWeek(APIView):
     def get(self, request):

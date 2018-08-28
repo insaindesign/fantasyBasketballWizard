@@ -33,15 +33,14 @@ function getAllTeams() {
 function gamesToday() {
     console.log("clicked gamesToday")
     var Http = new XMLHttpRequest();
-    var date = "2018-08-26" //must be in this format. we need to pull from the matchups screen to display number of games
-    var url = 'http://localhost:8000/gamestoday/?format=json&date='+date;
+    var date = "2019-1-1" //must be in this format. we need to pull from the matchups screen to display number of games
+    var url = 'http://localhost:8000/gamestoday/?&date='+date;
     Http.open("GET", url);
     Http.send();
     Http.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             document.getElementById("gamesTodayDiv").innerText = Http.responseText;
-            var day = JSON.parse(Http.responseText.toString());
-            console.log("Number of games on " + date + ": " + day[0].numberOfGames)
+            console.log("Number of games on " + date + ": " + Http.responseText);
         }
     }
 }

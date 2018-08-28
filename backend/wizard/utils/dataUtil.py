@@ -79,7 +79,7 @@ class DataLoader:
 
             d = row[0].split("-")
             gameDate = datetime.date(int(d[0]),int(d[1]),int(d[2]))
-
+            # gameDate = stringDateToDateObject(row[0])
             t = row[1].split(":")
             gameTime = datetime.time(int(t[0]),int(t[1]),0)
 
@@ -87,7 +87,8 @@ class DataLoader:
             home = Team.objects.get(acronym=row[3])
 
             Game(date=gameDate, time=gameTime, roadTeam=road, homeTeam=home).save()
-        
-            
-
-            
+    
+    @staticmethod
+    def stringDateToDateObject(oldDate):
+        d = oldDate.split("-")
+        return datetime.date(int(d[0]),int(d[1]),int(d[2]))

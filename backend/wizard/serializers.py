@@ -18,3 +18,9 @@ class DaySerializer(serializers.ModelSerializer):
     class Meta:
         model = Day
         fields = '__all__'
+
+class GameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Game
+        fields = '__all__'
+

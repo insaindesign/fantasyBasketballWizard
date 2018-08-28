@@ -1,8 +1,13 @@
+import csv
+import datetime
 from wizard.models import Team
 from wizard.models import Week
+from wizard.models import Game
+
 
 class DataLoader:
     """This class will load the base with the team and schedule data"""
+
     @staticmethod
     def loadTeams():
         Team(city="Atlanta", name="Hawks", acronym="ATL").save()
@@ -35,7 +40,8 @@ class DataLoader:
         Team(city="Toronto", name="Raptors", acronym="TOR").save()
         Team(city="Utah", name="Jazz", acronym="UTA").save()
         Team(city="Washington", name="Wiazrds", acronym="WAS").save()
-    
+
+    @staticmethod    
     def loadWeeks():
         Week(weekNum=1, startDate="2018-10-15", endDate="2018-10-21").save()
         Week(weekNum=2, startDate="2018-10-22", endDate="2018-10-28").save()
@@ -63,7 +69,25 @@ class DataLoader:
         Week(weekNum=24, startDate="2019-3-25", endDate="2019-3-31").save()
         Week(weekNum=25, startDate="2019-4-1", endDate="2019-4-7").save()
         Week(weekNum=26, startDate="2019-4-8", endDate="2019-4-14").save()
-        
 
+    @staticmethod
+    def loadGames():
+        file = open('wizard/utils/schedule.csv')
+        csvReader = csv.reader(file, delimiter=',')
+        for row in csvReader:
+            #str = row[0] + " " + row[1] + " "  + row[2] + " "  + row[3]
+
+            d = row[0].split("-")
+            gameDate = datetime.date(int(d[0]),int(d[1]),int(d[2]))
+
+            t = row[1].split(":")
+            gameTime = datetime.time(int(t[0]),int(t[1]),0)
+
+            road = Team.objects.get(acronym=row[2])
+            home = Team.objects.get(acronym=row[3])
+
+            Game(date=gameDate, time=gameTime, roadTeam=road, homeTeam=home).save()
         
-        
+            
+
+            

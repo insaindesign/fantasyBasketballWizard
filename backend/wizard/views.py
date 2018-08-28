@@ -2,9 +2,8 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .utils.scheduler import DataLoader
-from .models import Week
-from .models import YahooUse
+from .utils.dataUtil import DataLoader
+from .models import *
 from .serializers import *
 
 # Create your views here.
@@ -19,16 +18,19 @@ class TestView(APIView):
 
 
 # class that gets called when hitting /gamesRemaining (this is configured in URLS.py)
-# optional query parameter in call is /gamesRemaining?q=yourQueryHere
+# optional query parameter in call is /gamesRemaining?date=2019-1-1
 class GamesRemaining(APIView):
-    #gets called on a get request to this class. 
+    
+    # gets called on a get request to this class. 
     def get(self, request):
         teamAcronym = request.GET.get("teamAcronym") # gets parameter "teamAcronym" from request
         date = request.GET.get("date") 
         numGames = self.getNumberOfGames(teamAcronym, date)
         return Response(numGames)
+   
     def getNumberOfGames(self, teamAcronym, date):
-        #perform logic here to determine number of games as of date for teamacronym
+        
+        # perform logic here to determine number of games as of date for teamacronym
         return 2
 
 class AllTeams(APIView):
@@ -38,9 +40,11 @@ class AllTeams(APIView):
 class TotalGamesToday(APIView):
     def get(self, request):
         requestDate = request.GET.get("date")
-        print(requestDate)
-        day = Day.objects.filter(date=requestDate)
-        serializer = DaySerializer(day, many=True)
+        d = requestDate.split("-")#"2018-1-1"
+        gameDate = datetime.date(int(d[0]),int(d[1]),int(d[2]))
+        games = Game.objects.filter(date=gameDate)
+        
+        serializer = GameSerializer(games, many=True)
         return Response(serializer.data)
 
 class GamesThisWeek(APIView):
@@ -56,4 +60,9 @@ class LoadTeams(APIView):
 class LoadWeeks(APIView):
     def get(self, request):
         DataLoader.loadWeeks()
+        return Response()
+
+class LoadGames(APIView):
+    def get(self, request):
+        DataLoader.loadGames()
         return Response()

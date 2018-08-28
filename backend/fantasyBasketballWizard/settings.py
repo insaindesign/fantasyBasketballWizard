@@ -39,13 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'wizard.apps.WizardConfig',
-    'corsheaders'
+    'corsheaders' #added
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware', #added
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -123,4 +123,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+#added by us
 CORS_ORIGIN_ALLOW_ALL = True
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 1230

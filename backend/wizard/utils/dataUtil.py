@@ -108,7 +108,7 @@ class DataLoader:
     
     @staticmethod
     def stringDateToDateObject(oldDate):
-        """Converts date of type string in yyyy-m-d format to python3 date object"""
+        """Converts date of type string in yyyy-m-d format to datetime.date object"""
         d = oldDate.split("-")
         return datetime.date(int(d[0]),int(d[1]),int(d[2]))
 
@@ -122,3 +122,8 @@ class DataLoader:
     def getWeekFromDate(date):
         """returns week object from a date object"""
         return Week.objects.get(startDate__lte=date, endDate__gte=date)
+    
+    @staticmethod
+    def getTeamFromAcronym(teamAcronym):
+        """returns team object from an acronym string"""
+        return Team.objects.get(teamAcronym=teamAcronym)

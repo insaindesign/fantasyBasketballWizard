@@ -22,13 +22,19 @@ class GamesRemaining(APIView):
     # gets called on a get request to this class. 
     def get(self, request):
         teamAcronym = request.GET.get("teamAcronym") # gets parameter "teamAcronym" from request
-        date = request.GET.get("date") 
-        numGames = self.getNumberOfGames(teamAcronym, date)
+        requestDate = request.GET.get("date")
+        numGames = self.getNumberOfGames(teamAcronym, requestDate)
         return Response(numGames)
    
-    def getNumberOfGames(self, teamAcronym, date):
+    def getNumberOfGames(self, teamAcronym, requestDate):
+        team = DataLoader.getTeamFromAcronym(teamAcronym)
+        date = DataLoader.stringDateToDateObject(requestDate)
+        week = DataLoader.getWeekFromDate(date)
+        gamesRemaining = Game.objects.filter(Q(homeTeam = team) | Q(roadTeam = team),date__lte=date,date__gte=date ).count()
+
+        # perform logic here to determine whether the game is over or not. ~3 hours after start date
+        # if current time is more than 3 hours after game time, subtract one from count
         
-        # perform logic here to determine number of games as of date for teamacronym
         return 2
 
 class AllTeams(APIView):

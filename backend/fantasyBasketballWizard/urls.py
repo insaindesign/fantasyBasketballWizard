@@ -26,6 +26,8 @@ urlpatterns = [
     path('gamestoday/', views.TotalGamesToday.as_view()),
     path('loadteams/', views.LoadTeams.as_view()),
     path('loadweeks/', views.LoadWeeks.as_view()),
-    path('loadgames/', views.LoadGames.as_view())
+    path('loadgames/', views.LoadGames.as_view()),
+    path('deletegames/', views.DeleteGames.as_view()),
+    path('gamesthisweek/',views.GamesThisWeek.as_view())
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)

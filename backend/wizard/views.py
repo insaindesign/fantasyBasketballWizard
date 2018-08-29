@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -16,9 +17,6 @@ class TestView(APIView):
         # you can return an http response with html to display a page
         return Response(serializer.data)
 
-
-# class that gets called when hitting /gamesRemaining (this is configured in URLS.py)
-# optional query parameter in call is /gamesRemaining?date=2019-1-1
 class GamesRemaining(APIView):
     
     # gets called on a get request to this class. 
@@ -40,29 +38,44 @@ class AllTeams(APIView):
 class TotalGamesToday(APIView):
     def get(self, request):
         requestDate = request.GET.get("date")
-        d = requestDate.split("-")#"2018-1-1"
-        gameDate = datetime.date(int(d[0]),int(d[1]),int(d[2]))
+        gameDate = DataLoader.stringDateToDateObject(requestDate)
         games = Game.objects.filter(date=gameDate).count()
-        print(games)
-        #serializer = GameSerializer(games, many=True)
         return Response(games)
 
 class GamesThisWeek(APIView):
+    """Returns all games for the given week and team - /?teamAcronym=LAL&weekNum=3"""
     def get(self, request):
-        teamAcronym = request.GET.get("teamAcronym")
-        return Response(serializer.data)
 
+        # get the requested team and week objects from the database
+        requestTeam = Team.objects.get(acronym = request.GET.get("teamAcronym"))
+        requestWeek = Week.objects.get(weekNum = int(request.GET.get("weekNum")))
+
+        # the count of the games that have the requested team as
+        # either the home team OR road team and is in the requested week
+        numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count() 
+        return Response(numGames)
+
+# Data loading methods
 class LoadTeams(APIView):
+    """loads all hard coded teams into database - /loadteams"""
     def get(self, request):
         DataLoader.loadTeams()
         return Response()
 
 class LoadWeeks(APIView):
+    """ loads all hard coded weeks into database - /loadweeks"""
     def get(self, request):
         DataLoader.loadWeeks()
         return Response()
 
 class LoadGames(APIView):
+    """ loads all games from schedule.csv to the database - /loadgames"""
     def get(self, request):
         DataLoader.loadGames()
+        return Response()
+
+class DeleteGames(APIView):
+    """ deletes all games in the database -  /deletegames"""
+    def get(self, request):
+        DataLoader.deleteAllGames()
         return Response()

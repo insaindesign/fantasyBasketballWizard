@@ -59,13 +59,14 @@ class Team(models.Model):
 
     def __str__(self):
         return self.city + " " + self.name + " "
-
+    
 
 class Game(models.Model):
     time = models.TimeField()
     date = models.DateField()
-    roadTeam = models.ForeignKey(Team,related_name='roadTeam',on_delete=models.CASCADE)
-    homeTeam = models.ForeignKey(Team,related_name='homeTeam',on_delete=models.CASCADE)
+    roadTeam = models.ForeignKey(Team, related_name='roadTeam', on_delete=models.CASCADE)
+    homeTeam = models.ForeignKey(Team, related_name='homeTeam', on_delete=models.CASCADE)
+    week = models.ForeignKey(Week, related_name='week', on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return str(self.roadTeam) + " @ " + str(self.homeTeam) + " - " + str(self.time) + " " + str(self.date)

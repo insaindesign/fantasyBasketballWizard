@@ -126,4 +126,4 @@ class DataLoader:
     @staticmethod
     def getTeamFromAcronym(teamAcronym):
         """returns team object from an acronym string"""
-        return Team.objects.get(teamAcronym=teamAcronym)
+        return Team.objects.get(acronym=teamAcronym)

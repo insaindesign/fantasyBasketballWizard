@@ -29,7 +29,7 @@ class DataLoader:
         Team(city="Milwaukee", name="Bucks", acronym="MIL").save()
         Team(city="Minnesota", name="Timberwolves", acronym="MIN").save()
         Team(city="New Orleans", name="Pelicans", acronym="NO").save()
-        Team(city="New York", name="Knicks", acronym="NYK").save()
+        Team(city="New York", name="Knicks", acronym="NY").save()
         Team(city="Oklahoma City", name="Thunder", acronym="OKC").save()
         Team(city="Orlando", name="Magic", acronym="ORL").save()
         Team(city="Philadelphia", name="76ers", acronym="PHI").save()

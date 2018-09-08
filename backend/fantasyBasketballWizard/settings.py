@@ -25,7 +25,7 @@ SECRET_KEY = 'dpz9@_x5lgpbdypb4i=yi%kcq&cb0e!)=$$3gct#@$c%#1#9p0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['bilalsattar24.pythonanywhere.com']
+ALLOWED_HOSTS = ['bilalsattar24.pythonanywhere.com','127.0.0.1']
 
 
 # Application definition
@@ -125,8 +125,7 @@ STATICFILES_DIRS = [
     '/home/bilalsattar24/fantasyBasketballWizard/backend/static',
 ]
 
-STATIC_URL = '/fantasyBasketballWizard/backend/static'
-STATIC_ROOT = '/home/bilalsattar24/fantasyBasketballWizard/backend/static'
+STATIC_URL = '/static/'
 
 #added by us
 CORS_ORIGIN_ALLOW_ALL = True

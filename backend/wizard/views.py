@@ -1,3 +1,5 @@
+import datetime
+import pytz
 from django.shortcuts import render
 from django.db.models import Q
 from rest_framework.views import APIView
@@ -30,10 +32,19 @@ class GamesRemaining(APIView):
         team = DataLoader.getTeamFromAcronym(teamAcronym)
         date = DataLoader.stringDateToDateObject(requestDate)
         week = DataLoader.getWeekFromDate(date)
-        gamesRemaining = Game.objects.filter(Q(homeTeam = team) | Q(roadTeam = team),date__lte=date,date__gte=date ).count()
+        gamesRemaining = Game.objects.filter(Q(homeTeam = team) | Q(roadTeam = team),date__lte=date,date__gte=date )
 
         # perform logic here to determine whether the game is over or not. ~3 hours after start date
         # if current time is more than 3 hours after game time, subtract one from count
+        EasternTimeNow = datetime.datetime.now()
+        pacificTimeZone = pytz.timezone('US/Pacific-New')
+
+        EasternTimeNow = pacificTimeZone.localize(pacificTimeZone)
+        
+
+        
+        
+
         
         return 2
 

@@ -14,7 +14,7 @@ function gamesRemaining() {
 function getAllTeams() {
     console.log("clicked get all teams")
     var Http = new XMLHttpRequest();
-    var url='http://localhost:8000/teams/?format=json';
+    var url='http://bilalsattar24.pythonanywhere.com/teams/?format=json';
     Http.open("GET", url);
     Http.send();
     Http.onreadystatechange = function() {
@@ -43,6 +43,10 @@ function gamesToday() {
             console.log("Number of games on " + date + ": " + Http.responseText);
         }
     }
+}
+
+function gamesRemaining(date, acronym) {
+    var date
 }
 
 

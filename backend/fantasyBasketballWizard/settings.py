@@ -120,9 +120,13 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+    '/home/bilalsattar24/fantasyBasketballWizard/backend/static',
+]
 
-STATIC_URL = '/static/'
-STATIC_ROOT = 'static'
+STATIC_URL = '/fantasyBasketballWizard/backend/static'
+STATIC_ROOT = '/home/bilalsattar24/fantasyBasketballWizard/backend/static'
 
 #added by us
 CORS_ORIGIN_ALLOW_ALL = True

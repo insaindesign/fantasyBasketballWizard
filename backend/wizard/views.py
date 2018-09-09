@@ -33,6 +33,7 @@ class GamesRemaining(APIView):
         date = DataLoader.stringDateToDateObject(requestDate)
         week = DataLoader.getWeekFromDate(date)
         remainingGames = Game.objects.filter(Q(homeTeam = team) | Q(roadTeam = team),week=week,date__gte=date)
+        gamesThisWeek = Game.objects.filter(Q(homeTeam = team) | Q(roadTeam = team),week=week).count()
         gamesRemaining = remainingGames.count()
         
         # perform logic here to determine whether the game is over or not. ~3 hours after start date
@@ -59,7 +60,7 @@ class GamesRemaining(APIView):
         
 
         
-        return gamesRemaining
+        return str(gamesRemaining) + "/" + str(gamesThisWeek)
 
 class AllTeams(APIView):
     def get(self, request):

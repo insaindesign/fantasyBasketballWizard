@@ -32,21 +32,34 @@ class GamesRemaining(APIView):
         team = DataLoader.getTeamFromAcronym(teamAcronym)
         date = DataLoader.stringDateToDateObject(requestDate)
         week = DataLoader.getWeekFromDate(date)
-        gamesRemaining = Game.objects.filter(Q(homeTeam = team) | Q(roadTeam = team),week=week)
-
+        remainingGames = Game.objects.filter(Q(homeTeam = team) | Q(roadTeam = team),date__lte=date,date__gte=date)
+        gamesRemaining = remainingGames.count()
+        
         # perform logic here to determine whether the game is over or not. ~3 hours after start date
-        # if current time is more than 3 hours after game time, subtract one from count
-        EasternTimeNow = datetime.datetime.now()
-        pacificTimeZone = pytz.timezone('US/Pacific-New')
+        # if there is a game today AND current time is more than 3 hours after game time, subtract one from count
+        
+        #get nowtime in Eastern timezone
+        #add 3 hours to game time (already in eastern)
+        # if now is after (gametime + 3 hours) then the game is over and subtract 1 from count
+        # else
+        # return count
+        
+        
+        #gameToday = False
+        #for game in remainingGames:
+        #    if game.date = date and :
+                
+        #EasternTimeNow = datetime.datetime.now()
+        #pacificTimeZone = pytz.timezone('US/Pacific-New')
 
-        EasternTimeNow = pacificTimeZone.localize(pacificTimeZone)
+        #EasternTimeNow = pacificTimeZone.localize(pacificTimeZone)
         
 
         
         
 
         
-        return 2
+        return gamesRemaining
 
 class AllTeams(APIView):
     def get(self, request):

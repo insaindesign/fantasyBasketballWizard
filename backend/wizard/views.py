@@ -68,7 +68,8 @@ class GetPlayerStats(APIView):
 
 class UpdatePlayer(APIView):
     def post(self, request):
-        
+        return Response()
+
 class GamesThisWeek(APIView):
     """Returns all games for the given week and team - /?teamAcronym=LAL&weekNum=3"""
     def get(self, request):

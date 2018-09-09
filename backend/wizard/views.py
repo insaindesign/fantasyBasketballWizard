@@ -60,7 +60,8 @@ class GamesRemaining(APIView):
         
 
         
-        return str(gamesRemaining) + "/" + str(gamesThisWeek)
+        #return str(gamesRemaining) + "/" + str(gamesThisWeek)
+        return gamesRemaining
 
 class AllTeams(APIView):
     def get(self, request):

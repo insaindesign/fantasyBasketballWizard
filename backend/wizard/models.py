@@ -87,7 +87,7 @@ class Player(models.Model):
     ftpct = models.DecimalField(max_digits=2, decimal_places=1)
     fgapg = models.DecimalField(max_digits=2, decimal_places=1)
     fgmpg = models.DecimalField(max_digits=2, decimal_places=1)
-    gfpct = models.DecimalField(max_digits=2, decimal_places=1)
+    fgpct = models.DecimalField(max_digits=2, decimal_places=1)
     threepg = models.DecimalField(max_digits=1, decimal_places=1)
 
 class Test(models.Model):

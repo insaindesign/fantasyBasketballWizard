@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
 from .utils.dataUtil import DataLoader
 from .models import *
 from .serializers import *
@@ -44,7 +44,6 @@ class GamesRemaining(APIView):
         # if now is after (gametime + 3 hours) then the game is over and subtract 1 from count
         # else
         # return count
-        
         
         #gameToday = False
         #for game in remainingGames:
@@ -87,20 +86,22 @@ class UpdatePlayer(APIView):
 
 class GamesThisWeek(APIView):
     """Returns all games for the given week and team - /?teamAcronym=LAL&weekNum=3"""
-    def post(self, request):
+    def get(self, request):
         gameCountList = []
         # get the requested team and week objects from the database
-        #requestTeam = Team.objects.get(acronym = request.GET.get("teamAcronym"))
-        #requestWeek = Week.objects.get(weekNum = int(request.GET.get("weekNum")))
-        for player in request.data:
-            print(player["team"].upper())
-            requestTeam = DataLoader.getTeamFromAcronym(player["team"].upper())
-            requestWeek = Week.objects.get(weekNum=3)
+        requestTeams = request.GET.get("teams").split(",")
+        requestDate = request.GET.get("date")
+        print(requestDate)
+        print(requestTeams)
+        requestWeek = DataLoader.getWeekFromDate(requestDate)
+
+        for teamAcronym in requestTeams:
+            print(teamAcronym)
+            requestTeam = DataLoader.getTeamFromAcronym(teamAcronym)
             numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count() 
             gameCountList.append(numGames)
 
         
-
         # the count of the games that have the requested team as
         # either the home team OR road team and is in the requested week
         #numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count() 

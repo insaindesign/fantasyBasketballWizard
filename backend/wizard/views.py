@@ -89,7 +89,8 @@ class GamesThisWeek(APIView):
     def get(self, request):
         gameCountList = []
         # get the requested team and week objects from the database
-        requestTeams = request.GET.get("teams").split(",")
+        requestTeams = request.GET.get("teams")
+        requestTeams = requestTeams[:-1]
         requestDate = request.GET.get("date")
         print(requestDate)
         print(requestTeams)

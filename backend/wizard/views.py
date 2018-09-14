@@ -85,7 +85,7 @@ class UpdatePlayer(APIView):
         return Response()
 
 class GamesThisWeek(APIView):
-    """Returns all games for the given week and team - /?teamAcronym=LAL&weekNum=3"""
+    """Returns all games for the given week and team - /?teams=LAL,OKC,GSW,BOS,&weekNum=3"""
     def get(self, request):
         gameCountList = []
         # get the requested team and week objects from the database
@@ -97,7 +97,7 @@ class GamesThisWeek(APIView):
 
         for teamAcronym in requestTeams:
             print(teamAcronym)
-            requestTeam = DataLoader.getTeamFromAcronym(teamAcronym)
+            requestTeam = DataLoader.getTeamFromAcronym(teamAcronym.upper())
             numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count() 
             gameCountList.append(numGames)
 

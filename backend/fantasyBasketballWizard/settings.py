@@ -25,7 +25,7 @@ SECRET_KEY = 'dpz9@_x5lgpbdypb4i=yi%kcq&cb0e!)=$$3gct#@$c%#1#9p0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['bilalsattar24.pythonanywhere.com','127.0.0.1','localhost']
 
 
 # Application definition
@@ -120,6 +120,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+    '/home/bilalsattar24/fantasyBasketballWizard/backend/static',
+]
 
 STATIC_URL = '/static/'
 

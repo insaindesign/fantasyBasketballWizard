@@ -1,7 +1,10 @@
+import datetime
+import pytz
 from django.shortcuts import render
+from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
 from .utils.dataUtil import DataLoader
 from .models import *
 from .serializers import *
@@ -16,22 +19,48 @@ class TestView(APIView):
         # you can return an http response with html to display a page
         return Response(serializer.data)
 
-
-# class that gets called when hitting /gamesRemaining (this is configured in URLS.py)
-# optional query parameter in call is /gamesRemaining?date=2019-1-1
 class GamesRemaining(APIView):
     
     # gets called on a get request to this class. 
     def get(self, request):
         teamAcronym = request.GET.get("teamAcronym") # gets parameter "teamAcronym" from request
-        date = request.GET.get("date") 
-        numGames = self.getNumberOfGames(teamAcronym, date)
+        requestDate = request.GET.get("date") # yyyy-mm-dd
+        numGames = self.getNumberOfGames(teamAcronym, requestDate)
         return Response(numGames)
    
-    def getNumberOfGames(self, teamAcronym, date):
+    def getNumberOfGames(self, teamAcronym, requestDate):
+        team = DataLoader.getTeamFromAcronym(teamAcronym)
+        date = DataLoader.stringDateToDateObject(requestDate)
+        week = DataLoader.getWeekFromDate(date)
+        remainingGames = Game.objects.filter(Q(homeTeam = team) | Q(roadTeam = team),week=week,date__gte=date)
+        gamesThisWeek = Game.objects.filter(Q(homeTeam = team) | Q(roadTeam = team),week=week).count()
+        gamesRemaining = remainingGames.count()
         
-        # perform logic here to determine number of games as of date for teamacronym
-        return 2
+        # perform logic here to determine whether the game is over or not. ~3 hours after start date
+        # if there is a game today AND current time is more than 3 hours after game time, subtract one from count
+        
+        #get nowtime in Eastern timezone
+        #add 3 hours to game time (already in eastern)
+        # if now is after (gametime + 3 hours) then the game is over and subtract 1 from count
+        # else
+        # return count
+        
+        #gameToday = False
+        #for game in remainingGames:
+        #    if game.date = date and :
+                
+        #EasternTimeNow = datetime.datetime.now()
+        #pacificTimeZone = pytz.timezone('US/Pacific-New')
+
+        #EasternTimeNow = pacificTimeZone.localize(pacificTimeZone)
+        
+
+        
+        
+
+        
+        #return str(gamesRemaining) + "/" + str(gamesThisWeek)
+        return gamesRemaining
 
 class AllTeams(APIView):
     def get(self, request):
@@ -40,29 +69,66 @@ class AllTeams(APIView):
 class TotalGamesToday(APIView):
     def get(self, request):
         requestDate = request.GET.get("date")
-        d = requestDate.split("-")#"2018-1-1"
-        gameDate = datetime.date(int(d[0]),int(d[1]),int(d[2]))
+        gameDate = DataLoader.stringDateToDateObject(requestDate)
         games = Game.objects.filter(date=gameDate).count()
-        print(games)
-        #serializer = GameSerializer(games, many=True)
         return Response(games)
 
-class GamesThisWeek(APIView):
-    def get(self, request):
-        teamAcronym = request.GET.get("teamAcronym")
-        return Response(serializer.data)
 
+class GetPlayerStats(APIView):
+    def get(self, request):
+        yahooPlayerID = request.GET.get("yahooPlayerID")
+        return Response(Players.objects.get(yahooPlayerID=yahooPlayerID))
+
+
+class UpdatePlayer(APIView):
+    def post(self, request):
+        return Response()
+
+class GamesThisWeek(APIView):
+    """Returns all games for the given week and team - /?teams=LAL,OKC,GSW,BOS,&weekNum=3"""
+    def get(self, request):
+        gameCountList = []
+        # get the requested team and week objects from the database
+        requestTeams = request.GET.get("teams")
+        requestTeams = requestTeams[:-1]
+        requestDate = request.GET.get("date")
+        print(requestDate)
+        print(requestTeams)
+        requestWeek = DataLoader.getWeekFromDate(requestDate)
+
+        for teamAcronym in requestTeams:
+            print(teamAcronym)
+            requestTeam = DataLoader.getTeamFromAcronym(teamAcronym.upper())
+            numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count() 
+            gameCountList.append(numGames)
+
+        
+        # the count of the games that have the requested team as
+        # either the home team OR road team and is in the requested week
+        #numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count() 
+        return Response(gameCountList)
+
+# Data loading methods
 class LoadTeams(APIView):
+    """loads all hard coded teams into database - /loadteams"""
     def get(self, request):
         DataLoader.loadTeams()
         return Response()
 
 class LoadWeeks(APIView):
+    """ loads all hard coded weeks into database - /loadweeks"""
     def get(self, request):
         DataLoader.loadWeeks()
         return Response()
 
 class LoadGames(APIView):
+    """ loads all games from schedule.csv to the database - /loadgames"""
     def get(self, request):
         DataLoader.loadGames()
+        return Response()
+
+class DeleteGames(APIView):
+    """ deletes all games in the database -  /deletegames"""
+    def get(self, request):
+        DataLoader.deleteAllGames()
         return Response()

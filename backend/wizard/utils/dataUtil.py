@@ -28,15 +28,15 @@ class DataLoader:
         Team(city="Miami", name="Heat", acronym="MIA").save()
         Team(city="Milwaukee", name="Bucks", acronym="MIL").save()
         Team(city="Minnesota", name="Timberwolves", acronym="MIN").save()
-        Team(city="New Orleans", name="Pelicans", acronym="NOP").save()
-        Team(city="New York", name="Knicks", acronym="NYK").save()
+        Team(city="New Orleans", name="Pelicans", acronym="NO").save()
+        Team(city="New York", name="Knicks", acronym="NY").save()
         Team(city="Oklahoma City", name="Thunder", acronym="OKC").save()
         Team(city="Orlando", name="Magic", acronym="ORL").save()
         Team(city="Philadelphia", name="76ers", acronym="PHI").save()
         Team(city="Phoenix", name="Suns", acronym="PHO").save()
         Team(city="Portland", name="Trailblazers", acronym="POR").save()
         Team(city="Sacramento", name="Kings", acronym="SAC").save()
-        Team(city="San Antonio", name="Spurs", acronym="SAS").save()
+        Team(city="San Antonio", name="Spurs", acronym="SA").save()
         Team(city="Toronto", name="Raptors", acronym="TOR").save()
         Team(city="Utah", name="Jazz", acronym="UTA").save()
         Team(city="Washington", name="Wiazrds", acronym="WAS").save()
@@ -61,7 +61,10 @@ class DataLoader:
         Week(weekNum=16, startDate="2019-1-28", endDate="2019-2-3").save()
         Week(weekNum=17, startDate="2019-2-4", endDate="2019-2-10").save()
         Week(weekNum=18, startDate="2019-2-11", endDate="2019-2-24").save()
-        Week(weekNum=19, startDate="2019-2-11", endDate="2019-2-24").save()
+        
+        # leaving out week 19 because for our code, we'll count week 18 as "week 18 & 19"
+        # Week(weekNum=19, startDate="2019-2-11", endDate="2019-2-24").save()
+        
         Week(weekNum=20, startDate="2019-2-25", endDate="2019-3-3").save()
         Week(weekNum=21, startDate="2019-3-4", endDate="2019-3-10").save()
         Week(weekNum=22, startDate="2019-3-11", endDate="2019-3-17").save()
@@ -74,21 +77,53 @@ class DataLoader:
     def loadGames():
         file = open('wizard/utils/schedule.csv')
         csvReader = csv.reader(file, delimiter=',')
+        i = 1
         for row in csvReader:
             #str = row[0] + " " + row[1] + " "  + row[2] + " "  + row[3]
-
+            
             d = row[0].split("-")
-            gameDate = datetime.date(int(d[0]),int(d[1]),int(d[2]))
-            # gameDate = stringDateToDateObject(row[0])
+            #gameDate = datetime.date(int(d[0]),int(d[1]),int(d[2]))
+            gameDate = DataLoader.stringDateToDateObject(row[0])
+            print("iteration # " + str(i) + " date: " + str(gameDate))
+            
             t = row[1].split(":")
             gameTime = datetime.time(int(t[0]),int(t[1]),0)
+            gameTime = DataLoader.stringTimeToTimeObject(row[1])
 
             road = Team.objects.get(acronym=row[2])
             home = Team.objects.get(acronym=row[3])
 
-            Game(date=gameDate, time=gameTime, roadTeam=road, homeTeam=home).save()
+            # need to store the week in the game so that game has the week number on it as well
+            gameWeek = DataLoader.getWeekFromDate(gameDate)
+            Game(date=gameDate, time=gameTime, roadTeam=road, homeTeam=home, week=gameWeek).save()
+            i = i + 1
+        
+    @staticmethod
+    def deleteAllGames():
+        i=1
+        for game in Game.objects.all():
+            print("iteration " + str(i))
+            game.delete()
+            i = i+1
     
     @staticmethod
     def stringDateToDateObject(oldDate):
+        """Converts date of type string in yyyy-m-d format to datetime.date object"""
         d = oldDate.split("-")
         return datetime.date(int(d[0]),int(d[1]),int(d[2]))
+
+    @staticmethod
+    def stringTimeToTimeObject(oldTime):
+        """Converts time of type string in hh:mm format to python3 time object"""
+        t = oldTime.split(":")
+        return datetime.time(int(t[0]),int(t[1]),0)
+
+    @staticmethod
+    def getWeekFromDate(date):
+        """returns week object from a date object"""
+        return Week.objects.get(startDate__lte=date, endDate__gte=date)
+    
+    @staticmethod
+    def getTeamFromAcronym(teamAcronym):
+        """returns team object from an acronym string"""
+        return Team.objects.get(acronym=teamAcronym)

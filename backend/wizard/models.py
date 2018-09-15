@@ -59,16 +59,36 @@ class Team(models.Model):
 
     def __str__(self):
         return self.city + " " + self.name + " "
-
+    
 
 class Game(models.Model):
     time = models.TimeField()
     date = models.DateField()
-    roadTeam = models.ForeignKey(Team,related_name='roadTeam',on_delete=models.CASCADE)
-    homeTeam = models.ForeignKey(Team,related_name='homeTeam',on_delete=models.CASCADE)
+    roadTeam = models.ForeignKey(Team, related_name='roadTeam', on_delete=models.CASCADE)
+    homeTeam = models.ForeignKey(Team, related_name='homeTeam', on_delete=models.CASCADE)
+    week = models.ForeignKey(Week, related_name='week', on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return str(self.roadTeam) + " @ " + str(self.homeTeam) + " - " + str(self.time) + " " + str(self.date)
+
+class Player(models.Model):
+    yahooPlayerID = models.IntegerField(primary_key=True)
+    firstName = models.CharField(max_length=50)
+    lastName = models.CharField(max_length=50)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    ppg = models.DecimalField(max_digits=2, decimal_places=1)
+    rpg = models.DecimalField(max_digits=2, decimal_places=1)
+    apg = models.DecimalField(max_digits=2, decimal_places=1)
+    spg = models.DecimalField(max_digits=1, decimal_places=1)
+    bpg = models.DecimalField(max_digits=1, decimal_places=1)
+    topg = models.DecimalField(max_digits=1, decimal_places=1)
+    ftmpg = models.DecimalField(max_digits=2, decimal_places=1)
+    ftapg = models.DecimalField(max_digits=2, decimal_places=1)
+    ftpct = models.DecimalField(max_digits=2, decimal_places=1)
+    fgapg = models.DecimalField(max_digits=2, decimal_places=1)
+    fgmpg = models.DecimalField(max_digits=2, decimal_places=1)
+    fgpct = models.DecimalField(max_digits=2, decimal_places=1)
+    threepg = models.DecimalField(max_digits=1, decimal_places=1)
 
 class Test(models.Model):
     test = models.CharField(max_length=100)

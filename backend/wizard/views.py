@@ -23,18 +23,42 @@ class GamesRemaining(APIView):
     
     # gets called on a get request to this class. 
     def get(self, request):
-        teamAcronym = request.GET.get("teamAcronym") # gets parameter "teamAcronym" from request
-        requestDate = request.GET.get("date") # yyyy-mm-dd
-        numGames = self.getNumberOfGames(teamAcronym, requestDate)
-        return Response(numGames)
+        gameCountList = []
+        # get the requested team and week objects from the database
+        requestTeamsString = request.GET.get("teams")
+        requestTeams = requestTeamsString.split(",")
+        requestTeams = requestTeams[:-1] # remove last character (comma in this case)
+        requestWeek = request.GET.get("weekNum")
+        requestDate = request.GET.get("date")
+        print(requestTeams)
+
+        if(requestWeek is None and requestDate is not None):
+            requestDate = DataLoader.stringDateToDateObject(request.GET.get("date"))# yyyy-m-d
+            requestWeek = DataLoader.getWeekFromDate(requestDate)
+
+
+        for teamAcronym in requestTeams:
+            print(teamAcronym)
+            requestTeam = DataLoader.getTeamFromAcronym(teamAcronym.upper())
+            print(requestTeam)
+            numGamesRemaining = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek,date__gte=requestDate).count()
+            numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek).count()
+            fraction = str(numGamesRemaining) + "/" + str(numGames)
+            # the count of the games that have the requested team as
+            # either the home team OR road team and is in the requested week
+            
+            gameCountList.append(fraction)
+
+        
+        print(gameCountList)
+        #numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count() 
+        return Response(gameCountList)
    
-    def getNumberOfGames(self, teamAcronym, requestDate):
-        team = DataLoader.getTeamFromAcronym(teamAcronym)
-        date = DataLoader.stringDateToDateObject(requestDate)
-        week = DataLoader.getWeekFromDate(date)
-        remainingGames = Game.objects.filter(Q(homeTeam = team) | Q(roadTeam = team),week=week,date__gte=date)
-        gamesThisWeek = Game.objects.filter(Q(homeTeam = team) | Q(roadTeam = team),week=week).count()
-        gamesRemaining = remainingGames.count()
+    def getNumberOfGames(self, requestTeam, requestWeek, requestDate):
+        return Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek).count()
+    
+    def getNumberOfRemainingGames(self, teamAcronym, requestWeek, requestDate):
+        return Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek,date__gte=requestDate).count()
         
         # perform logic here to determine whether the game is over or not. ~3 hours after start date
         # if there is a game today AND current time is more than 3 hours after game time, subtract one from count
@@ -99,12 +123,15 @@ class GamesThisWeek(APIView):
         for teamAcronym in requestTeams:
             print(teamAcronym)
             requestTeam = DataLoader.getTeamFromAcronym(teamAcronym.upper())
+
+            # the count of the games that have the requested team as
+            # either the home team OR road team and is in the requested week
+
             numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count() 
             gameCountList.append(numGames)
 
         
-        # the count of the games that have the requested team as
-        # either the home team OR road team and is in the requested week
+        
         #numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count() 
         return Response(gameCountList)
 

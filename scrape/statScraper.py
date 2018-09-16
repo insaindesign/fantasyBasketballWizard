@@ -16,7 +16,7 @@ players_url = "https://basketball.fantasysports.yahoo.com/nba/23790/players?stat
 page = 0
 
 #load and init chromedriver
-chromedriver = "/Users/alexdoria/Downloads/chromedriver"
+chromedriver = "./chromedriver"
 os.environ["webdriver.chrome.driver"] = chromedriver
 
 driver = webdriver.Chrome(chromedriver)

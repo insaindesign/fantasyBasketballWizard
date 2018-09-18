@@ -172,18 +172,16 @@ setYourLineUpDateFormat = function( pMonth, pDate )
 */
 addGamesHeader = function()
 {
-    var getPlayerTableSectionHeader = document.getElementsByClassName( "playertableSectionHeader" );
-    for( var i = 0; i < getPlayerTableSectionHeader.length; i++ )
-    {
-        var newHeader = document.createElement( "th" );
-        var newSectionLeadingSpacer = document.createElement( "td" );
-        newHeader.innerHTML = "GAMES";
-        newHeader.colSpan = 1;
-        newSectionLeadingSpacer.className = "sectionLeadingSpacer";
-
-        getPlayerTableSectionHeader[i].appendChild( newSectionLeadingSpacer );
-        getPlayerTableSectionHeader[i].appendChild( newHeader );
-    }
+//    console.log( "addGamesHeader()" );
+    var listOfElements = document.getElementsByClassName( "Table2__header-row" );
+    var headerList = listOfElements[1];
+    
+    var newGamesHeader = document.createElement( "th" );
+    newGamesHeader.title = "GAMES";
+    newGamesHeader.colspan = 1;
+    newGamesHeader.className = "tc bg-clr-white Table2__th";
+    newGamesHeader.innerHTML = "GAMES";
+    headerList.appendChild( newGamesHeader );
 }
 
 /*
@@ -444,7 +442,15 @@ $('div' ).on( 'click', ' .playertablefiltersmenucontainer', function( event ) {
 
 /*
     Main load of calling render games when the document is ready.
+    Note: Have to wait a few seconds to load this dynamic page, otherwise it will not find any elements. 
 */
 $( document ).ready( function(){
-    renderGames();
+    // renderGames();
+    console.log( "TEST" );
+    console.log('before');
+    setTimeout(function(){
+        console.log('after');
+        addGamesHeader();
+    },5000);
+    
 });

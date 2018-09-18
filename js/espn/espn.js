@@ -185,22 +185,24 @@ addGamesHeader = function()
 }
 
 /*
-    addTotalSubheader - adds the 'TOTAL' subheader to the HTML of the page.
+    addWeekSubHeader - adds the 'WEEK' subheader to the HTML of the page.
 */
-addTotalSubheader = function()
+addWeekSubHeader = function()
 {
-    var getPlayerTableBgRowSubhead = document.getElementsByClassName( "playerTableBgRowSubhead" );
-    for( var i = 0; i < getPlayerTableBgRowSubhead.length; i++ )
-    {
-        var newSubHeader = document.createElement( "td" );
-        var newSectionLeadingSpacer = document.createElement( "td" );
-        newSubHeader.className = "playertableData";
-        newSubHeader.title = "Number of games for this week";
-        newSubHeader.innerHTML = "TOTAL";
-        newSectionLeadingSpacer.className = "sectionLeadingSpacer";
-        getPlayerTableBgRowSubhead[i].appendChild( newSectionLeadingSpacer );
-        getPlayerTableBgRowSubhead[i].appendChild( newSubHeader );
-    }
+    var listOfElements = document.getElementsByClassName( "Table2__header-row" );
+    var subHeaderList = listOfElements[2];
+    var newWeekSubHeaderTh = document.createElement( "th" );
+    var newWeekSubHeaderDiv = document.createElement( "div" );
+    var newWeekSubHeaderSpan = document.createElement( "span" );
+    
+    newWeekSubHeaderTh.className = "Table2__th";
+    newWeekSubHeaderDiv.title = "Week";
+    newWeekSubHeaderDiv.className = "jsx-2810852873 table--cell header";
+    newWeekSubHeaderSpan.innerHTML = "WEEK";
+    
+    newWeekSubHeaderDiv.appendChild( newWeekSubHeaderSpan );
+    newWeekSubHeaderTh.appendChild( newWeekSubHeaderDiv );
+    subHeaderList.appendChild( newWeekSubHeaderTh );
 }
 
 /*
@@ -451,6 +453,7 @@ $( document ).ready( function(){
     setTimeout(function(){
         console.log('after');
         addGamesHeader();
+        addWeekSubHeader();
     },5000);
     
 });

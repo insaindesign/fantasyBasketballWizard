@@ -172,11 +172,11 @@ setYourLineUpDateFormat = function( pMonth, pDate )
 */
 addGamesHeader = function()
 {
-//    console.log( "addGamesHeader()" );
+//    console.log( "addGamesHeader" );
     var listOfElements = document.getElementsByClassName( "Table2__header-row" );
     var headerList = listOfElements[1];
-    
     var newGamesHeader = document.createElement( "th" );
+    
     newGamesHeader.title = "GAMES";
     newGamesHeader.colspan = 1;
     newGamesHeader.className = "tc bg-clr-white Table2__th";

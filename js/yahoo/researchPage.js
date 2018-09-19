@@ -56,7 +56,7 @@ function newRenderGames() {
     }
     console.log(teamsString);
 
-    var date = new Date(); //"2019-1-7" must be in this format. we need to pull from the matchups screen to display number of games
+    //"2019-1-7" must be in this format. we need to pull from the matchups screen to display number of games
     var dateString = getFormattedDate();
     console.log("dateString = " + dateString);
     var url = 'https://bilalsattar24.pythonanywhere.com/gamesremaining/?'+teamsString+'&format=json&date='+dateString;
@@ -106,6 +106,7 @@ function addGames(data) {
         newCell = rows[i].insertCell(6);
         rows[i].cells[5].setAttribute("class", "Bdrend");
         newCell.style.border.color = borderColor;
+        newCell.style.textAlign = "center";
         newCell.style.backgroundColor = getColor(numGames);
         newCell.innerText = data[i-1];
     }

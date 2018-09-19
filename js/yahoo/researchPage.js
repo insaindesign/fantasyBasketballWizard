@@ -1,6 +1,9 @@
+//can also get from backend but damn, this is easier in this case lol
+//look through this array to find the team in the player info div
 Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"]
 
 //--------Colors-----------
+var noneColor = "#ff4d4d";
 var lowColor = "#ffffcc";
 var medColor = "#d8ffcc";
 var highColor = "#adebad";
@@ -9,14 +12,17 @@ var borderColor = "#e7e7e7";
 
 //determine color based on number of games
 function getColor(games){
-    if (games > 3){
+    var numGames = parseInt(games.split("/")[0], 10);
+    if (numGames > 3){
         return highColor;
-    } else if (games == 3){
+    } else if (numGames == 3){
         return medColor;
-    } else if (games == 2){
+    } else if (numGames == 2){
         return lowColor;
-    } else if (games == 1){
+    } else if (numGames == 1){
         return lowColor;
+    } else if (numGames == 0) {
+        return noneColor;
     } else {
         return whiteColor;
     }
@@ -43,18 +49,17 @@ function newRenderGames() {
                 console.log(playerInfo[j]);
                 var teamAcronym = playerInfo[j];
                 var rowNumber = i;
-                teamsString = teamsString + teamAcronym + ",";
+                teamsString += teamAcronym + ",";
                 break;
             }
         }
     }
     console.log(teamsString);
 
-   // var Http = new XMLHttpRequest();
     var date = new Date(); //"2019-1-7" must be in this format. we need to pull from the matchups screen to display number of games
-    var dateString = "2019-1-1";//getFormattedDate();
+    var dateString = getFormattedDate();
     console.log("dateString = " + dateString);
-    var url = 'https://bilalsattar24.pythonanywhere.com/gamesthisweek/?'+teamsString+'&format=json&date='+dateString;
+    var url = 'https://bilalsattar24.pythonanywhere.com/gamesremaining/?'+teamsString+'&format=json&date='+dateString;
     console.log("before request");
     fetch(url)
         .then(function(response){
@@ -77,11 +82,10 @@ function addGames(data) {
     var rows = table.rows;
     var gpHeader = document.createElement("th");
     var gpCell = table.rows[0].appendChild(gpHeader);
-    gpHeader.innerText = "G*";
     var gpTip = document.createElement("div");
     gpTip.setAttribute("style", "text-align: right; color: #757575");
     document.getElementById("Buzz Index Navigation").appendChild(gpTip);
-    gpHeader.innerText = "G*";
+    gpHeader.innerText = "Gr/G*";
     var playerInfo;
 
 
@@ -106,13 +110,13 @@ function addGames(data) {
         newCell.innerText = data[i-1];
     }
     gpCell.addEventListener("mouseover", function() {
-        gpTip.innerText="*Games this week";
+        gpTip.innerText="*Games remaining this week / Games this week";
     });
     gpCell.addEventListener("mouseout", function () {
         gpTip.innerText="";
     });
     gpTip.addEventListener("mouseover", function() {
-        gpTip.innerText="*Games this week";
+        gpTip.innerText="*Games remaining this week / Games this week";
     });
     gpTip.addEventListener("mouseout", function () {
         gpTip.innerText="";

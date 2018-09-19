@@ -102,6 +102,7 @@ to_csv = []
 while page < 300:
     
     driver.get(players_url + "&count=" + str(page))
+    time.sleep(.2)
 
     stats = driver.find_elements_by_xpath('//*[@class="players"]/*')
 

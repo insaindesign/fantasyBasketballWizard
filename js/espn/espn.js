@@ -172,37 +172,37 @@ setYourLineUpDateFormat = function( pMonth, pDate )
 */
 addGamesHeader = function()
 {
-    var getPlayerTableSectionHeader = document.getElementsByClassName( "playertableSectionHeader" );
-    for( var i = 0; i < getPlayerTableSectionHeader.length; i++ )
-    {
-        var newHeader = document.createElement( "th" );
-        var newSectionLeadingSpacer = document.createElement( "td" );
-        newHeader.innerHTML = "GAMES";
-        newHeader.colSpan = 1;
-        newSectionLeadingSpacer.className = "sectionLeadingSpacer";
-
-        getPlayerTableSectionHeader[i].appendChild( newSectionLeadingSpacer );
-        getPlayerTableSectionHeader[i].appendChild( newHeader );
-    }
+//    console.log( "addGamesHeader" );
+    var listOfElements = document.getElementsByClassName( "Table2__header-row" );
+    var headerList = listOfElements[1];
+    var newGamesHeader = document.createElement( "th" );
+    
+    newGamesHeader.title = "GAMES";
+    newGamesHeader.colspan = 1;
+    newGamesHeader.className = "tc bg-clr-white Table2__th";
+    newGamesHeader.innerHTML = "GAMES";
+    headerList.appendChild( newGamesHeader );
 }
 
 /*
-    addTotalSubheader - adds the 'TOTAL' subheader to the HTML of the page.
+    addWeekSubHeader - adds the 'WEEK' subheader to the HTML of the page.
 */
-addTotalSubheader = function()
+addWeekSubHeader = function()
 {
-    var getPlayerTableBgRowSubhead = document.getElementsByClassName( "playerTableBgRowSubhead" );
-    for( var i = 0; i < getPlayerTableBgRowSubhead.length; i++ )
-    {
-        var newSubHeader = document.createElement( "td" );
-        var newSectionLeadingSpacer = document.createElement( "td" );
-        newSubHeader.className = "playertableData";
-        newSubHeader.title = "Number of games for this week";
-        newSubHeader.innerHTML = "TOTAL";
-        newSectionLeadingSpacer.className = "sectionLeadingSpacer";
-        getPlayerTableBgRowSubhead[i].appendChild( newSectionLeadingSpacer );
-        getPlayerTableBgRowSubhead[i].appendChild( newSubHeader );
-    }
+    var listOfElements = document.getElementsByClassName( "Table2__header-row" );
+    var subHeaderList = listOfElements[2];
+    var newWeekSubHeaderTh = document.createElement( "th" );
+    var newWeekSubHeaderDiv = document.createElement( "div" );
+    var newWeekSubHeaderSpan = document.createElement( "span" );
+    
+    newWeekSubHeaderTh.className = "Table2__th";
+    newWeekSubHeaderDiv.title = "Week";
+    newWeekSubHeaderDiv.className = "jsx-2810852873 table--cell header";
+    newWeekSubHeaderSpan.innerHTML = "WEEK";
+    
+    newWeekSubHeaderDiv.appendChild( newWeekSubHeaderSpan );
+    newWeekSubHeaderTh.appendChild( newWeekSubHeaderDiv );
+    subHeaderList.appendChild( newWeekSubHeaderTh );
 }
 
 /*
@@ -444,7 +444,16 @@ $('div' ).on( 'click', ' .playertablefiltersmenucontainer', function( event ) {
 
 /*
     Main load of calling render games when the document is ready.
+    Note: Have to wait a few seconds to load this dynamic page, otherwise it will not find any elements. 
 */
 $( document ).ready( function(){
-    renderGames();
+    // renderGames();
+    console.log( "TEST" );
+    console.log('before');
+    setTimeout(function(){
+        console.log('after');
+        addGamesHeader();
+        addWeekSubHeader();
+    },5000);
+    
 });

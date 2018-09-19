@@ -19,7 +19,7 @@ class DataLoader:
         Team(city="Dallas", name="Mavericks", acronym="DAL").save()
         Team(city="Denver", name="Nuggets", acronym="DEN").save()
         Team(city="Detroit", name="Pistons", acronym="DET").save()
-        Team(city="Golden State", name="Warriors", acronym="GSW").save()
+        Team(city="Golden State", name="Warriors", acronym="GS").save()
         Team(city="Houston", name="Rockets", acronym="HOU").save()
         Team(city="Indiana", name="Pacers", acronym="IND").save()
         Team(city="Los Angeles", name="Clippers", acronym="LAC").save()
@@ -127,3 +127,4 @@ class DataLoader:
     def getTeamFromAcronym(teamAcronym):
         """returns team object from an acronym string"""
         return Team.objects.get(acronym=teamAcronym)
+    

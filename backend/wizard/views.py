@@ -36,7 +36,7 @@ class GamesRemaining(APIView):
 
         requestDate = DataLoader.stringDateToDateObject(request.GET.get("date"))# yyyy-m-d
         if seasonStartDate > requestDate:
-            print("pre season - no gaemes")
+            print("pre season - no games")
             for teamAcronym in requestTeams:
                 gameCountList.append("0/0")
             return Response(gameCountList)

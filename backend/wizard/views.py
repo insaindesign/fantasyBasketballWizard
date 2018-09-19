@@ -20,27 +20,32 @@ class TestView(APIView):
         return Response(serializer.data)
 
 class GamesRemaining(APIView):
-    
-    # gets called on a get request to this class. 
+
+    # gets called on a get request to this class.
     def get(self, request):
+        seasonStartDate = datetime.date(2018, 10, 15)
         gameCountList = []
         # get the requested team and week objects from the database
         requestTeamsString = request.GET.get("teams")
         requestTeams = requestTeamsString.split(",")
         requestTeams = requestTeams[:-1] # remove last character (comma in this case)
         requestWeek = request.GET.get("weekNum")
-        requestDate = request.GET.get("date")
+        date = request.GET.get("date")
+        print("Request: Games Remaining as of " + date)
         print(requestTeams)
 
-        if(requestWeek is None and requestDate is not None):
-            requestDate = DataLoader.stringDateToDateObject(request.GET.get("date"))# yyyy-m-d
-            requestWeek = DataLoader.getWeekFromDate(requestDate)
+        requestDate = DataLoader.stringDateToDateObject(request.GET.get("date"))# yyyy-m-d
+        if seasonStartDate > requestDate:
+            print("pre season - no gaemes")
+            for teamAcronym in requestTeams:
+                gameCountList.append("0/0")
+            return Response(gameCountList)
+
+        requestWeek = DataLoader.getWeekFromDate(date)
 
 
         for teamAcronym in requestTeams:
-            print(teamAcronym)
             requestTeam = DataLoader.getTeamFromAcronym(teamAcronym.upper())
-            print(requestTeam)
             numGamesRemaining = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek,date__gte=requestDate).count()
             numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek).count()
             fraction = str(numGamesRemaining) + "/" + str(numGames)
@@ -49,10 +54,12 @@ class GamesRemaining(APIView):
             
             gameCountList.append(fraction)
 
-        
+
+        print("Response for Games Remaining")
         print(gameCountList)
-        #numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count() 
+        #numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count()
         return Response(gameCountList)
+
    
     def getNumberOfGames(self, requestTeam, requestWeek, requestDate):
         return Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek).count()
@@ -97,7 +104,14 @@ class TotalGamesToday(APIView):
         games = Game.objects.filter(date=gameDate).count()
         return Response(games)
 
-
+class AddUse(APIView):
+    def get(self, request):
+        requestUseType = request.GET.get("useType")
+        print(requestUseType)
+        useType=YahooUseType.objects.get(pageName=requestUseType)
+        yahooUser=YahooUser.objects.get(email="kobebryant5@yahoo.com")
+        YahooUse(useType=useType,user=yahooUser).save()
+        return Response("saved successfully")
 class GetPlayerStats(APIView):
     def get(self, request):
         yahooPlayerID = request.GET.get("yahooPlayerID")

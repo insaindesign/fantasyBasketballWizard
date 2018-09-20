@@ -31,7 +31,7 @@ class GamesRemaining(APIView):
         requestTeams = requestTeams[:-1] # remove last character (comma in this case)
         requestWeek = request.GET.get("weekNum")
         date = request.GET.get("date")
-        print("Request: Games Remaining as of " + date)
+        print("\nRequest: Games Remaining as of " + date)
         print(requestTeams)
 
         requestDate = DataLoader.stringDateToDateObject(request.GET.get("date"))# yyyy-m-d
@@ -39,6 +39,8 @@ class GamesRemaining(APIView):
             print("pre season - no games")
             for teamAcronym in requestTeams:
                 gameCountList.append("0/0")
+            print("Response for Games Remaining")
+            print(gameCountList)
             return Response(gameCountList)
 
         requestWeek = DataLoader.getWeekFromDate(date)
@@ -46,7 +48,11 @@ class GamesRemaining(APIView):
 
         for teamAcronym in requestTeams:
             requestTeam = DataLoader.getTeamFromAcronym(teamAcronym.upper())
-            numGamesRemaining = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek,date__gte=requestDate).count()
+            gamesRemaining = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek,date__gte=requestDate)
+            numGamesRemaining = gamesRemaining.count()
+            if(self.isTodaysGameOver(gamesRemaining, requestDate) == True):
+                print("Today's game for " + teamAcronym + " is over")
+                numGamesRemaining = numGamesRemaining - 1
             numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek).count()
             fraction = str(numGamesRemaining) + "/" + str(numGames)
             # the count of the games that have the requested team as
@@ -61,6 +67,25 @@ class GamesRemaining(APIView):
         return Response(gameCountList)
 
    
+    def isTodaysGameOver(self, gamesRemaining, requestDate):
+        #get nowtime
+        now = datetime.datetime.now().astimezone(pytz.timezone('US/Eastern'))
+        #get todays game
+        todaysGameQuery = gamesRemaining.filter(date=requestDate)
+        if todaysGameQuery.count() < 1:
+            return False
+        todaysGame = todaysGameQuery[0]
+        gameTime = todaysGame.time
+        gameDate = todaysGame.date
+        gameDateTime = datetime.datetime(gameDate.year, gameDate.month, gameDate.day, gameTime.hour, gameTime.minute, tzinfo=pytz.timezone('US/Eastern'))
+        #now = datetime.datetime(gameDate.year, gameDate.month, gameDate.day+1, 1, 8, tzinfo=pytz.timezone('US/Eastern'))
+        threeHours = datetime.timedelta(hours=3)
+        gameEndTime = gameDateTime + threeHours
+        if now > gameEndTime:
+            return True
+        else:
+            return False
+
     def getNumberOfGames(self, requestTeam, requestWeek, requestDate):
         return Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek).count()
     

@@ -199,19 +199,17 @@ addGamesWeekHeaders = function()
     }
 }
 
-function getTeamNames()
+function buildTeamsRequestString()
 {
-    console.log( "getTeamNames()" );
+    console.log( "buildTeamsRequestString()" );
     var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );
-    // Maybe use a queue because there's a lot of elements
-    var listOfTeamNames = [];
-
-    console.log( listOfElements.length );
+    var teamsRequestString = "teams=";
+    
     for( var i = 0; i < listOfElements.length; i++ )
     {
-        listOfTeamNames.push( listOfElements[i].innerHTML );
+        teamsRequestString += acronymEspnToYahoo[listOfElements[i].innerHTML] + ",";
     }
-    return listOfTeamNames;
+    return teamsRequestString;
 }
 
 function getSelectedDate()
@@ -227,18 +225,9 @@ function getSelectedDate()
 function requestDataFromServer()
 {
     console.log( "requestDataFromServer()" );
-    var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );
 
-    var teamsRequestString = "teams=";
-    console.log( listOfElements.length );
-    for( var i = 0; i < listOfElements.length; i++ )
-    {
-        teamsRequestString += acronymEspnToYahoo[listOfElements[i].innerHTML] + ",";
-    }
-    console.log( teamsRequestString );
-
+    var teamsRequestString = buildTeamsRequestString();
     var dateString = "2018-10-16";
-
     var url = 'https://bilalsattar24.pythonanywhere.com/gamesremaining/?'+teamsRequestString+'&format=json&date='+dateString;
 
     fetch(url)
@@ -260,6 +249,8 @@ function addGamesForPlayers( data )
     console.log( "addGamesForPlayers()" );
     var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
     var index = 0;
+    var totalGamesRemaining = 0;
+    var totalGamesForWeek = 0;
 
     for( var i = 0; i < listOfElements.length; i++ )
     {
@@ -274,17 +265,21 @@ function addGamesForPlayers( data )
             if( listOfElementsTr.innerHTML.indexOf( ">TOTALS</div>" ) != -1 )
             {
                 // Logic for total games, convert string to int then back to string
-                console.log( "$$$$$$$found TOTALS" );
-                newGamesDiv.innerHTML = "20/20";
+                var totalGamesString = totalGamesRemaining.toString() + "/" + totalGamesForWeek.toString();
+                newGamesDiv.innerHTML = totalGamesString;
                 newGamesTd.className += " bg-clr-gray-08";
                 newGamesDiv.className += " bg-clr-gray-08";
             }
+            // Normal player
             else if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
             {
-                newGamesDiv.innerHTML = "3/3";
-
-                console.log( teamNames[teamNamesIndex++] );
-                
+                newGamesDiv.innerHTML = data[index];
+                var splitDataIndex = data[index].split( "/" );
+                console.log("splitDataIndex:" + splitDataIndex[0] + ", " + splitDataIndex[1] );
+                totalGamesRemaining += parseInt( splitDataIndex[0] );
+                totalGamesForWeek += parseInt( splitDataIndex[1] ); 
+                console.log( totalGamesRemaining + " -- " + totalGamesForWeek );
+                index++;
             }
             // Empty player
             else

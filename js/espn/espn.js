@@ -319,14 +319,14 @@ myTeamRoster = function()
     previousDateOnHtml = newDateOnHtml;
 }
 
-if( pageType == "Roster")
-{
-    var previousDateOn = document.getElementsByClassName( "date-on" );
-    var previousDateOnHtml = previousDateOn[0].innerHTML;
-    var initialLoad = true;
-    var dateRanges = false;
-    var dailyLockLeague = false;
-}
+//if( pageType == "Roster")
+//{
+//    var previousDateOn = document.getElementsByClassName( "date-on" );
+//    var previousDateOnHtml = previousDateOn[0].innerHTML;
+//    var initialLoad = true;
+//    var dateRanges = false;
+//    var dailyLockLeague = false;
+//}
 
 /*
     renderGames - the main function containing the logic to add:

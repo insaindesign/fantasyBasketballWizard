@@ -99,6 +99,11 @@ getBackgroundColor = function( games )
     {
         return "#ffd6cc";
     }
+    // Injured players
+    else if( games == 0 )
+    {
+        return "#ff7777";
+    }
 }
 
 /* 
@@ -268,9 +273,13 @@ function addGamesForPlayers( data )
             var newGamesDiv = document.createElement( "div" );
             newGamesTd.className = "Table2__td Table2__td--fixed-width";
             newGamesDiv.className = "jsx-2810852873 table--cell";
-            if( listOfElementsTr.innerHTML.indexOf( ">TOTALS</div>" ) != -1 )
+
+            var isInjured = false;
+            if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
             {
-                // Logic for total games, convert string to int then back to string
+                isInjured = true;
+            }
+            if( listOfElementsTr.innerHTML.indexOf( ">TOTALS</div>" ) != -1 )
                 var totalGamesString = totalGamesRemaining.toString() + "/" + totalGamesForWeek.toString();
                 newGamesDiv.innerHTML = totalGamesString;
                 newGamesTd.className += " bg-clr-gray-08";
@@ -279,12 +288,19 @@ function addGamesForPlayers( data )
             // Normal player
             else if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
             {
-                newGamesDiv.innerHTML = data[index];
-                var splitDataIndex = data[index].split( "/" );
-                console.log("splitDataIndex:" + splitDataIndex[0] + ", " + splitDataIndex[1] );
-                totalGamesRemaining += parseInt( splitDataIndex[0] );
-                totalGamesForWeek += parseInt( splitDataIndex[1] ); 
-                console.log( totalGamesRemaining + " -- " + totalGamesForWeek );
+                if( !isInjured )
+                {
+                    newGamesDiv.innerHTML = data[index];
+                    var splitDataIndex = data[index].split( "/" );
+                    totalGamesRemaining += parseInt( splitDataIndex[0] );
+                    totalGamesForWeek += parseInt( splitDataIndex[1] );
+                    newGamesTd.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
+                }
+                else
+                {
+                    newGamesDiv.innerHTML = "-/-";
+                    newGamesTd.style.backgroundColor = getBackgroundColor( 0 );
+                }
                 index++;
             }
             // Empty player

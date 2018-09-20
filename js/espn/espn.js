@@ -199,7 +199,7 @@ addGamesWeekHeaders = function()
     }
 }
 
-getTeamNames = function()
+function getTeamNames()
 {
     console.log( "getTeamNames()" );
     var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );

@@ -76,22 +76,28 @@ if( gamesOnElements.length == 2 )
 }
 
 /* 
-    getBackgroundColor - returns the background color associated with
-    the number of games.
+    getBackgroundColor - returns the background color
+    associated with the number of games.
 
     games - The number of games
 */
-getBackgroundColor = function( games ){
-    if (games > 3){
+getBackgroundColor = function( games )
+{
+    if( games > 3 )
+    {
         return "#adebad";
-    } else if (games == 3){
+    }
+    else if( games == 3 )
+    {
         return "#d8ffcc";
-    } else if (games == 2){
+    }
+    else if( games == 2 )
+    {
         return "#ffffcc";
-    } else if (games == 1){
+    }
+    else if( games == 1 )
+    {
         return "#ffd6cc";
-    } else {
-        return "white";
     }
 }
 

@@ -168,42 +168,94 @@ setYourLineUpDateFormat = function( pMonth, pDate )
 }
 
 /*
-    addGamesHeader - adds the 'GAMES' header to the HTML of the page.
+    addGamesWeekHeaders - adds the 'GAMES' and 'WEEK' headers to the HTML of the page.
 */
-addGamesHeader = function()
+addGamesWeekHeaders = function()
 {
-//    console.log( "addGamesHeader" );
+    console.log( "addGamesWeekHeaders()" );
+    // Maybe loop through these elements and if innerHTML contains STATUS then append
     var listOfElements = document.getElementsByClassName( "Table2__header-row" );
-    var headerList = listOfElements[1];
-    var newGamesHeader = document.createElement( "th" );
-    
-    newGamesHeader.title = "GAMES";
-    newGamesHeader.colspan = 1;
-    newGamesHeader.className = "tc bg-clr-white Table2__th";
-    newGamesHeader.innerHTML = "GAMES";
-    headerList.appendChild( newGamesHeader );
+
+    for( var i = 0; i < listOfElements.length; i++ )
+    {
+        if( listOfElements[i].innerHTML.indexOf( "STARTERS" ) != -1 )
+        {
+            var newGamesHeader = document.createElement( "th" );
+            newGamesHeader.title = "GAMES";
+            newGamesHeader.colSpan = "1";
+            newGamesHeader.className = "tc bg-clr-white Table2__th";
+            newGamesHeader.innerHTML = "GAMES";
+            listOfElements[i].appendChild( newGamesHeader );
+        }
+        else if( listOfElements[i].innerHTML.indexOf( "STATUS" ) != -1 )
+        {
+            var newGamesHeader = document.createElement( "th" );
+            newGamesHeader.title = "WEEK";
+            newGamesHeader.colSpan = "1";
+            newGamesHeader.className = "tc bg-clr-white Table2__th";
+            newGamesHeader.innerHTML = "WEEK";
+            listOfElements[i].appendChild( newGamesHeader );
+        }
+    }
 }
 
-/*
-    addWeekSubHeader - adds the 'WEEK' subheader to the HTML of the page.
-*/
-addWeekSubHeader = function()
+function getTeamNames()
 {
-    var listOfElements = document.getElementsByClassName( "Table2__header-row" );
-    var subHeaderList = listOfElements[2];
-    var newWeekSubHeaderTh = document.createElement( "th" );
-    var newWeekSubHeaderDiv = document.createElement( "div" );
-    var newWeekSubHeaderSpan = document.createElement( "span" );
-    
-    newWeekSubHeaderTh.className = "Table2__th";
-    newWeekSubHeaderDiv.title = "Week";
-    newWeekSubHeaderDiv.className = "jsx-2810852873 table--cell header";
-    newWeekSubHeaderSpan.innerHTML = "WEEK";
-    
-    newWeekSubHeaderDiv.appendChild( newWeekSubHeaderSpan );
-    newWeekSubHeaderTh.appendChild( newWeekSubHeaderDiv );
-    subHeaderList.appendChild( newWeekSubHeaderTh );
+    console.log( "getTeamNames()" );
+    var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );
+    // Maybe use a queue because there's a lot of elements
+    var listOfTeamNames = [];
+
+    console.log( listOfElements.length );
+    for( var i = 0; i < listOfElements.length; i++ )
+    {
+        listOfTeamNames.push( listOfElements[i].innerHTML );
+    }
+    return listOfTeamNames;
 }
+
+NEWaddGamesForPlayers = function()
+{
+    console.log( "NEWaddGamesForPlayers()" );
+    var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
+    var teamNames = getTeamNames();
+    var teamNamesIndex = 0;
+    for( var i = 0; i < listOfElements.length; i++ )
+    {
+        var listOfElementsTr = listOfElements[i];
+
+        if( listOfElementsTr.children.length == 5 )
+        {
+            var newGamesTd = document.createElement( "td" );
+            var newGamesDiv = document.createElement( "div" );
+            newGamesTd.className = "Table2__td Table2__td--fixed-width";
+            newGamesDiv.className = "jsx-2810852873 table--cell";
+            if( listOfElementsTr.innerHTML.indexOf( ">TOTALS</div>" ) != -1 )
+            {
+                // Logic for total games, convert string to int then back to string
+                console.log( "$$$$$$$found TOTALS" );
+                newGamesDiv.innerHTML = "20/20";
+                newGamesTd.className += " bg-clr-gray-08";
+                newGamesDiv.className += " bg-clr-gray-08";
+            }
+            else if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
+            {
+                newGamesDiv.innerHTML = "3/3";
+
+                console.log( teamNames[teamNamesIndex++] );
+                
+            }
+            // Empty player
+            else
+            {
+                newGamesDiv.innerHTML = "-/-";    
+            }
+            newGamesTd.appendChild( newGamesDiv );
+            listOfElementsTr.appendChild( newGamesTd );
+        }
+    }
+}
+
 
 /*
     addGamesForPlayers - adds the number of games for the week for a player.

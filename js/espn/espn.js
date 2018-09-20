@@ -211,33 +211,47 @@ function getTeamNames()
     {
         listOfTeamNames.push( listOfElements[i].innerHTML );
     }
+    return listOfTeamNames;
 }
 
 NEWaddGamesForPlayers = function()
 {
     console.log( "NEWaddGamesForPlayers()" );
-    var listOfElements2 = document.getElementsByClassName( "Table2__tr--lg" );
-    // console.log( "listOfElements2.length=" + listOfElements2.length );
-    // MAybe some smart math with the number of players that give playerteam 13 from getTeamNames
-    // and dividing it to get the indices, but a bit complicated, looking for an easier solution
-    for( var i = 0; i < listOfElements2.length; i++ )
+    var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
+    var teamNames = getTeamNames();
+    var teamNamesIndex = 0;
+    for( var i = 0; i < listOfElements.length; i++ )
     {
-        // console.log( "listOfElements2[i]" );
-        // console.log( listOfElements2[i] );
-        var list3 = listOfElements2[i];
-        // console.log( list3 );
-        // console.log( "list3.children.length=" + list3.children.length );
-        var list3children = list3.children;
-        // We want the TR's with children length 5
-        if( list3.children.length == 5 )
+        var listOfElementsTr = listOfElements[i];
+
+        if( listOfElementsTr.children.length == 5 )
         {
             var newGamesTd = document.createElement( "td" );
             var newGamesDiv = document.createElement( "div" );
             newGamesTd.className = "Table2__td Table2__td--fixed-width";
             newGamesDiv.className = "jsx-2810852873 table--cell";
-            newGamesDiv.innerHTML = "3/3";
+            if( listOfElementsTr.innerHTML.indexOf( ">TOTALS</div>" ) != -1 )
+            {
+                // Logic for total games, convert string to int then back to string
+                console.log( "$$$$$$$found TOTALS" );
+                newGamesDiv.innerHTML = "20/20";
+                newGamesTd.className += " bg-clr-gray-08";
+                newGamesDiv.className += " bg-clr-gray-08";
+            }
+            else if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
+            {
+                newGamesDiv.innerHTML = "3/3";
+
+                console.log( teamNames[teamNamesIndex++] );
+                
+            }
+            // Empty player
+            else
+            {
+                newGamesDiv.innerHTML = "-/-";    
+            }
             newGamesTd.appendChild( newGamesDiv );
-            list3.appendChild( newGamesTd );
+            listOfElementsTr.appendChild( newGamesTd );
         }
     }
 }

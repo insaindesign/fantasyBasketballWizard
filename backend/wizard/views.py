@@ -20,22 +20,26 @@ class TestView(APIView):
         return Response(serializer.data)
 
 class GamesRemaining(APIView):
-
+    """
+        Returns all gamesRemaining/GamesThisWeek for the given team and date. 
+        /?teams=LAL,OKC,GSW,BOS,&date=2019-1-1&format=json
+    """
     # gets called on a get request to this class.
     def get(self, request):
-        seasonStartDate = datetime.date(2018, 10, 15)
+        dayBeforeSeasonStartDate = datetime.date(2018, 10, 15)
         gameCountList = []
         # get the requested team and week objects from the database
         requestTeamsString = request.GET.get("teams")
-        requestTeams = requestTeamsString.split(",")
-        requestTeams = requestTeams[:-1] # remove last character (comma in this case)
+        requestTeams = self.getCleanedTeamsString(requestTeamsString)
+        
+        
         requestWeek = request.GET.get("weekNum")
         date = request.GET.get("date")
         print("\nRequest: Games Remaining as of " + date)
         print(requestTeams)
 
         requestDate = DataLoader.stringDateToDateObject(request.GET.get("date"))# yyyy-m-d
-        if seasonStartDate > requestDate:
+        if dayBeforeSeasonStartDate > requestDate:
             print("pre season - no games")
             for teamAcronym in requestTeams:
                 gameCountList.append("0/0")
@@ -47,7 +51,7 @@ class GamesRemaining(APIView):
 
 
         for teamAcronym in requestTeams:
-            requestTeam = DataLoader.getTeamFromAcronym(teamAcronym.upper())
+            requestTeam = DataLoader.getTeamFromAcronym(teamAcronym)
             gamesRemaining = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek,date__gte=requestDate)
             numGamesRemaining = gamesRemaining.count()
             if(self.isTodaysGameOver(gamesRemaining, requestDate) == True):
@@ -85,38 +89,21 @@ class GamesRemaining(APIView):
             return True
         else:
             return False
+    def getCleanedTeamsString(self, teamsString):
+        teamsString = teamsString[:-1].upper() # remove last character (comma in this case)
+
+        # espn has a few dumbass acronyms
+        teamsString = teamsString.replace("WSH","WAS")
+        teamsString = teamsString.replace("NOR","NO")
+        teamsString = teamsString.replace("UTAH","UTA")
+        teamsString = teamsString.replace("PHX","PHO")
+        return teamsString.split(",")
 
     def getNumberOfGames(self, requestTeam, requestWeek, requestDate):
         return Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek).count()
     
     def getNumberOfRemainingGames(self, teamAcronym, requestWeek, requestDate):
         return Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek,date__gte=requestDate).count()
-        
-        # perform logic here to determine whether the game is over or not. ~3 hours after start date
-        # if there is a game today AND current time is more than 3 hours after game time, subtract one from count
-        
-        #get nowtime in Eastern timezone
-        #add 3 hours to game time (already in eastern)
-        # if now is after (gametime + 3 hours) then the game is over and subtract 1 from count
-        # else
-        # return count
-        
-        #gameToday = False
-        #for game in remainingGames:
-        #    if game.date = date and :
-                
-        #EasternTimeNow = datetime.datetime.now()
-        #pacificTimeZone = pytz.timezone('US/Pacific-New')
-
-        #EasternTimeNow = pacificTimeZone.localize(pacificTimeZone)
-        
-
-        
-        
-
-        
-        #return str(gamesRemaining) + "/" + str(gamesThisWeek)
-        return gamesRemaining
 
 class AllTeams(APIView):
     def get(self, request):

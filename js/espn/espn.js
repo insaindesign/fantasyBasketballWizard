@@ -545,10 +545,12 @@ renderGames = function()
 {
     console.log("Fantasy Wizard rendering...");
 
-    if( pageType == "Roster" )
-    {
-        myTeamRoster();
-    }
+    // if( pageType == "Roster" )
+    // {
+    //     myTeamRoster();
+    // }
+    addGamesWeekHeaders();
+    requestDataFromServer();
 }
 
 var refreshSleepTime = 700;
@@ -599,8 +601,7 @@ $( document ).ready( function(){
     console.log('before');
     setTimeout(function(){
         console.log('after');
-        addGamesHeader();
-        addWeekSubHeader();
+        renderGames();
     },5000);
     
 });

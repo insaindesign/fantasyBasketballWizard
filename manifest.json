@@ -23,6 +23,10 @@
     {
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/buzzindex*"],
       "js": ["js/yahoo/transactionTrendsPage.js"]
+    },
+    {
+      "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/matchup*"],
+      "js": ["js/yahoo/matchupsPage.js"]
     }
   ],
   "permissions": [

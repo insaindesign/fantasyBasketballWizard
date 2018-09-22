@@ -233,6 +233,8 @@ addGamesWeekHeaders = function()
     }
 }
 
+var localGamesDataDict = {};
+
 function buildTeamsRequestString()
 {
     console.log( "buildTeamsRequestString()" );
@@ -276,22 +278,50 @@ function requestDataFromServer()
             return;
         }
         response.json().then(function(data) {
-            addGamesForPlayers( data );
+            addGamesDataToLocalDictionary( data, teamsRequestString );
+            // addGamesForPlayers( data );
+            addGamesForPlayers();
         });
     }).catch(function(err) {
         console.log('Fetch Error :-S', err);
     });
 }
 
+function addGamesDataToLocalDictionary( data, teamsRequestString )
+{
+    console.log( "addDataToLocalDictionary()" );
+    // console.log( data );
+    // console.log( teamsRequestString );
+    var teamsRequestStringConcise = teamsRequestString.substring( 6, teamsRequestString.length-1 );
+    var teamsList = teamsRequestStringConcise.split( "," );
+    // console.log( teamsList );
+    for( var i = 0; i < data.length; i++ )
+    {
+        if( !( teamsList[i] in localGamesDataDict ) )
+        {
+            // console.log( "OG team - " + teamsList[i]);
+            localGamesDataDict[teamsList[i]] = data[i];
+        }
+        // else
+        // {
+        //     console.log( "Duplicate team - " + teamsList[i]);
+        // }
+    }
+    // console.log( localGamesDataDict );
+}
+
 var initialRender = false;
 
-function addGamesForPlayers( data )
+function addGamesForPlayers( )
 {
     console.log( "addGamesForPlayers()" );
 
     var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
     var totalGamesRemaining = 0;
     var totalGamesForWeek = 0;
+
+    var listOfTeamNameElements = document.getElementsByClassName( "playerinfo__playerteam" );
+    var listOfTeamNameElementsIndex = 0;
 
     if( initialRender == false )
     {
@@ -332,8 +362,11 @@ function addGamesForPlayers( data )
                     if( !isInjured )
                     {
                         // console.log( "adding games/games" );
-                        newGamesDiv.innerHTML = data[index];
-                        var splitDataIndex = data[index].split( "/" );
+                        // newGamesDiv.innerHTML = data[index];
+                        var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                        // console.log( "localGamesDataDict[listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML]=" + localGamesDataDict[teamName] );
+                        newGamesDiv.innerHTML = localGamesDataDict[teamName];
+                        var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                         totalGamesRemaining += parseInt( splitDataIndex[0] );
                         totalGamesForWeek += parseInt( splitDataIndex[1] );
                         newGamesTd.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
@@ -343,7 +376,8 @@ function addGamesForPlayers( data )
                         newGamesDiv.innerHTML = "-/-";
                         newGamesTd.style.backgroundColor = getBackgroundColor( 0 );
                     }
-                    index++;
+                    // index++;
+                    listOfTeamNameElementsIndex++;
                 }
                 // Empty player
                 else
@@ -401,8 +435,10 @@ function addGamesForPlayers( data )
                     // Healthy player 
                     if( !isInjured )
                     {
-                        listOfGamesDiv[listOfGamesIndex].innerHTML = data[backendIndex];
-                        var splitDataIndex = data[backendIndex].split( "/" );
+                        var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                        listOfGamesDiv[listOfGamesIndex].innerHTML = localGamesDataDict[teamName];
+                        // listOfGamesDiv[listOfGamesIndex].innerHTML = data[backendIndex];
+                        var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                         totalGamesRemaining += parseInt( splitDataIndex[0] );
                         totalGamesForWeek += parseInt( splitDataIndex[1] );
                         listOfGamesTd[listOfGamesIndex].style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
@@ -414,6 +450,7 @@ function addGamesForPlayers( data )
                         listOfGamesTd[listOfGamesIndex].style.backgroundColor = getBackgroundColor( 0 );
                     }
                     backendIndex++;
+                    listOfTeamNameElementsIndex++;
                 }
                 // Empty player
                 else

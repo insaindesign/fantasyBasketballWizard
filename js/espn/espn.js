@@ -66,14 +66,37 @@ Schedule["Tor"]  =  TorontoRaptors;
 Schedule["Utah"] =  UtahJazz;
 Schedule["Wsh"]  =  WashingtonWizards;
 
-var gamesOnElements = document.getElementsByClassName( "games-on" );
-var pageType = gamesOnElements[0].innerText;
-var gamesOnSubheader = "";
-
-if( gamesOnElements.length == 2 )
-{
-    pageType = gamesOnElements[1].innerText;
-}
+var acronymEspnToYahoo = {};
+acronymEspnToYahoo["Atl"]  =  "Atl";
+acronymEspnToYahoo["Bos"]  =  "Bos";
+acronymEspnToYahoo["Bkn"]  =  "Bkn";
+acronymEspnToYahoo["Cha"]  =  "Cha";
+acronymEspnToYahoo["Chi"]  =  "Chi";
+acronymEspnToYahoo["Cle"]  =  "Cle";
+acronymEspnToYahoo["Dal"]  =  "Dal";
+acronymEspnToYahoo["Den"]  =  "Den";
+acronymEspnToYahoo["Det"]  =  "Det";
+acronymEspnToYahoo["GS"]   =  "GS";
+acronymEspnToYahoo["Hou"]  =  "Hou";
+acronymEspnToYahoo["Ind"]  =  "Ind";
+acronymEspnToYahoo["LAC"]  =  "LAC";
+acronymEspnToYahoo["LAL"]  =  "LAL";
+acronymEspnToYahoo["Mem"]  =  "Mem";
+acronymEspnToYahoo["Mia"]  =  "Mia";
+acronymEspnToYahoo["Mil"]  =  "Mil";
+acronymEspnToYahoo["Min"]  =  "Min";
+acronymEspnToYahoo["Nor"]  =  "NO";
+acronymEspnToYahoo["NY"]   =  "NY";
+acronymEspnToYahoo["OKC"]  =  "OKC";
+acronymEspnToYahoo["Orl"]  =  "Orl";
+acronymEspnToYahoo["Phi"]  =  "Phi";
+acronymEspnToYahoo["Phx"]  =  "Pho";
+acronymEspnToYahoo["Por"]  =  "Por";
+acronymEspnToYahoo["Sac"]  =  "Sac";
+acronymEspnToYahoo["SA"]   =  "SA";
+acronymEspnToYahoo["Tor"]  =  "Tor";
+acronymEspnToYahoo["Utah"] =  "Uta";
+acronymEspnToYahoo["Wsh"]  =  "Was";
 
 /* 
     getBackgroundColor - returns the background color

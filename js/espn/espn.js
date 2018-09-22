@@ -256,13 +256,18 @@ function getSelectedDate()
     console.log( "currentDate.innerHTML=" + currentDate.innerHTML );
 }
 
+
+
 function requestDataFromServer()
 {
     console.log( "requestDataFromServer()" );
 
     var teamsRequestString = buildTeamsRequestString();
+    console.log( "teamsRequestString=" + teamsRequestString );
     var dateString = "2018-10-16";
-    var url = 'https://bilalsattar24.pythonanywhere.com/gamesremaining/?'+teamsRequestString+'&format=json&date='+dateString;
+    // var url = 'https://bilalsattar24.pythonanywhere.com/gamesremaining/?'+teamsRequestString+'&format=json&date='+dateString;
+    var url = "http://www.fantasywizard.site/gamesremaining/?" + teamsRequestString + "&format=json&date=" + dateString;
+    console.log( url );
 
     fetch(url)
         .then(function(response){

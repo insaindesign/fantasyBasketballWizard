@@ -47,7 +47,8 @@ class GamesRemaining(APIView):
             print(gameCountList)
             return Response(gameCountList)
 
-        requestWeek = DataLoader.getWeekFromDate(date)
+        #if requestWeek == None:
+        #    requestWeek = DataLoader.getWeekFromDate(date)
 
 
         for teamAcronym in requestTeams:
@@ -112,6 +113,9 @@ class AllTeams(APIView):
 class TotalGamesToday(APIView):
     def get(self, request):
         requestDate = request.GET.get("date")
+        requestWeek = request.GET.get("weekNum")
+        if requestDate == None:
+            requestDate= str(Week.objects.get(weekNum=requestWeek).startDate)
         gameDate = DataLoader.stringDateToDateObject(requestDate)
         games = Game.objects.filter(date=gameDate).count()
         return Response(games)

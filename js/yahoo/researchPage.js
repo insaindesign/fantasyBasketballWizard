@@ -3,7 +3,7 @@
 Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"]
 
 //--------Colors-----------
-var noneColor = "#ff4d4d";
+var noneColor = "#56d2ff";
 var lowColor = "#ffffcc";
 var medColor = "#d8ffcc";
 var highColor = "#adebad";
@@ -34,7 +34,7 @@ function getFormattedDate() {
 }
 
 
-function newRenderGames() {
+function renderGames() {
     
     var table = document.getElementById("buzzindextable"); 
     var players = [];
@@ -59,7 +59,7 @@ function newRenderGames() {
     //"2019-1-7" must be in this format. we need to pull from the matchups screen to display number of games
     var dateString = getFormattedDate();
     console.log("dateString = " + dateString);
-    var url = 'https://bilalsattar24.pythonanywhere.com/gamesremaining/?'+teamsString+'&format=json&date='+dateString;
+    var url = 'https://www.fantasywizard.site/gamesremaining/?'+teamsString+'&format=json&date='+dateString;
     console.log("before request");
     fetch(url)
         .then(function(response){
@@ -125,4 +125,4 @@ function addGames(data) {
 
 
 }
-newRenderGames();
+renderGames();

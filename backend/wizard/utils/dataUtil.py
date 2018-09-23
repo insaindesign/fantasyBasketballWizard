@@ -1,8 +1,6 @@
 import csv
 import datetime
-from wizard.models import Team
-from wizard.models import Week
-from wizard.models import Game
+from wizard.models import *
 
 
 class DataLoader:
@@ -101,10 +99,21 @@ class DataLoader:
     @staticmethod
     def deleteAllGames():
         i=1
+        print("deleting all games...")
         for game in Game.objects.all():
             print("iteration " + str(i))
             game.delete()
             i = i+1
+        print("done")
+    
+    def deleteAllPlayers():
+        i=1
+        print("deleting all players...")
+        for player in Player.objects.all():
+            print("iteration " + str(i))
+            player.delete()
+            i = i + 1
+        print("done")
     
     @staticmethod
     def stringDateToDateObject(oldDate):

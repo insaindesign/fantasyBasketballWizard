@@ -1,19 +1,21 @@
-function getFormattedDateFromURL() {
+function getFormattedQueryFromURL() {
     var url = window.location.href;
     var start = url.indexOf("date");
     
-    //check to see if date is in url
-    //if its not in url, make request with the week
-
-
     var end = url.indexOf("&", start);
-    return url.substring(start+5, end);
 
-
+    var str = url.substring(start+5, end);
+    if(str == "totals" || start == -1) {
+        var weekNum = "weekNum=";
+        weekNum+=document.getElementsByClassName("flyout-title")[0].innerText.split(" ")[1];
+        console.log(weekNum);
+        return weekNum;
+    }
+    return "date="+str;
 }
 function getGames() {
-    var dateString = getFormattedDateFromURL();
-    var url = 'https://www.fantasywizard.site/gamestoday/?'+'&format=json&date='+dateString;
+    var query = getFormattedQueryFromURL();
+    var url = 'https://www.fantasywizard.site/gamestoday/?'+'&format=json&'+query;
     fetch(url)
         .then(function(response){
         if (response.status !== 200) {

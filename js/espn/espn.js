@@ -66,14 +66,37 @@ Schedule["Tor"]  =  TorontoRaptors;
 Schedule["Utah"] =  UtahJazz;
 Schedule["Wsh"]  =  WashingtonWizards;
 
-var gamesOnElements = document.getElementsByClassName( "games-on" );
-var pageType = gamesOnElements[0].innerText;
-var gamesOnSubheader = "";
-
-if( gamesOnElements.length == 2 )
-{
-    pageType = gamesOnElements[1].innerText;
-}
+var acronymEspnToYahoo = {};
+acronymEspnToYahoo["Atl"]  =  "Atl";
+acronymEspnToYahoo["Bos"]  =  "Bos";
+acronymEspnToYahoo["Bkn"]  =  "Bkn";
+acronymEspnToYahoo["Cha"]  =  "Cha";
+acronymEspnToYahoo["Chi"]  =  "Chi";
+acronymEspnToYahoo["Cle"]  =  "Cle";
+acronymEspnToYahoo["Dal"]  =  "Dal";
+acronymEspnToYahoo["Den"]  =  "Den";
+acronymEspnToYahoo["Det"]  =  "Det";
+acronymEspnToYahoo["GS"]   =  "GS";
+acronymEspnToYahoo["Hou"]  =  "Hou";
+acronymEspnToYahoo["Ind"]  =  "Ind";
+acronymEspnToYahoo["LAC"]  =  "LAC";
+acronymEspnToYahoo["LAL"]  =  "LAL";
+acronymEspnToYahoo["Mem"]  =  "Mem";
+acronymEspnToYahoo["Mia"]  =  "Mia";
+acronymEspnToYahoo["Mil"]  =  "Mil";
+acronymEspnToYahoo["Min"]  =  "Min";
+acronymEspnToYahoo["Nor"]  =  "NO";
+acronymEspnToYahoo["NY"]   =  "NY";
+acronymEspnToYahoo["OKC"]  =  "OKC";
+acronymEspnToYahoo["Orl"]  =  "Orl";
+acronymEspnToYahoo["Phi"]  =  "Phi";
+acronymEspnToYahoo["Phx"]  =  "Pho";
+acronymEspnToYahoo["Por"]  =  "Por";
+acronymEspnToYahoo["Sac"]  =  "Sac";
+acronymEspnToYahoo["SA"]   =  "SA";
+acronymEspnToYahoo["Tor"]  =  "Tor";
+acronymEspnToYahoo["Utah"] =  "Uta";
+acronymEspnToYahoo["Wsh"]  =  "Was";
 
 /* 
     getBackgroundColor - returns the background color
@@ -210,6 +233,8 @@ addGamesWeekHeaders = function()
     }
 }
 
+var localGamesDataDict = {};
+
 function buildTeamsRequestString()
 {
     console.log( "buildTeamsRequestString()" );
@@ -233,13 +258,18 @@ function getSelectedDate()
     console.log( "currentDate.innerHTML=" + currentDate.innerHTML );
 }
 
+
+
 function requestDataFromServer()
 {
     console.log( "requestDataFromServer()" );
 
     var teamsRequestString = buildTeamsRequestString();
+    console.log( "teamsRequestString=" + teamsRequestString );
     var dateString = "2018-10-16";
-    var url = 'https://bilalsattar24.pythonanywhere.com/gamesremaining/?'+teamsRequestString+'&format=json&date='+dateString;
+    // var url = 'https://bilalsattar24.pythonanywhere.com/gamesremaining/?'+teamsRequestString+'&format=json&date='+dateString;
+    var url = "http://www.fantasywizard.site/gamesremaining/?" + teamsRequestString + "&format=json&date=" + dateString;
+    console.log( url );
 
     fetch(url)
         .then(function(response){
@@ -248,71 +278,224 @@ function requestDataFromServer()
             return;
         }
         response.json().then(function(data) {
-            addGamesForPlayers( data );
+            addGamesDataToLocalDictionary( data, teamsRequestString );
+            // addGamesForPlayers( data );
+            addGamesForPlayers();
         });
     }).catch(function(err) {
         console.log('Fetch Error :-S', err);
     });
 }
 
-function addGamesForPlayers( data )
+function addGamesDataToLocalDictionary( data, teamsRequestString )
+{
+    console.log( "addDataToLocalDictionary()" );
+    // console.log( data );
+    // console.log( teamsRequestString );
+    var teamsRequestStringConcise = teamsRequestString.substring( 6, teamsRequestString.length-1 );
+    var teamsList = teamsRequestStringConcise.split( "," );
+    // console.log( teamsList );
+    for( var i = 0; i < data.length; i++ )
+    {
+        if( !( teamsList[i] in localGamesDataDict ) )
+        {
+            // console.log( "OG team - " + teamsList[i]);
+            localGamesDataDict[teamsList[i]] = data[i];
+        }
+        // else
+        // {
+        //     console.log( "Duplicate team - " + teamsList[i]);
+        // }
+    }
+    // console.log( localGamesDataDict );
+}
+
+var initialRender = false;
+
+function addGamesForPlayers( )
 {
     console.log( "addGamesForPlayers()" );
+
     var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
-    var index = 0;
     var totalGamesRemaining = 0;
     var totalGamesForWeek = 0;
 
-    for( var i = 0; i < listOfElements.length; i++ )
+    var listOfTeamNameElements = document.getElementsByClassName( "playerinfo__playerteam" );
+    var listOfTeamNameElementsIndex = 0;
+
+    if( initialRender == false )
     {
-        var listOfElementsTr = listOfElements[i];
+        // var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
+        var index = 0;
 
-        if( listOfElementsTr.children.length == 5 )
+
+        for( var i = 0; i < listOfElements.length; i++ )
         {
-            var newGamesTd = document.createElement( "td" );
-            var newGamesDiv = document.createElement( "div" );
-            newGamesTd.className = "Table2__td Table2__td--fixed-width";
-            newGamesDiv.className = "jsx-2810852873 table--cell";
+            var listOfElementsTr = listOfElements[i];
+            // console.log( "listOfElementsTr.children.length=" + listOfElementsTr.children.length );
 
-            var isInjured = false;
-            if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
+            if( listOfElementsTr.children.length == 5 )
             {
-                isInjured = true;
-            }
-            if( listOfElementsTr.innerHTML.indexOf( ">TOTALS</div>" ) != -1 )
-                var totalGamesString = totalGamesRemaining.toString() + "/" + totalGamesForWeek.toString();
-                newGamesDiv.innerHTML = totalGamesString;
-                newGamesTd.className += " bg-clr-gray-08";
-                newGamesDiv.className += " bg-clr-gray-08";
-            }
-            // Normal player
-            else if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
-            {
-                if( !isInjured )
+                var newGamesTd = document.createElement( "td" );
+                var newGamesDiv = document.createElement( "div" );
+                newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td";
+                newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div";
+
+                var isInjured = false;
+                // 'O'ut, injured player
+                if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
                 {
-                    newGamesDiv.innerHTML = data[index];
-                    var splitDataIndex = data[index].split( "/" );
-                    totalGamesRemaining += parseInt( splitDataIndex[0] );
-                    totalGamesForWeek += parseInt( splitDataIndex[1] );
-                    newGamesTd.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
+                    isInjured = true;
                 }
+                // TOTALS row
+                if( listOfElementsTr.innerHTML.indexOf( ">TOTALS</div>" ) != -1 )
+                {
+                    // console.log( "WORKING ON TOTALS" );
+                    var totalGamesString = totalGamesRemaining.toString() + "/" + totalGamesForWeek.toString();
+                    newGamesDiv.innerHTML = totalGamesString;
+                    newGamesTd.className += " bg-clr-gray-08";
+                    newGamesDiv.className += " bg-clr-gray-08";
+                }
+                // Normal player
+                else if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
+                {
+                    if( !isInjured )
+                    {
+                        // console.log( "adding games/games" );
+                        // newGamesDiv.innerHTML = data[index];
+                        var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                        // console.log( "localGamesDataDict[listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML]=" + localGamesDataDict[teamName] );
+                        newGamesDiv.innerHTML = localGamesDataDict[teamName];
+                        var splitDataIndex = localGamesDataDict[teamName].split( "/" );
+                        totalGamesRemaining += parseInt( splitDataIndex[0] );
+                        totalGamesForWeek += parseInt( splitDataIndex[1] );
+                        newGamesTd.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
+                    }
+                    else
+                    {
+                        newGamesDiv.innerHTML = "-/-";
+                        newGamesTd.style.backgroundColor = getBackgroundColor( 0 );
+                    }
+                    // index++;
+                    listOfTeamNameElementsIndex++;
+                }
+                // Empty player
                 else
                 {
-                    newGamesDiv.innerHTML = "-/-";
-                    newGamesTd.style.backgroundColor = getBackgroundColor( 0 );
+                    newGamesDiv.innerHTML = "-/-";    
                 }
-                index++;
+                newGamesTd.appendChild( newGamesDiv );
+                listOfElementsTr.appendChild( newGamesTd );
             }
-            // Empty player
-            else
+        }
+        initialRender = true;
+    }
+    // Not initial render, do not create new elements, update them
+    else
+    {
+        var listOfGamesTd = document.getElementsByClassName( "fbw-games-remaining-td" );
+        var listOfGamesDiv = document.getElementsByClassName( "fbw-games-remaining-div" );
+        var listOfGamesIndex = 0;
+        var backendIndex = 0;
+        console.log( "listOfGamesDiv.length=" + listOfGamesDiv.length );
+
+
+        for( var i = 0; i < listOfElements.length; i++ )
+        {
+            var listOfElementsTr = listOfElements[i];
+
+            if( listOfElementsTr.children.length == 6 )
             {
-                newGamesDiv.innerHTML = "-/-";    
+                // console.log( "Player rows" );
+
+                // See if the cell is empty
+                // If the cell is total
+                // if injured player
+
+
+                var isInjured = false;
+                // 'O'ut, injured player
+                if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
+                {
+                    // console.log( "found injured" );
+                    isInjured = true;
+                }
+                // TOTALS row
+                if( listOfElementsTr.innerHTML.indexOf( ">TOTALS</div>" ) != -1 )
+                {
+                    // console.log( "TOTALSZZZZZ" );
+                    var totalGamesString = totalGamesRemaining.toString() + "/" + totalGamesForWeek.toString();
+                    listOfGamesDiv[listOfGamesIndex].innerHTML = totalGamesString;
+                }
+                // // Normal player
+                else if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
+                {
+                    // console.log( "healthy player" );
+                    
+                    // Healthy player 
+                    if( !isInjured )
+                    {
+                        var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                        listOfGamesDiv[listOfGamesIndex].innerHTML = localGamesDataDict[teamName];
+                        // listOfGamesDiv[listOfGamesIndex].innerHTML = data[backendIndex];
+                        var splitDataIndex = localGamesDataDict[teamName].split( "/" );
+                        totalGamesRemaining += parseInt( splitDataIndex[0] );
+                        totalGamesForWeek += parseInt( splitDataIndex[1] );
+                        listOfGamesTd[listOfGamesIndex].style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
+                    }
+                    // Injured player
+                    else
+                    {
+                        listOfGamesDiv[listOfGamesIndex].innerHTML = "-/-";
+                        listOfGamesTd[listOfGamesIndex].style.backgroundColor = getBackgroundColor( 0 );
+                    }
+                    backendIndex++;
+                    listOfTeamNameElementsIndex++;
+                }
+                // Empty player
+                else
+                {
+                    // console.log( "injured player" );
+                    listOfGamesDiv[listOfGamesIndex].innerHTML = "-/-";
+                    listOfGamesTd[listOfGamesIndex].style.backgroundColor = getBackgroundColor( 0 );
+                }
+                listOfGamesIndex++;
             }
-            newGamesTd.appendChild( newGamesDiv );
-            listOfElementsTr.appendChild( newGamesTd );
         }
     }
 }
+
+// Adjusting the roster by moving players around
+// Requires a call to render to load the correct games
+$( 'body' ).on( 'click', 'a.move-action-btn', function() 
+{
+    // event.stopPropagation();
+    // var thisText = $( this ).text();
+    // console.log( "Move button pressed@@@@" );
+    // console.log( $( this ).text() );
+    if( $( this ).text() == "HERE" )
+    {
+        requestDataFromServer();
+    }
+    // if( pageType == "Roster" &&
+    //     thisText != "Last 7" &&
+    //     thisText != "Last 15" &&
+    //     thisText != "Last 30" &&
+    //     thisText != "2018 Season" &&
+    //     thisText != "2017" &&
+    //     thisText != "2018 Projections"
+    //   )
+    // {
+    //     dateRanges = true;
+    //     setTimeout( () => {
+    //         renderGames();
+    //     }, refreshSleepTime );
+    // }
+});
+
+
+
+
 
 /*
     myTeamRoster - Calls other functions to add the 'GAMES' header, 'TOTAL'
@@ -362,10 +545,12 @@ renderGames = function()
 {
     console.log("Fantasy Wizard rendering...");
 
-    if( pageType == "Roster" )
-    {
-        myTeamRoster();
-    }
+    // if( pageType == "Roster" )
+    // {
+    //     myTeamRoster();
+    // }
+    addGamesWeekHeaders();
+    requestDataFromServer();
 }
 
 var refreshSleepTime = 700;
@@ -416,8 +601,7 @@ $( document ).ready( function(){
     console.log('before');
     setTimeout(function(){
         console.log('after');
-        addGamesHeader();
-        addWeekSubHeader();
+        renderGames();
     },5000);
     
 });

@@ -31,7 +31,9 @@ urlpatterns = [
     path('loadweeks/', views.LoadWeeks.as_view()),
     path('loadgames/', views.LoadGames.as_view()),
     path('deletegames/', views.DeleteGames.as_view()),
-    path('gamesthisweek/',views.GamesThisWeek.as_view())
+    path('gamesthisweek/',views.GamesThisWeek.as_view()),
+    path('addplayer/', views.AddPlayer.as_view()),
+    path('deleteplayers/', views.DeleteAllPlayers.as_view())
 ]
 static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns = format_suffix_patterns(urlpatterns)

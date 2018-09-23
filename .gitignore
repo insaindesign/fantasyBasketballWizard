@@ -31,3 +31,13 @@ backend/wizard/utils/__pycache__/scheduler.cpython-37.pyc
 backend/wizard/utils/__pycache__/dataUtil.cpython-37.pyc
 backend/wizard/migrations/0004_game_week.py
 backend/wizard/migrations/__pycache__/0004_game_week.cpython-37.pyc
+backend/wizard/migrations/0003_auto_20180923_0933.py
+backend/wizard/migrations/0001_initial.py
+backend/wizard/migrations/0002_auto_20180923_0906.py
+backend/wizard/migrations/0004_auto_20180923_0934.py
+backend/wizard/migrations/0005_auto_20180923_0936.py
+backend/wizard/migrations/__init__.py
+backend/wizard/migrations/__pycache__/0002_auto_20180923_0906.cpython-37.pyc
+backend/wizard/migrations/__pycache__/0003_auto_20180923_0933.cpython-37.pyc
+backend/wizard/migrations/__pycache__/0004_auto_20180923_0934.cpython-37.pyc
+backend/wizard/migrations/__pycache__/0005_auto_20180923_0936.cpython-37.pyc

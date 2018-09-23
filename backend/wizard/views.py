@@ -31,28 +31,22 @@ class GamesRemaining(APIView):
         gameCountList = []
         # get the requested team and week objects from the database
         requestTeamsString = request.GET.get("teams")
+        pageName = request.GET.get("pageName")
         requestTeams = self.getCleanedTeamsString(requestTeamsString)
         
         
         requestWeek = request.GET.get("weekNum")
         date = request.GET.get("date")
-        print("\nRequest: Games Remaining as of " + date)
+        print("Request: Games Remaining as of " + date)
         print(requestTeams)
+        requestDate = DataLoader.stringDateToDateObject(date) # yyyy-m-d
 
-        requestDate = DataLoader.stringDateToDateObject(request.GET.get("date"))# yyyy-m-d
-        if dayBeforeSeasonStartDate > requestDate:
-            print("pre season - no games")
-            for teamAcronym in requestTeams:
-                gameCountList.append("0/0")
-            print("Response for Games Remaining")
-            print(gameCountList)
-            return Response(gameCountList)
-
-        # if no date in the request, get the corresponding week
-        #if requestWeek == None:
-        #    requestWeek = DataLoader.getWeekFromDate(date)
+        # if no week in the request, get the corresponding week
+        if requestWeek == None:
+            requestWeek = DataLoader.getWeekFromDate(date)
 
 
+        # get each teams games remaining as of the request date
         for teamAcronym in requestTeams:
             requestTeam = DataLoader.getTeamFromAcronym(teamAcronym)
             gamesRemaining = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek,date__gte=requestDate)
@@ -61,10 +55,7 @@ class GamesRemaining(APIView):
                 print("Today's game for " + teamAcronym + " is over")
                 numGamesRemaining = numGamesRemaining - 1
             numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek).count()
-            fraction = str(numGamesRemaining) + "/" + str(numGames)
-            # the count of the games that have the requested team as
-            # either the home team OR road team and is in the requested week
-            
+            fraction = str(numGamesRemaining) + "/" + str(numGames)            
             gameCountList.append(fraction)
 
 
@@ -95,6 +86,7 @@ class GamesRemaining(APIView):
             return True
         else:
             return False
+            
     def getCleanedTeamsString(self, teamsString):
         teamsString = teamsString[:-1].upper() # remove last character (comma in this case)
 

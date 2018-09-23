@@ -40,7 +40,15 @@ class GamesRemaining(APIView):
         print("Request: Games Remaining as of " + date)
         print(requestTeams)
         requestDate = DataLoader.stringDateToDateObject(date) # yyyy-m-d
-
+        
+        if dayBeforeSeasonStartDate > requestDate:	       
+            print("pre season - no games")	  
+            for teamAcronym in requestTeams:
+                gameCountList.append("0/0")
+            print("Response for Games Remaining")
+            print(gameCountList)
+            return Response(gameCountList)
+        
         # if no week in the request, get the corresponding week
         if requestWeek == None:
             requestWeek = DataLoader.getWeekFromDate(date)
@@ -86,7 +94,7 @@ class GamesRemaining(APIView):
             return True
         else:
             return False
-            
+
     def getCleanedTeamsString(self, teamsString):
         teamsString = teamsString[:-1].upper() # remove last character (comma in this case)
 

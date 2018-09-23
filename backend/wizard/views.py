@@ -8,6 +8,7 @@ from rest_framework import status, permissions
 from .utils.dataUtil import DataLoader
 from .models import *
 from .serializers import *
+from decimal import *
 
 # Create your views here.
 # ignore
@@ -47,6 +48,7 @@ class GamesRemaining(APIView):
             print(gameCountList)
             return Response(gameCountList)
 
+        # if no date in the request, get the corresponding week
         #if requestWeek == None:
         #    requestWeek = DataLoader.getWeekFromDate(date)
 
@@ -83,7 +85,10 @@ class GamesRemaining(APIView):
         gameTime = todaysGame.time
         gameDate = todaysGame.date
         gameDateTime = datetime.datetime(gameDate.year, gameDate.month, gameDate.day, gameTime.hour, gameTime.minute, tzinfo=pytz.timezone('US/Eastern'))
-        #now = datetime.datetime(gameDate.year, gameDate.month, gameDate.day+1, 1, 8, tzinfo=pytz.timezone('US/Eastern'))
+        
+        #for testing. change this to which time you want to test as of
+        #now = datetime.datetime(gameDate.year, gameDate.month, gameDate.day, 23, 1, tzinfo=pytz.timezone('US/Eastern'))
+        
         threeHours = datetime.timedelta(hours=3)
         gameEndTime = gameDateTime + threeHours
         if now > gameEndTime:
@@ -130,13 +135,30 @@ class AddUse(APIView):
         return Response("saved successfully")
 class GetPlayerStats(APIView):
     def get(self, request):
-        yahooPlayerID = request.GET.get("yahooPlayerID")
-        return Response(Players.objects.get(yahooPlayerID=yahooPlayerID))
+        playerID = request.GET.get("id")
+        # need to get serializer for Player class
+        return Response(Players.objects.get(playerID=playerID))
 
-
-class UpdatePlayer(APIView):
-    def post(self, request):
-        return Response()
+class AddPlayer(APIView):
+    def get(self, request):
+        team = DataLoader.getTeamFromAcronym(request.GET.get("team"))
+        Player(playerID = request.GET.get("id"),
+            team = team,
+            ppg = Decimal(request.GET.get("ppg")),
+            rpg = Decimal(request.GET.get("rpg")),
+            apg = Decimal(request.GET.get("apg")),
+            spg = Decimal(request.GET.get("spg")),
+            bpg = Decimal(request.GET.get("bpg")),
+            topg = Decimal(request.GET.get("topg")),
+            ftmpg = Decimal(request.GET.get("ftmpg")),
+            ftapg = Decimal(request.GET.get("ftapg")),
+            fgapg = Decimal(request.GET.get("fgapg")),
+            ftpct = Decimal(request.GET.get("ftpct")),
+            fgmpg = Decimal(request.GET.get("fgmpg")),
+            fgpct = Decimal(request.GET.get("fgpct")),
+            threepg = Decimal(request.GET.get("threepg"))
+        ).save()
+        return Response("successfully added player")
 
 class GamesThisWeek(APIView):
     """Returns all games for the given week and team - /?teams=LAL,OKC,GSW,BOS,&weekNum=3"""
@@ -189,3 +211,19 @@ class DeleteGames(APIView):
     def get(self, request):
         DataLoader.deleteAllGames()
         return Response()
+
+class DeleteAllPlayers(APIView):
+    """ deleted all players in the database - /deletepayers """
+    def get(self, request):
+        DataLoader.deleteAllPlayers()
+        return Response()
+class LoadAllData(APIView):
+    """ loads all teams, weeks, then games all in one request"""
+    def get(self, request):
+        DataLoader.loadTeams()
+        DataLoader.loadWeeks()
+        DataLoader.loadGames()
+        return Response("data successfully loaded")
+
+        
+

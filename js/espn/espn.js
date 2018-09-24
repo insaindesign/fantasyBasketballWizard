@@ -379,33 +379,41 @@ function addGamesForPlayers( )
     }
 }
 
+function moveButtonStarterPressed()
+{
+    console.log( "moveButtonStarterPressed()" );
+
+
+}
+
 // Adjusting the roster by moving players around
 // Requires a call to render to load the correct games
 $( 'body' ).on( 'click', 'a.move-action-btn', function() 
 {
-    // event.stopPropagation();
-    // var thisText = $( this ).text();
-    // console.log( "Move button pressed@@@@" );
-    // console.log( $( this ).text() );
+    var closestTd = $( this ).closest( "td" )[0];
+    var slotTd = $( closestTd ).siblings( "td" )[0];
+    var slotTdInnerDiv = slotTd.getElementsByClassName( "table--cell" )[0];
+    var benchOrStater = slotTdInnerDiv.innerHTML;
+
+
+    if( $( this ).text() == "MOVE" )
+    {
+        // A Starter Player's 'MOVE' button has been pressed
+        if( benchOrStarter != "BE" )
+        {
+            moveButtonStarterPressed();
+        }
+        // A Bench Player's 'MOVE' button has been pressed
+        else
+        {
+
+        }
+    }
 
     if( $( this ).text() == "HERE" )
     {
         requestDataFromServer();
     }
-    // if( pageType == "Roster" &&
-    //     thisText != "Last 7" &&
-    //     thisText != "Last 15" &&
-    //     thisText != "Last 30" &&
-    //     thisText != "2018 Season" &&
-    //     thisText != "2017" &&
-    //     thisText != "2018 Projections"
-    //   )
-    // {
-    //     dateRanges = true;
-    //     setTimeout( () => {
-    //         renderGames();
-    //     }, refreshSleepTime );
-    // }
 });
 
 

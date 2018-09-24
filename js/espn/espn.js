@@ -149,41 +149,6 @@ getTodaysDate = function()
     return todaysDate;
 }
 
-/* 
-    getNbaWeek - returns the NBA week relative to the actual date.
-    Note: Month is 0-based. January = 0, December = 11.
-
-    pDate - The date to compare
-*/
-getNbaWeek = function( pDate )
-{
-    if( ( pDate >= new Date( 2017, 9, 16 ) ) && ( pDate < new Date( 2017, 9, 23 ) ) ){ return 1; }
-    else if( ( pDate >= new Date( 2017, 9, 23 ) ) && ( pDate < new Date( 2017, 9, 30 ) ) ){ return 2; }
-    else if( ( pDate >= new Date( 2017, 9, 30 ) ) && ( pDate < new Date( 2017, 10, 6 ) ) ){ return 3; }
-    else if( ( pDate >= new Date( 2017, 10, 6 ) ) && ( pDate < new Date( 2017, 10, 13 ) ) ){ return 4; }
-    else if( ( pDate >= new Date( 2017, 10, 13 ) ) && ( pDate < new Date( 2017, 10, 20 ) ) ){ return 5; }
-    else if( ( pDate >= new Date( 2017, 10, 20 ) ) && ( pDate < new Date( 2017, 10, 27 ) ) ){ return 6; }
-    else if( ( pDate >= new Date( 2017, 10, 27 ) ) && ( pDate < new Date( 2017, 11, 4 ) ) ){ return 7; }
-    else if( ( pDate >= new Date( 2017, 11, 4 ) ) && ( pDate < new Date( 2017, 11, 11 ) ) ){ return 8; }
-    else if( ( pDate >= new Date( 2017, 11, 11 ) ) && ( pDate < new Date( 2017, 11, 18 ) ) ){ return 9; }
-    else if( ( pDate >= new Date( 2017, 11, 18 ) ) && ( pDate < new Date( 2017, 11, 25 ) ) ){ return 10; }
-    else if( ( pDate >= new Date( 2017, 11, 25 ) ) && ( pDate < new Date( 2018, 0, 1 ) ) ){ return 11; }
-    else if( ( pDate >= new Date( 2018, 0, 1 ) ) && ( pDate < new Date( 2018, 0, 8 ) ) ){ return 12; }
-    else if( ( pDate >= new Date( 2018, 0, 8 ) ) && ( pDate < new Date( 2018, 0, 15 ) ) ){ return 13; }
-    else if( ( pDate >= new Date( 2018, 0, 15 ) ) && ( pDate < new Date( 2018, 0, 22 ) ) ){ return 14; }
-    else if( ( pDate >= new Date( 2018, 0, 22 ) ) && ( pDate < new Date( 2018, 0, 29 ) ) ){ return 15; }
-    else if( ( pDate >= new Date( 2018, 0, 29 ) ) && ( pDate < new Date( 2018, 1, 5 ) ) ){ return 16; }
-    else if( ( pDate >= new Date( 2018, 1, 5 ) ) && ( pDate < new Date( 2018, 1, 12 ) ) ){ return 17; }
-    else if( ( pDate >= new Date( 2018, 1, 12 ) ) && ( pDate < new Date( 2018, 1, 26 ) ) ){ return 18; }
-    else if( ( pDate >= new Date( 2018, 1, 26 ) ) && ( pDate < new Date( 2018, 2, 5 ) ) ){ return 19; }
-    else if( ( pDate >= new Date( 2018, 2, 5 ) ) && ( pDate < new Date( 2018, 2, 12 ) ) ){ return 20; }
-    else if( ( pDate >= new Date( 2018, 2, 12 ) ) && ( pDate < new Date( 2018, 2, 19 ) ) ){ return 21; }
-    else if( ( pDate >= new Date( 2018, 2, 19 ) ) && ( pDate < new Date( 2018, 2, 26 ) ) ){ return 22; }
-    else if( ( pDate >= new Date( 2018, 2, 26 ) ) && ( pDate < new Date( 2018, 3, 2 ) ) ){ return 23; }
-    else if( ( pDate >= new Date( 2018, 3, 2 ) ) && ( pDate < new Date( 2018, 3, 9 ) ) ){ return 24; }
-    else if( ( pDate >= new Date( 2018, 3, 9 ) ) && ( pDate < new Date( 2018, 3, 16 ) ) ){ return 25; }
-}
-
 /*
     setYourLineUpDateFormat - returns a Date object with the month and date as inputs.
 
@@ -233,18 +198,31 @@ addGamesWeekHeaders = function()
     }
 }
 
+// function wait(ms){
+//    var start = new Date().getTime();
+//    var end = start;
+//    while(end < start + ms) {
+//      end = new Date().getTime();
+//   }
+// }
+    // wait( 1000 );
+
+
+
+
 var localGamesDataDict = {};
 
 function buildTeamsRequestString()
 {
     console.log( "buildTeamsRequestString()" );
+
     var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );
     var teamsRequestString = "teams=";
-    
     for( var i = 0; i < listOfElements.length; i++ )
     {
         teamsRequestString += acronymEspnToYahoo[listOfElements[i].innerHTML] + ",";
     }
+    // console.log( teamsRequestString );
     return teamsRequestString;
 }
 
@@ -307,7 +285,7 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
         //     console.log( "Duplicate team - " + teamsList[i]);
         // }
     }
-    // console.log( localGamesDataDict );
+    console.log( localGamesDataDict );
 }
 
 var initialRender = false;
@@ -406,7 +384,7 @@ function addGamesForPlayers( )
 
             if( listOfElementsTr.children.length == 6 )
             {
-                // console.log( "Player rows" );
+                console.log( "in the 6 with my woes" );
 
                 // See if the cell is empty
                 // If the cell is total
@@ -473,6 +451,7 @@ $( 'body' ).on( 'click', 'a.move-action-btn', function()
     // var thisText = $( this ).text();
     // console.log( "Move button pressed@@@@" );
     // console.log( $( this ).text() );
+
     if( $( this ).text() == "HERE" )
     {
         requestDataFromServer();
@@ -559,14 +538,14 @@ var refreshSleepTime = 700;
     Event listener for when a date in the top navigation bar with the 
     black background is clicked - Today, Weekday, Month Date
 */
-if( pageType == "Roster" )
-{
-    document.getElementsByClassName( "games-dates-mod" )[0].addEventListener( "click" , function() {
-        setTimeout( () => {
-            renderGames();
-        }, refreshSleepTime );
-    });
-}
+//if( pageType == "Roster" )
+//{
+//    document.getElementsByClassName( "games-dates-mod" )[0].addEventListener( "click" , function() {
+//        setTimeout( () => {
+//            renderGames();
+//        }, refreshSleepTime );
+//    });
+//}
 
 /*
     Event listener for navigating between 'Month Date', 'Last 7',
@@ -590,6 +569,7 @@ $('div' ).on( 'click', ' .playertablefiltersmenucontainer', function( event ) {
         }, refreshSleepTime );
     }
 });
+
 
 /*
     Main load of calling render games when the document is ready.

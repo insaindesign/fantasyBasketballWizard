@@ -64,6 +64,25 @@ def process_row(p_row):
         pass
     return p_row
 
+def get_url(p):
+    id = p['id']
+    id = id.replace(" ", "")
+    id = id.replace("-", "")
+    id = id.replace(".", "")
+    try:
+        ftpct = float(p['ft%']) * 100
+        ftpct = round(ftpct, 1)
+        ftpct = str(ftpct)
+    except:
+        ftpct = "0.0"
+    try:
+        fgpct = float(p['fg%']) * 100
+        fgpct = round(fgpct, 1)
+        fgpct = str(fgpct)
+    except:
+        fgpct = "0.0"
+    p['team'] = p['team'].upper()
+    return "https://www.fantasywizard.site/addplayer/?id=" + id + "&team=" + p['team'] + "&ppg=" + p['ppg'] + "&rpg=" + p['rpg'] + "&apg=" + p['apg'] + "&spg=" + p['spg'] + "&bpg=" + p['bpg'] + "&topg=" + p['topg'] + "&ftmpg=" + p['ftm'] + "&ftapg=" + p['fta'] + "&ftpct=" + ftpct + "&fgmpg=" + p['fgm'] + "&fgapg=" + p['fga'] + "&fgpct=" + fgpct + "&threepg=" + p['threepg'] + "&format=json"
 
 
 def extract_stats(players):
@@ -73,8 +92,8 @@ def extract_stats(players):
         p_row = process_row(p_row)
         #print("player: ", p_row)
         p_map = OrderedDict()
-        p_map['id'] = p_row[0].split("-")[0]
-        p_map['position'] = p_row[0].split("-")[1]
+        p_map['id'] = p_row[0].split(" - ")[0]
+        p_map['position'] = p_row[0].split(" - ")[1]
         for i in range(0, len(p_row)):
             if "%" in p_row[i]:
                 index = i
@@ -90,11 +109,14 @@ def extract_stats(players):
         p_map['threepg'] = p_row[index+6]
         p_map['ppg'] = p_row[index+7]
         p_map['rpg'] = p_row[index+8]
-        p_map['asg'] = p_row[index+9]
+        p_map['apg'] = p_row[index+9]
         p_map['spg'] = p_row[index+10]
         p_map['bpg'] = p_row[index+11]
         p_map['topg'] = p_row[index+12]
+        url = get_url(p_map)
         print(p_map)
+        print(url)
+        print(requests.get(url).content)
         p_maps.append(p_map)
     return p_maps
 

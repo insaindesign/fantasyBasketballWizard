@@ -1,9 +1,9 @@
 //transactionTrendsPage.js
 //Populates the transaction trends page with number of games for the week
 Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"]
-
+var teamsString = "teams=";
 //--------Colors-----------
-var noneColor = "#ff4d4d";
+var noneColor = "#56d2ff";
 var lowColor = "#FF9E9A";
 var medColor = "#d8ffcc";
 var highColor = "#adebad";
@@ -15,10 +15,10 @@ function init() {
     renderGames();
     addDropDown();
     var dropdown = document.getElementById("dropdown");
-    // dropdown.addEventListener("change", function() {
-    //     var weekNum = getWeekNumFromDropdown();
-    //     resetGames(weekNum-1);
-    // });
+     dropdown.addEventListener("change", function() {
+         var weekNum = getWeekNumFromDropdown();
+         resetGames(weekNum);
+    });
 }
 
 //check values from that <td> to values from the Teams array to find the team abbreviation
@@ -82,11 +82,31 @@ function resetGames(weekNum) {
     var gameColumn = document.getElementsByClassName("gameColumn");
     var rows = document.getElementsByClassName("Tst-table Table")[0].rows;
     var playerInfo;
-    for(var i=1; i<rows.length; i++) {
-        playerInfo = rows[i].cells[1].innerText.split(" ");
-        team = getTeamFromInfo(playerInfo);
-        gameColumn[i].innerText = Schedule[team][weekNum];
-    }
+
+    console.log(teamsString)
+    var dateString = "date="+getFormattedDate();
+    console.log("dateString = " + dateString);
+    var url = 'https://www.fantasywizard.site/gamesremaining/?'+teamsString+'&format=json'+'&weekNum='+weekNum+'&'+dateString;
+    console.log("before request");
+    console.log("weekNum="+weekNum);
+    fetch(url)
+        .then(function(response){
+        if (response.status !== 200) {
+            console.log('Called to backend failed: ' + response.status);
+            return;
+        }
+
+        response.json().then(function(data) {
+            var gameColumn = document.getElementsByClassName("gameColumn");
+            console.log(data)
+            for(var i=0; i<rows.length; i++) {
+                gameColumn[i].innerText = data[i];
+                gameColumn[i].style.backgroundColor = getColor(data[i])
+            }    
+        });
+    }).catch(function(err) {
+        console.log('Fetch Error :-S', err);
+    });
 }
 
 function getFormattedDate() {
@@ -97,7 +117,6 @@ function getFormattedDate() {
 //initial appending of new colum for current week with games
 function renderGames() {
     var rows = document.getElementsByClassName("Tst-table Table")[0].rows;
-    var teamsString = "teams=";
     var playerInfo;
 
     //go through rows of table
@@ -109,7 +128,7 @@ function renderGames() {
     console.log(teamsString)
     var dateString = getFormattedDate();
     console.log("dateString = " + dateString);
-    var url = 'https://bilalsattar24.pythonanywhere.com/gamesremaining/?'+teamsString+'&format=json&date='+dateString;
+    var url = 'https://www.fantasywizard.site/gamesremaining/?'+teamsString+'&format=json&date='+dateString;
     console.log("before request");
     fetch(url)
         .then(function(response){
@@ -129,6 +148,7 @@ function renderGames() {
 
 function addGames(data) {
     console.log("in add Games");
+    console.log(data);
     var table = document.getElementsByClassName("Tst-table Table")[0];
     var rows = table.rows;
     var newCell;

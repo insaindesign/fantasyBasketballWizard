@@ -105,7 +105,7 @@ setYourLineUpDateFormat = function( pMonth, pDate )
 /*
     addGamesWeekHeaders - adds the 'GAMES' and 'WEEK' headers to the HTML of the page.
 */
-addGamesWeekHeaders = function()
+function addGamesWeekHeaders()
 {
     console.log( "addGamesWeekHeaders()" );
     // Maybe loop through these elements and if innerHTML contains STATUS then append

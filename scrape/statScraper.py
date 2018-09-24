@@ -9,6 +9,9 @@ from collections import OrderedDict
 import os
 import time
 
+#delete players
+requests.get("https://www.fantasywizard.site/deleteplayers")
+
 login_url = "https://login.yahoo.com/config/login?.src=fantasy&specId=usernameRegWithName&.intl=us&.lang=en-US&.done=https://basketball.fantasysports.yahoo.com/nba"
 
 players_url = "https://basketball.fantasysports.yahoo.com/nba/23790/players?status=ALL"
@@ -121,7 +124,7 @@ def extract_stats(players):
     return p_maps
 
 to_csv = []
-while page < 300:
+while page < 450:
     
     driver.get(players_url + "&count=" + str(page))
     time.sleep(.2)

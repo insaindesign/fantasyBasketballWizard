@@ -140,7 +140,10 @@ class GetPlayerStats(APIView):
         playerID = request.GET.get("id")
         print("Request: Player stats for: " + playerID)
         # need to get serializer for Player class
-        player = Player.objects.get(playerID=playerID)
+        try:
+            player = Player.objects.get(playerID=playerID)
+        except:
+            return Response(playerID + " not found")
         serializer = PlayerSerializer(player)
         print("Response: " + str(serializer.data))
         return Response(serializer.data)

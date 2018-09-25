@@ -432,46 +432,6 @@ $( 'body' ).on( 'click', 'a.move-action-btn', function()
     }
 });
 
-
-
-
-
-/*
-    myTeamRoster - Calls other functions to add the 'GAMES' header, 'TOTAL'
-    subheader, and the number of games for players. 
-*/
-myTeamRoster = function()
-{
-    // Date on = for Set your line up - for switching b/t Today and 'Dec 23'
-    var newDateOn = document.getElementsByClassName( "date-on" );
-    var newDateOnHtml = newDateOn[0].innerHTML;
-    
-    // Conditionals to allow renderGames to run on the correct situations
-    if( ( previousDateOnHtml != newDateOnHtml ) || initialLoad || dateRanges )
-    {
-        initialLoad = false;
-        // Counter for the total number of games for the entire team for that week
-        
-        addGamesHeader();
-        
-        addTotalSubheader();
-        
-        addGamesForPlayers();
-
-        dateRanges = false;
-    }
-    previousDateOnHtml = newDateOnHtml;
-}
-
-//if( pageType == "Roster")
-//{
-//    var previousDateOn = document.getElementsByClassName( "date-on" );
-//    var previousDateOnHtml = previousDateOn[0].innerHTML;
-//    var initialLoad = true;
-//    var dateRanges = false;
-//    var dailyLockLeague = false;
-//}
-
 /*
     renderGames - the main function containing the logic to add:
     1) 'GAMES' header

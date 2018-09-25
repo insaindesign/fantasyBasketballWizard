@@ -138,15 +138,18 @@ class AddUse(APIView):
 class GetPlayerStats(APIView):
     def get(self, request):
         playerID = request.GET.get("id")
+        print("Request: Player stats for: " + playerID)
         # need to get serializer for Player class
         player = Player.objects.get(playerID=playerID)
         serializer = PlayerSerializer(player)
+        print("Response: " + str(serializer.data))
         return Response(serializer.data)
 
 class AddPlayer(APIView):
     def get(self, request):
         team = DataLoader.getTeamFromAcronym(request.GET.get("team"))
-        Player(playerID = request.GET.get("id"),
+        id = request.GET.get("id")
+        Player(playerID = id,
             team = team,
             ppg = Decimal(request.GET.get("ppg")),
             rpg = Decimal(request.GET.get("rpg")),
@@ -162,7 +165,7 @@ class AddPlayer(APIView):
             fgpct = Decimal(request.GET.get("fgpct")),
             threepg = Decimal(request.GET.get("threepg"))
         ).save()
-        return Response("successfully added player")
+        return Response("successfully added player: " + id)
 
 class GamesThisWeek(APIView):
     """Returns all games for the given week and team - /?teams=LAL,OKC,GSW,BOS,&weekNum=3"""

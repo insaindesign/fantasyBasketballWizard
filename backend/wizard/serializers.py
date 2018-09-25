@@ -1,9 +1,26 @@
 from rest_framework import serializers
-from .models import YahooStats
-from .models import ESPNStats
-from .models import Test
+from .models import *
 
-class TestSerializer(serializers.ModelSerializer):
+# this class helps get the objects and convert them to json to send in the response
+# we need one for every object that we plan to send in the response
+class YahooUseSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Test
+        model = YahooUse
         fields = '__all__'
+
+
+class TeamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Team
+        fields = '__all__'
+
+class DaySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Day
+        fields = '__all__'
+
+class GameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Game
+        fields = '__all__'
+

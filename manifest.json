@@ -13,7 +13,7 @@
       "js": ["js/yahoo/teamPage.js"]
     },
     {
-      "matches": ["http://games.espn.com/fba/*"],
+      "matches": ["http://fantasy.espn.com/basketball/*"],
       "js": ["js/jquery-3.2.1.min.js", "js/espn/espn.js"]
     },
     {
@@ -23,6 +23,10 @@
     {
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/buzzindex*"],
       "js": ["js/yahoo/transactionTrendsPage.js"]
+    },
+    {
+      "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/matchup*"],
+      "js": ["js/yahoo/matchupsPage.js"]
     }
   ],
   "permissions": [

@@ -1,4 +1,12 @@
 from django.contrib import admin
-from .models import Test
+from .models import *
 # Register your models here.
-admin.site.register(Test)
+# register all of the models(classes) here so that we can edit them in the built in admin GUI we can log into
+admin.site.register(YahooUse)
+admin.site.register(YahooUser)
+admin.site.register(YahooUseType)
+admin.site.register(Week)
+admin.site.register(Game)
+admin.site.register(Team)
+admin.site.register(Day)
+admin.site.register(Player)

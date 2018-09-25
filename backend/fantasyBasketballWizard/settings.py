@@ -25,7 +25,7 @@ SECRET_KEY = 'dpz9@_x5lgpbdypb4i=yi%kcq&cb0e!)=$$3gct#@$c%#1#9p0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['bilalsattar24.pythonanywhere.com','127.0.0.1','localhost','www.fantasywizard.site']
 
 
 # Application definition
@@ -38,12 +38,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'wizard.apps.WizardConfig'
+    'wizard.apps.WizardConfig',
+    'corsheaders' #added
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware', #added
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -107,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'US/Pacific'
 
 USE_I18N = True
 
@@ -118,5 +120,13 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+    '/home/bilalsattar24/fantasyBasketballWizard/backend/static',
+]
 
 STATIC_URL = '/static/'
+
+#added by us
+CORS_ORIGIN_ALLOW_ALL = True
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 1230

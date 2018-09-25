@@ -379,11 +379,28 @@ function addGamesForPlayers( )
     }
 }
 
+// Add an empty '-/-' cell for the EMPTY row created when a starter's 'MOVE'
+// button is pressed.
 function moveButtonStarterPressed()
 {
     console.log( "moveButtonStarterPressed()" );
-
-
+    
+    var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
+    for( var i = listOfElements.length-1; i > 0; i-- )
+    {
+        var listOfElementsTr = listOfElements[i];
+        if( listOfElementsTr.children.length == 5 )
+        {
+            var newGamesTd = document.createElement( "td" );
+            var newGamesDiv = document.createElement( "div" );
+            newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td";
+            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div";
+            newGamesDiv.innerHTML = "-/-";
+            newGamesTd.appendChild( newGamesDiv );
+            listOfElementsTr.appendChild( newGamesTd );
+            break;
+        }
+    }
 }
 
 // Adjusting the roster by moving players around
@@ -393,20 +410,19 @@ $( 'body' ).on( 'click', 'a.move-action-btn', function()
     var closestTd = $( this ).closest( "td" )[0];
     var slotTd = $( closestTd ).siblings( "td" )[0];
     var slotTdInnerDiv = slotTd.getElementsByClassName( "table--cell" )[0];
-    var benchOrStater = slotTdInnerDiv.innerHTML;
-
+    var benchOrStarter = slotTdInnerDiv.innerHTML;
 
     if( $( this ).text() == "MOVE" )
     {
         // A Starter Player's 'MOVE' button has been pressed
         if( benchOrStarter != "BE" )
         {
-            moveButtonStarterPressed();
+            // Need a small delay for the new EMPTY bench spot to be created dynamically
+            setTimeout( moveButtonStarterPressed, 200 );
         }
         // A Bench Player's 'MOVE' button has been pressed
         else
         {
-
         }
     }
 

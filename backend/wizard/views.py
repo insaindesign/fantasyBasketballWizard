@@ -41,7 +41,7 @@ class GamesRemaining(APIView):
         print(requestTeams)
         requestDate = DataLoader.stringDateToDateObject(date) # yyyy-m-d
         
-        if dayBeforeSeasonStartDate > requestDate:	       
+        if dayBeforeSeasonStartDate > requestDate and pageName != "weekSelect":	       
             print("pre season - no games")	  
             for teamAcronym in requestTeams:
                 gameCountList.append("0/0")
@@ -70,8 +70,11 @@ class GamesRemaining(APIView):
         print("Response for Games Remaining")
         print(gameCountList)
         #numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count()
+        
+        useType=YahooUseType.objects.get(pageName=pageName)
+        YahooUse(useType=useType).save()
         return Response(gameCountList)
-
+        
    
     def isTodaysGameOver(self, gamesRemaining, requestDate):
         #get nowtime
@@ -130,8 +133,7 @@ class AddUse(APIView):
         requestUseType = request.GET.get("useType")
         print(requestUseType)
         useType=YahooUseType.objects.get(pageName=requestUseType)
-        yahooUser=YahooUser.objects.get(email="kobebryant5@yahoo.com")
-        YahooUse(useType=useType,user=yahooUser).save()
+        YahooUse(useType=useType).save()
         return Response("saved successfully")
 class GetPlayerStats(APIView):
     def get(self, request):

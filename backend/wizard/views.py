@@ -139,7 +139,9 @@ class GetPlayerStats(APIView):
     def get(self, request):
         playerID = request.GET.get("id")
         # need to get serializer for Player class
-        return Response(Players.objects.get(playerID=playerID))
+        player = Player.objects.get(playerID=playerID)
+        serializer = PlayerSerializer(player)
+        return Response(serializer.data)
 
 class AddPlayer(APIView):
     def get(self, request):

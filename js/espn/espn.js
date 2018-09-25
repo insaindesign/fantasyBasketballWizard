@@ -66,17 +66,6 @@ getBackgroundColor = function( games )
 }
 
 /* 
-    getSelectedDate - returns the date that is currently selected.
-    Returns either 'Today' or a date with ( Month (abbreviated) Day ) format.
-*/
-getSelectedDate = function()
-{
-    var selectedDate = document.getElementsByClassName( "date-on" );
-    var selectedDateContent = selectedDate[0].innerText;
-    return selectedDateContent;
-}
-
-/* 
     getTodaysDate - returns today's date by returning a new Date object.
 */
 getTodaysDate = function()

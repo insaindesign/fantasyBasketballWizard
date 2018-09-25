@@ -65,6 +65,13 @@ function addDropDown() {
         var option = document.createElement("option");
         option.setAttribute("value", i);
         option.innerText = "Week " + i;
+        if(i!=18) {
+            option.innerText = "Week " + i;
+        }
+        else {
+            option.innerText = "Week " + i + "/19";
+            i++;    
+        }
         select.appendChild(option);
     }
     console.log(select);
@@ -86,7 +93,7 @@ function resetGames(weekNum) {
     console.log(teamsString)
     var dateString = "date="+getFormattedDate();
     console.log("dateString = " + dateString);
-    var url = 'https://www.fantasywizard.site/gamesremaining/?'+teamsString+'&format=json'+'&weekNum='+weekNum+'&'+dateString;
+    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=weekSelect&'+teamsString+'&format=json'+'&weekNum='+weekNum+'&'+dateString;
     console.log("before request");
     console.log("weekNum="+weekNum);
     fetch(url)

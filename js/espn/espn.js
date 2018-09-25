@@ -531,6 +531,6 @@ $( document ).ready( function(){
     setTimeout(function(){
         console.log('after');
         renderGames();
-    },5000);
+    },3000);
     
 });

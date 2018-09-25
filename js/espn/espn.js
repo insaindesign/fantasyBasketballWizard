@@ -139,14 +139,45 @@ function buildTeamsRequestString()
     return teamsRequestString;
 }
 
-function getSelectedDate()
+function buildDateRequestString()
 {
-    console.log( "getSelectedDate()" ); 
+    console.log( "buildDateRequestString()" ); 
     var currentElements = document.getElementsByClassName( "is-current" );
-    console.log( currentElements[0] );
     var currentDateDiv = currentElements[0];
-    var currentDate = currentDateDiv.children[0];
-    console.log( "currentDate.innerHTML=" + currentDate.innerHTML );
+    var currentDateChildren = currentDateDiv.children[0];
+    var currentMonthDate = currentDateChildren.innerHTML;
+    var currentMonthDateSplit = currentMonthDate.split( " " );
+    var month = currentMonthDateSplit[0];
+    var date = currentMonthDateSplit[1];
+
+    if( month == "Oct" )
+    {
+        return ( "2018-10-" + date );
+    }
+    else if( month == "Nov" )
+    {
+        return ( "2018-11-" + date );
+    }
+    else if( month == "Dec" )
+    {
+        return ( "2018-12-" + date );
+    }
+    else if( month == "Jan" )
+    {
+        return ( "2019-01-" + date );
+    }
+    else if( month == "Feb" )
+    {
+        return ( "2019-02-" + date );
+    }
+    else if( month == "Mar" )
+    {
+        return ( "2019-03-" + date );
+    }
+    else if( month == "Apr" )
+    {
+        return ( "2019-04-" + date );
+    }
 }
 
 
@@ -156,10 +187,11 @@ function requestDataFromServer()
     console.log( "requestDataFromServer()" );
 
     var teamsRequestString = buildTeamsRequestString();
-    console.log( "teamsRequestString=" + teamsRequestString );
-    var dateString = "2018-10-16";
+    // console.log( "teamsRequestString=" + teamsRequestString );
+    var dateRequestString = buildDateRequestString();
+    // console.log( "dateRequestString= " + dateRequestString );
     // var url = 'https://bilalsattar24.pythonanywhere.com/gamesremaining/?'+teamsRequestString+'&format=json&date='+dateString;
-    var url = "http://www.fantasywizard.site/gamesremaining/?" + teamsRequestString + "&format=json&date=" + dateString;
+    var url = "http://www.fantasywizard.site/gamesremaining/?" + teamsRequestString + "&format=json&date=" + dateRequestString;
     console.log( url );
 
     fetch(url)
@@ -180,12 +212,10 @@ function requestDataFromServer()
 
 function addGamesDataToLocalDictionary( data, teamsRequestString )
 {
+    localGamesDataDict = {};
     console.log( "addDataToLocalDictionary()" );
-    // console.log( data );
-    // console.log( teamsRequestString );
     var teamsRequestStringConcise = teamsRequestString.substring( 6, teamsRequestString.length-1 );
     var teamsList = teamsRequestStringConcise.split( "," );
-    // console.log( teamsList );
     for( var i = 0; i < data.length; i++ )
     {
         if( !( teamsList[i] in localGamesDataDict ) )
@@ -201,7 +231,8 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
     console.log( localGamesDataDict );
 }
 
-var initialRender = false;
+var initialRender = true;
+
 
 function addGamesForPlayers( )
 {
@@ -214,8 +245,9 @@ function addGamesForPlayers( )
     var listOfTeamNameElements = document.getElementsByClassName( "playerinfo__playerteam" );
     var listOfTeamNameElementsIndex = 0;
 
-    if( initialRender == false )
+    if( initialRender == true )
     {
+        console.log( "INITIAL RENDER = TRUE" );
         // var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
         var index = 0;
 
@@ -279,9 +311,10 @@ function addGamesForPlayers( )
                 listOfElementsTr.appendChild( newGamesTd );
             }
         }
-        initialRender = true;
+        initialRender = false;
     }
-    // Not initial render, do not create new elements, update them
+    // Not initial render, do not create new elements, update them, 
+    // For moving players around
     else
     {
         var listOfGamesTd = document.getElementsByClassName( "fbw-games-remaining-td" );
@@ -297,13 +330,7 @@ function addGamesForPlayers( )
 
             if( listOfElementsTr.children.length == 6 )
             {
-                console.log( "in the 6 with my woes" );
-
-                // See if the cell is empty
-                // If the cell is total
-                // if injured player
-
-
+                // console.log( "in the 6 with my woes" );
                 var isInjured = false;
                 // 'O'ut, injured player
                 if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
@@ -408,6 +435,31 @@ $( 'body' ).on( 'click', 'a.move-action-btn', function()
         requestDataFromServer();
     }
 });
+
+function removeColumn()
+{
+    var elements = document.getElementsByClassName( "fbw-games-remaining-td" );
+
+    while( elements.length > 0 )
+    {
+        elements[0].parentNode.removeChild( elements[0] );
+    }
+}
+
+
+$( 'body' ).on( 'click', 'div.custom--day', function() 
+{
+    var className = this.className;
+    // Render games for new dates
+    // Date other than the current one selected
+    if( className.indexOf( "is-current" ) == -1 )
+    {
+        initialRender = true;
+        removeColumn();
+        requestDataFromServer();
+    }
+});
+
 
 /*
     renderGames - the main function containing the logic to add:

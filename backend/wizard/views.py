@@ -70,9 +70,7 @@ class GamesRemaining(APIView):
         print("Response for Games Remaining")
         print(gameCountList)
         #numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count()
-        
-        useType=YahooUseType.objects.get(pageName=pageName)
-        YahooUse(useType=useType).save()
+
         return Response(gameCountList)
         
    

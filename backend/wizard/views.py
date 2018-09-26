@@ -126,13 +126,6 @@ class TotalGamesToday(APIView):
         games = Game.objects.filter(date=gameDate).count()
         return Response(games)
 
-class AddUse(APIView):
-    def get(self, request):
-        requestUseType = request.GET.get("useType")
-        print(requestUseType)
-        useType=YahooUseType.objects.get(pageName=requestUseType)
-        YahooUse(useType=useType).save()
-        return Response("saved successfully")
 class GetPlayerStats(APIView):
     def get(self, request):
         playerID = request.GET.get("id")
@@ -195,6 +188,11 @@ class GamesThisWeek(APIView):
         #numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count() 
         return Response(gameCountList)
 
+class GetWeekFromDate(APIView):
+    def get(self, request):
+        requestDate = request.GET.get("date")
+        serializer = WeekSerializer(DataLoader.getWeekFromDate(requestDate))
+        return Response(serializer.data)
 # Data loading methods
 class LoadTeams(APIView):
     """loads all hard coded teams into database - /loadteams"""

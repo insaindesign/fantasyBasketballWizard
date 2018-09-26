@@ -139,9 +139,14 @@ function buildTeamsRequestString()
     return teamsRequestString;
 }
 
+function sleep(ms)
+{
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function buildDateRequestString()
 {
-    console.log( "buildDateRequestString()" ); 
+    console.log( "buildDateRequestString()" );
     var currentElements = document.getElementsByClassName( "is-current" );
     var currentDateDiv = currentElements[0];
     var currentDateChildren = currentDateDiv.children[0];
@@ -182,14 +187,14 @@ function buildDateRequestString()
 
 
 
-function requestDataFromServer()
+async function requestDataFromServer()
 {
     console.log( "requestDataFromServer()" );
 
     var teamsRequestString = buildTeamsRequestString();
-    // console.log( "teamsRequestString=" + teamsRequestString );
+    // Sleep before getting the date string to allow the selected date some time to be changed
+    await sleep( 200 );     
     var dateRequestString = buildDateRequestString();
-    // console.log( "dateRequestString= " + dateRequestString );
     // var url = 'https://bilalsattar24.pythonanywhere.com/gamesremaining/?'+teamsRequestString+'&format=json&date='+dateString;
     var url = "http://www.fantasywizard.site/gamesremaining/?" + teamsRequestString + "&format=json&date=" + dateRequestString;
     console.log( url );

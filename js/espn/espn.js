@@ -91,43 +91,15 @@ setYourLineUpDateFormat = function( pMonth, pDate )
     else if( pMonth == "Apr" ){ return new Date( 2018, 3, pDate ); }
 }
 
-/*
-    addGamesWeekHeaders - adds the 'GAMES' and 'WEEK' headers to the HTML of the page.
-*/
-function addGamesWeekHeaders()
-{
-    console.log( "addGamesWeekHeaders()" );
-    // Maybe loop through these elements and if innerHTML contains STATUS then append
-    var listOfElements = document.getElementsByClassName( "Table2__header-row" );
 
-    for( var i = 0; i < listOfElements.length; i++ )
-    {
-        if( listOfElements[i].innerHTML.indexOf( "STARTERS" ) != -1 )
-        {
-            var newGamesHeader = document.createElement( "th" );
-            newGamesHeader.title = "GAMES";
-            newGamesHeader.colSpan = "1";
-            newGamesHeader.className = "tc bg-clr-white Table2__th";
-            newGamesHeader.innerHTML = "GAMES";
-            listOfElements[i].appendChild( newGamesHeader );
-        }
-        else if( listOfElements[i].innerHTML.indexOf( "STATUS" ) != -1 )
-        {
-            var newGamesHeader = document.createElement( "th" );
-            newGamesHeader.title = "WEEK";
-            newGamesHeader.colSpan = "1";
-            newGamesHeader.className = "tc bg-clr-white Table2__th";
-            newGamesHeader.innerHTML = "WEEK";
-            listOfElements[i].appendChild( newGamesHeader );
-        }
-    }
-}
 
+var initialRender = true;
+var updateHeaders = false;
 var localGamesDataDict = {};
 
 function buildTeamsRequestString()
 {
-    console.log( "buildTeamsRequestString()" );
+    // console.log( "buildTeamsRequestString()" );
 
     var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );
     var teamsRequestString = "teams=";
@@ -146,7 +118,7 @@ function sleep(ms)
 
 function buildDateRequestString()
 {
-    console.log( "buildDateRequestString()" );
+    // console.log( "buildDateRequestString()" );
     var currentElements = document.getElementsByClassName( "is-current" );
     var currentDateDiv = currentElements[0];
     var currentDateChildren = currentDateDiv.children[0];
@@ -186,17 +158,90 @@ function buildDateRequestString()
 }
 
 
+async function requestWeekNumberFromServer()
+{
+    console.log( "requestWeekNumberFromServer()" );
+    // Sleep before getting the date string to allow the selected date some time to be changed
+    await sleep( 200 );
+    var dateRequestString = buildDateRequestString();
+    var url = "http://www.fantasywizard.site/getweek/?&format=json&date=" + dateRequestString;
+
+    fetch(url)
+        .then(function(response){
+        if (response.status !== 200) {
+            console.log('Called to backend failed: ' + response.status);
+            return;
+        }
+        response.json().then(function(data) {
+            console.log( typeof data.weekNum );
+            var weekNum = data.weekNum;
+            addWeekGamesHeaders( data );
+        });
+    }).catch(function(err) {
+        console.log('Fetch Error :-S', err);
+    });
+}
+
+/*
+    addGamesWeekHeaders - adds the 'GAMES' and 'WEEK' headers to the HTML of the page.
+*/
+function addWeekGamesHeaders( data )
+{
+    console.log( "addWeekGamesHeaders()" );
+    var weekNum = data.weekNum;
+
+    if( updateHeaders == false )
+    {
+        // Maybe loop through these elements and if innerHTML contains STATUS then append
+        var listOfElements = document.getElementsByClassName( "Table2__header-row" );
+
+        for( var i = 0; i < listOfElements.length; i++ )
+        {
+            if( listOfElements[i].innerHTML.indexOf( "STARTERS" ) != -1 )
+            {
+                var newGamesHeader = document.createElement( "th" );
+                newGamesHeader.title = "Week number " + weekNum.toString() + " of fantasy basketball";
+                newGamesHeader.colSpan = "1";
+                newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header";
+                newGamesHeader.innerHTML = "WEEK" + weekNum.toString();
+                listOfElements[i].appendChild( newGamesHeader );
+            }
+            else if( listOfElements[i].innerHTML.indexOf( "STATUS" ) != -1 )
+            {
+                var newGamesHeader = document.createElement( "th" );
+                newGamesHeader.title = "Games Remaining / Games This Week";
+                newGamesHeader.colSpan = "1";
+                newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header";
+                newGamesHeader.innerHTML = "GR/G";
+                listOfElements[i].appendChild( newGamesHeader );
+            }
+        }
+    }
+    else
+    {
+        var listOfHeaders = document.getElementsByClassName( "fbw-header" );
+        for( var i = 0; i < listOfHeaders.length; i++ )
+        {
+            if( i % 2 == 0 )
+            {
+                listOfHeaders[i].title = "Week number " + weekNum.toString() + " of fantasy basketball";
+                listOfHeaders[i].innerHTML = "WEEK" + weekNum.toString();
+            }
+        }
+    }
+}
+
 
 async function requestDataFromServer()
 {
-    console.log( "requestDataFromServer()" );
+    // console.log( "requestDataFromServer()" );
 
     var teamsRequestString = buildTeamsRequestString();
     // Sleep before getting the date string to allow the selected date some time to be changed
     await sleep( 200 );     
     var dateRequestString = buildDateRequestString();
     // var url = 'https://bilalsattar24.pythonanywhere.com/gamesremaining/?'+teamsRequestString+'&format=json&date='+dateString;
-    var url = "http://www.fantasywizard.site/gamesremaining/?" + teamsRequestString + "&format=json&date=" + dateRequestString;
+    var url = "https://www.fantasywizard.site/gamesremaining/?" + teamsRequestString + "&format=json&date=" + dateRequestString;
     console.log( url );
 
     fetch(url)
@@ -236,8 +281,6 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
     console.log( localGamesDataDict );
 }
 
-var initialRender = true;
-
 
 function addGamesForPlayers( )
 {
@@ -252,7 +295,6 @@ function addGamesForPlayers( )
 
     if( initialRender == true )
     {
-        console.log( "INITIAL RENDER = TRUE" );
         // var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
         var index = 0;
 
@@ -460,8 +502,10 @@ $( 'body' ).on( 'click', 'div.custom--day', function()
     if( className.indexOf( "is-current" ) == -1 )
     {
         initialRender = true;
+        updateHeaders = true;
         removeColumn();
-        requestDataFromServer();
+        requestWeekNumberFromServer();  
+        requestDataFromServer();    
     }
 });
 
@@ -482,7 +526,7 @@ renderGames = function()
     // {
     //     myTeamRoster();
     // }
-    addGamesWeekHeaders();
+    requestWeekNumberFromServer();
     requestDataFromServer();
 }
 

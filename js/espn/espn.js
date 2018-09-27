@@ -321,7 +321,6 @@ function addGamesForPlayers( )
                 // TOTALS row
                 if( listOfElementsTr.innerHTML.indexOf( ">TOTALS</div>" ) != -1 )
                 {
-                    // console.log( "WORKING ON TOTALS" );
                     var totalGamesString = totalGamesRemaining.toString() + "/" + totalGamesForWeek.toString();
                     newGamesDiv.innerHTML = totalGamesString;
                     newGamesTd.className += " bg-clr-gray-08";
@@ -332,10 +331,7 @@ function addGamesForPlayers( )
                 {
                     if( !isInjured )
                     {
-                        // console.log( "adding games/games" );
-                        // newGamesDiv.innerHTML = data[index];
                         var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
-                        // console.log( "localGamesDataDict[listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML]=" + localGamesDataDict[teamName] );
                         newGamesDiv.innerHTML = localGamesDataDict[teamName];
                         var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                         totalGamesRemaining += parseInt( splitDataIndex[0] );
@@ -347,7 +343,6 @@ function addGamesForPlayers( )
                         newGamesDiv.innerHTML = "-/-";
                         newGamesTd.style.backgroundColor = getBackgroundColor( 0 );
                     }
-                    // index++;
                     listOfTeamNameElementsIndex++;
                 }
                 // Empty player
@@ -369,8 +364,6 @@ function addGamesForPlayers( )
         var listOfGamesDiv = document.getElementsByClassName( "fbw-games-remaining-div" );
         var listOfGamesIndex = 0;
         var backendIndex = 0;
-        console.log( "listOfGamesDiv.length=" + listOfGamesDiv.length );
-
 
         for( var i = 0; i < listOfElements.length; i++ )
         {
@@ -378,26 +371,21 @@ function addGamesForPlayers( )
 
             if( listOfElementsTr.children.length == 6 )
             {
-                // console.log( "in the 6 with my woes" );
                 var isInjured = false;
                 // 'O'ut, injured player
                 if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
                 {
-                    // console.log( "found injured" );
                     isInjured = true;
                 }
                 // TOTALS row
                 if( listOfElementsTr.innerHTML.indexOf( ">TOTALS</div>" ) != -1 )
                 {
-                    // console.log( "TOTALSZZZZZ" );
                     var totalGamesString = totalGamesRemaining.toString() + "/" + totalGamesForWeek.toString();
                     listOfGamesDiv[listOfGamesIndex].innerHTML = totalGamesString;
                 }
                 // // Normal player
                 else if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
                 {
-                    // console.log( "healthy player" );
-                    
                     // Healthy player 
                     if( !isInjured )
                     {
@@ -421,7 +409,6 @@ function addGamesForPlayers( )
                 // Empty player
                 else
                 {
-                    // console.log( "injured player" );
                     listOfGamesDiv[listOfGamesIndex].innerHTML = "-/-";
                     listOfGamesTd[listOfGamesIndex].style.backgroundColor = getBackgroundColor( 0 );
                 }
@@ -575,8 +562,6 @@ $('div' ).on( 'click', ' .playertablefiltersmenucontainer', function( event ) {
     Note: Have to wait a few seconds to load this dynamic page, otherwise it will not find any elements. 
 */
 $( document ).ready( function(){
-    // renderGames();
-    console.log( "TEST" );
     console.log('before');
     setTimeout(function(){
         console.log('after');

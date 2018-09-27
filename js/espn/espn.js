@@ -56,12 +56,11 @@ getBackgroundColor = function( games )
     }
     else if( games == 1 )
     {
-        return "#ffd6cc";
+        return "#ffe1ba";
     }
-    // Injured players
     else if( games == 0 )
     {
-        return "#ff7777";
+        return "#ffd6cc";
     }
 }
 

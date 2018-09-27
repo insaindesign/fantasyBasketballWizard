@@ -310,6 +310,7 @@ function addGamesForPlayers( )
                 var newGamesDiv = document.createElement( "div" );
                 newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td";
                 newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div";
+                newGamesDiv.style.textAlign = "center";
 
                 var isInjured = false;
                 // 'O'ut, injured player

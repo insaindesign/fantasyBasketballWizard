@@ -14,7 +14,7 @@
     },
     {
       "matches": ["http://fantasy.espn.com/basketball/*"],
-      "js": ["js/jquery-3.2.1.min.js", "js/espn/espn.js"]
+      "js": ["js/jquery-3.2.1.min.js", "js/espn/teamPage.js"]
     },
     {
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/research*"],

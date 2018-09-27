@@ -1,6 +1,8 @@
-//Fantasy Basketball Wizard
-//espn.js
-//--------------------------------Schedule-------------------------------------
+/* 
+    Fantasy Basketball Wizard #1 Chrome Extension (ever) for Fantasy Sports
+    
+    teamPage.js 
+*/
 
 var acronymEspnToYahoo = {};
 acronymEspnToYahoo["Atl"]  =  "Atl";

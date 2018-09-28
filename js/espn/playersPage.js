@@ -181,7 +181,7 @@ function addGamesForPlayers()
                 isInjured = true;
             }
             // Normal player
-            else if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
+            if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
             {
                 if( !isInjured )
                 {

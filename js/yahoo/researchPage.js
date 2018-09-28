@@ -59,7 +59,7 @@ function renderGames() {
     //"2019-1-7" must be in this format. we need to pull from the matchups screen to display number of games
     var dateString = getFormattedDate();
     console.log("dateString = " + dateString);
-    var url = 'https://www.fantasywizard.site/gamesremaining/?'+teamsString+'&format=json&date='+dateString;
+    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=research&'+teamsString+'&format=json&date='+dateString;
     console.log("before request");
     fetch(url)
         .then(function(response){

@@ -135,7 +135,7 @@ function renderGames() {
     console.log(teamsString)
     var dateString = getFormattedDate();
     console.log("dateString = " + dateString);
-    var url = 'https://www.fantasywizard.site/gamesremaining/?'+teamsString+'&format=json&date='+dateString;
+    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=transactionTrends&'+teamsString+'&format=json&date='+dateString;
     console.log("before request");
     fetch(url)
         .then(function(response){

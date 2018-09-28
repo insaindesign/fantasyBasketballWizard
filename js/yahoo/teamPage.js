@@ -619,7 +619,7 @@ render = function() {
 //-----------------------------------------------------------------
 
 if (currentUrl.indexOf(teamURLMatch) !== -1) {
-    //render();
+    render();
     //renderGames();
     //countStats();
 }

@@ -10,7 +10,7 @@ import os
 import time
 
 #delete players
-requests.get("https://www.fantasywizard.site/deleteplayers")
+requests.get("https://www.fantasywizard.site/sreyalpllaeteled")
 
 login_url = "https://login.yahoo.com/config/login?.src=fantasy&specId=usernameRegWithName&.intl=us&.lang=en-US&.done=https://basketball.fantasysports.yahoo.com/nba"
 

@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 import datetime
 import pytz
 
@@ -9,32 +10,6 @@ import pytz
 # they extend the class Model which is a django base model.
 # we need to design these properly to store the schedule and other statistic info
 
-#the types of pages that users can make a use of. will be a foriegn key in YahooUse
-class YahooUseType(models.Model):
-    pageName = models.CharField(max_length=25, primary_key=True)
-
-    def __str__(self):
-        return str(self.pageName)
-
-#if we wanna keep track of Yahoo emails   
-class YahooUser(models.Model):
-    email = models.EmailField(primary_key=True)
-    def __str__(self):
-        return self.pk
-
-class YahooUse(models.Model):
-    timeStamp = models.DateTimeField(auto_now=True)
-    useType = models.ForeignKey(YahooUseType,on_delete=models.CASCADE)
-
-    def __str__(self):
-        return str(self.useType)
-
-
-class ESPNUse(models.Model):
-    timeStamp = models.DateTimeField(auto_now=True)
-    useType = models.ForeignKey(YahooUseType,on_delete=models.CASCADE)
-
-
 class Week(models.Model):
     weekNum = models.IntegerField(primary_key=True)
     startDate = models.DateField()
@@ -43,14 +18,6 @@ class Week(models.Model):
     def __str__(self):
         return "Week " + str(self.weekNum) + ": " + str(self.startDate) + " through " + str(self.endDate)
 
-class Day(models.Model):
-    date = models.DateField(primary_key=True)
-    numberOfGames = models.IntegerField(default=0)
-
-    def __str__(self):
-        return str(self.numberOfGames) + " games on " + str(self.date)
-
-
 class Team(models.Model):
     name = models.CharField(max_length=15)
     city = models.CharField(max_length=25)
@@ -58,7 +25,6 @@ class Team(models.Model):
 
     def __str__(self):
         return self.city + " " + self.name + " "
-    
 
 class Game(models.Model):
     time = models.TimeField()
@@ -90,5 +56,7 @@ class Player(models.Model):
     def __str__(self):
         return str(self.playerID)
 
-class Test(models.Model):
-    test = models.CharField(max_length=100)
+class Use(models.Model):
+    timeStamp = models.DateTimeField(default = timezone.now)
+class UseType(models.Model):
+    pageName = models.CharField(max_length=100)

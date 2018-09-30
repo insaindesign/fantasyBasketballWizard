@@ -5,6 +5,7 @@ import pytz
 from django.shortcuts import render
 from django.db.models import Q
 from rest_framework.views import APIView
+from django.views.generic import TemplateView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from .utils.dataUtil import DataLoader
@@ -12,6 +13,7 @@ from .models import *
 from .serializers import *
 from decimal import *
 
+# ---------------------- API VIEWS -----------------------------
 class GamesRemaining(APIView):
     """
         Returns all gamesRemaining/GamesThisWeek for the given team and date. 
@@ -214,9 +216,15 @@ class GetWeekFromDate(APIView):
         requestDate = request.GET.get("date")
         serializer = WeekSerializer(DataLoader.getWeekFromDate(requestDate))
         return Response(serializer.data)
+# -------------- Template Views --------------------------------
+class PrivacyPolicy(TemplateView):
+    def get(self, request):
+        return render(request, template_name='wizard/privacyPolicy.html')
+        
 
-# Data loading methods
-# -------------------------------------------------------------------
+
+
+# -------------- Data loading methods --------------------------
 class LoadTeams(APIView):
     """loads all hard coded teams into database - /loadteams"""
     def get(self, request):

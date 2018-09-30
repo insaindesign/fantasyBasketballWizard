@@ -61,6 +61,10 @@ function getWeekNumFromDropdown() {
 function addDropDown() {
     var select = document.createElement("select");
     select.setAttribute("id", "dropdown");
+    var option = document.createElement("option");
+    option.setAttribute("value", 0);
+    option.innerText = "Today";
+    select.appendChild(option);
     for(var i=1; i<=24; i++) {
         var option = document.createElement("option");
         option.setAttribute("value", i);
@@ -70,7 +74,7 @@ function addDropDown() {
         }
         else {
             option.innerText = "Week " + i + "/19";
-            i++;    
+            i++;
         }
         select.appendChild(option);
     }
@@ -80,8 +84,6 @@ function addDropDown() {
     div.setAttribute("class", "navtarget");
     select.style.cssFloat ="right";
     document.getElementsByClassName("Nav-h Py-med No-brdbot Tst-pos-nav")[0].appendChild(select);
-
-
 }
 
 //sets the number of games in the games column for the new week selected by the user

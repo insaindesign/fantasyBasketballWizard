@@ -165,7 +165,7 @@ async function requestWeekNumberFromServer()
     // Sleep before getting the date string to allow the selected date some time to be changed
     await sleep( 200 );
     var dateRequestString = buildDateRequestString();
-    var url = "http://www.fantasywizard.site/getweek/?&format=json&date=" + dateRequestString;
+    var url = "http://www.fantasywizard.site/getweek/?pageName=eTeamsPage&format=json&date=" + dateRequestString;
 
     fetch(url)
         .then(function(response){
@@ -242,7 +242,7 @@ async function requestDataFromServer()
     await sleep( 200 );     
     var dateRequestString = buildDateRequestString();
     // var url = 'https://bilalsattar24.pythonanywhere.com/gamesremaining/?'+teamsRequestString+'&format=json&date='+dateString;
-    var url = "https://www.fantasywizard.site/gamesremaining/?" + teamsRequestString + "&format=json&date=" + dateRequestString;
+    var url = "https://www.fantasywizard.site/gamesremaining/?pageName=eTeamsPage" + teamsRequestString + "&format=json&date=" + dateRequestString;
     console.log( url );
 
     fetch(url)

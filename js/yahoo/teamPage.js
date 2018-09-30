@@ -36,7 +36,7 @@ function getFormattedDate() {
 
 function getGames(team){
     var dateString = getFormattedDate();
-    var url = 'https://www.fantasywizard.site/gamesremaining/?teams='+team+'&format=json&date='+dateString;
+    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yTeamsPage&teams='+team+'&format=json&date='+dateString;
     var req = new XMLHttpRequest();
     req.open("GET", url, false);
     req.send(null);

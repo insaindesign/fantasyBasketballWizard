@@ -237,7 +237,7 @@ function requestDataFromServer()
     var teamsRequestString = buildTeamsRequestString(); 
     var dateRequestString = getFormattedTodaysDate();
     // var url = 'https://bilalsattar24.pythonanywhere.com/gamesremaining/?'+teamsRequestString+'&format=json&date='+dateString;
-    var url = "https://www.fantasywizard.site/gamesremaining/?" + teamsRequestString + "&format=json&date=" + dateRequestString;
+    var url = "https://www.fantasywizard.site/gamesremaining/?pageName=ePlayersPage" + teamsRequestString + "&format=json&date=" + dateRequestString;
     console.log( url );
 
     fetch(url)

@@ -93,9 +93,9 @@ function buildTeamsRequestString()
     return teamsRequestString;
 }
 
-function sleep(ms)
+function sleep( ms )
 {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise( resolve => setTimeout( resolve, ms ) );
 }
 
 function buildDateRequestString()

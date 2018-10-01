@@ -92,7 +92,6 @@ function requestWeekNumberFromServer()
     console.log( "requestWeekNumberFromServer()" );
     // Sleep before getting the date string to allow the selected date some time to be changed
     var dateRequestString = getFormattedTodaysDate();
-    console.log( dateRequestString );
     var url = "http://www.fantasywizard.site/getweek/?&format=json&date=" + dateRequestString;
 
     fetch(url)

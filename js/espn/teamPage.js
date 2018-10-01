@@ -481,62 +481,15 @@ $( 'body' ).on( 'click', 'div.custom--day', function()
 
 
 /*
-    renderGames - the main function containing the logic to add:
-    1) 'GAMES' header
-    2) 'TOTAL' subheader
-    3) The number of games per week for a player
-        i) '--' for empty player row or free agents
-    4) Total number of games for the entire team for the week
+    renderGames - 
 */
 renderGames = function()
 {
     console.log("Fantasy Wizard rendering...");
 
-    // if( pageType == "Roster" )
-    // {
-    //     myTeamRoster();
-    // }
     requestWeekNumberFromServer();
     requestDataFromServer();
 }
-
-var refreshSleepTime = 700;
-
-/*
-    Event listener for when a date in the top navigation bar with the 
-    black background is clicked - Today, Weekday, Month Date
-*/
-//if( pageType == "Roster" )
-//{
-//    document.getElementsByClassName( "games-dates-mod" )[0].addEventListener( "click" , function() {
-//        setTimeout( () => {
-//            renderGames();
-//        }, refreshSleepTime );
-//    });
-//}
-
-/*
-    Event listener for navigating between 'Month Date', 'Last 7',
-    'Last 15', 'Last 30', '2018 Season', '2017', '2018 Projections'
-*/
-$('div' ).on( 'click', ' .playertablefiltersmenucontainer', function( event ) {
-    event.stopPropagation();
-    var thisText = $( this ).text();
-    if( pageType == "Roster" &&
-        thisText != "Last 7" &&
-        thisText != "Last 15" &&
-        thisText != "Last 30" &&
-        thisText != "2018 Season" &&
-        thisText != "2017" &&
-        thisText != "2018 Projections"
-      )
-    {
-        dateRanges = true;
-        setTimeout( () => {
-            renderGames();
-        }, refreshSleepTime );
-    }
-});
 
 
 /*

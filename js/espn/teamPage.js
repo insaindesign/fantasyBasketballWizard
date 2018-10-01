@@ -75,25 +75,6 @@ getTodaysDate = function()
     return todaysDate;
 }
 
-/*
-    setYourLineUpDateFormat - returns a Date object with the month and date as inputs.
-
-    pMonth - Month as a string
-    pDate - Date as a string
-*/
-setYourLineUpDateFormat = function( pMonth, pDate )
-{
-    if( pMonth == "Oct" ){ return new Date( 2017, 9, pDate ); }
-    else if( pMonth == "Nov" ){ return new Date( 2017, 10, pDate ); }
-    else if( pMonth == "Dec" ){ return new Date( 2017, 11, pDate ); }
-    else if( pMonth == "Jan" ){ return new Date( 2018, 0, pDate ); }
-    else if( pMonth == "Feb" ){ return new Date( 2018, 1, pDate ); }
-    else if( pMonth == "Mar" ){ return new Date( 2018, 2, pDate ); }
-    else if( pMonth == "Apr" ){ return new Date( 2018, 3, pDate ); }
-}
-
-
-
 var initialRender = true;
 var updateHeaders = false;
 var localGamesDataDict = {};

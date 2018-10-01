@@ -242,7 +242,7 @@ async function requestDataFromServer()
     await sleep( 200 );     
     var dateRequestString = buildDateRequestString();
     // var url = 'https://bilalsattar24.pythonanywhere.com/gamesremaining/?'+teamsRequestString+'&format=json&date='+dateString;
-    var url = "https://www.fantasywizard.site/gamesremaining/?pageName=eTeamsPage" + teamsRequestString + "&format=json&date=" + dateRequestString;
+    var url = "https://www.fantasywizard.site/gamesremaining/?pageName=eTeamsPage&" + teamsRequestString + "&format=json&date=" + dateRequestString;
     console.log( url );
 
     fetch(url)

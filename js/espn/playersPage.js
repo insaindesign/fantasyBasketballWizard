@@ -36,6 +36,13 @@ acronymEspnToYahoo["Tor"]  =  "Tor";
 acronymEspnToYahoo["Utah"] =  "Uta";
 acronymEspnToYahoo["Wsh"]  =  "Was";
 
+var localGamesDataDict = {};
+
+function sleep( ms )
+{
+  return new Promise( resolve => setTimeout( resolve, ms ) );
+}
+
 function getFormattedTodaysDate()
 {
     var todaysDate = new Date();
@@ -144,6 +151,12 @@ function buildTeamsRequestString()
     for( var i = 0; i < listOfElements.length; i++ )
     {
         teamsRequestString += acronymEspnToYahoo[listOfElements[i].innerHTML] + ",";
+        // teamsRequestString += acronymEspnToYahoo[listOfElements[i].innerHTML] + ",";
+        if( !( acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] in localGamesDataDict ) )
+        {
+            localGamesDataDict[ acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] ] = "";
+            teamsRequestString += acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] + ",";
+        }
     }
     console.log( teamsRequestString );
     return teamsRequestString;
@@ -197,32 +210,41 @@ function addGamesForPlayers()
                     newGamesDiv.innerHTML = "-/-";
                     newGamesTd.style.backgroundColor = getBackgroundColor( 0 );
                 }
-                listOfTeamNameElementsIndex++;
             }
-            // Empty player
-            else
-            {
-                newGamesDiv.innerHTML = "-/-";    
-            }
+            listOfTeamNameElementsIndex++;
+            // Don't have empty players in Free agents
+            // // Empty player
+            // else
+            // {
+            //     newGamesDiv.innerHTML = "-/-";    
+            // }
             newGamesTd.appendChild( newGamesDiv );
             listOfElementsTr.appendChild( newGamesTd );
         }
     }
 }
 
+
 function addGamesDataToLocalDictionary( data, teamsRequestString )
 {
-    localGamesDataDict = {};
+    // Don't need to erase the local games info because the date doesn't change for free agents, can build onto
+    // The data structure as I use it
+    // localGamesDataDict = {};
     console.log( "addDataToLocalDictionary()" );
     var teamsRequestStringConcise = teamsRequestString.substring( 6, teamsRequestString.length-1 );
     var teamsList = teamsRequestStringConcise.split( "," );
     for( var i = 0; i < data.length; i++ )
     {
-        if( !( teamsList[i] in localGamesDataDict ) )
+        if( localGamesDataDict[teamsList[i]] == "" )
         {
-            // console.log( "OG team - " + teamsList[i]);
             localGamesDataDict[teamsList[i]] = data[i];
         }
+
+        // if( !( teamsList[i] in localGamesDataDict ) )
+        // {
+        //     // console.log( "OG team - " + teamsList[i]);
+        //     localGamesDataDict[teamsList[i]] = data[i];
+        // }
         // else
         // {
         //     console.log( "Duplicate team - " + teamsList[i]);
@@ -231,28 +253,53 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
     console.log( localGamesDataDict );
 }
 
-function requestDataFromServer()
+async function requestDataFromServer()
 {
     console.log( "requestDataFromServer()" );
+    await sleep( 3000 );
     var teamsRequestString = buildTeamsRequestString(); 
-    var dateRequestString = getFormattedTodaysDate();
-    // var url = 'https://bilalsattar24.pythonanywhere.com/gamesremaining/?'+teamsRequestString+'&format=json&date='+dateString;
-    var url = "https://www.fantasywizard.site/gamesremaining/?pageName=ePlayersPage&" + teamsRequestString + "&format=json&date=" + dateRequestString;
-    console.log( url );
 
-    fetch(url)
-        .then(function(response){
-        if (response.status !== 200) {
-            console.log('Called to backend failed: ' + response.status);
-            return;
-        }
-        response.json().then(function(data) {
-            addGamesDataToLocalDictionary( data, teamsRequestString );
-            addGamesForPlayers();
-        });
-    }).catch(function(err) {
-        console.log('Fetch Error :-S', err);
-    });
+
+    // Code did not find any new teams to request from the server
+    if( teamsRequestString == "teams=" )
+    {
+        addGamesForPlayers();
+    }
+    else
+    {
+        var dateRequestString = getFormattedTodaysDate();
+        var url = "https://www.fantasywizard.site/gamesremaining/?pageName=ePlayersPage&" + teamsRequestString + "&format=json&date=" + dateRequestString;
+        console.log( url );
+
+        fetch( url )
+            .then( function( response )
+            {
+                if ( response.status !== 200 )
+                {
+                    console.log('Called to backend failed: ' + response.status );
+                    return;
+                }
+                response.json().then( function( data )
+                {
+                    addGamesDataToLocalDictionary( data, teamsRequestString );
+                    addGamesForPlayers();
+                });
+            }).catch( function( err )
+            {
+                console.log('Fetch Error :-S', err);
+            });
+    }
+}
+
+function removeColumn()
+{
+    console.log( "removeColumn()" );
+    var elements = document.getElementsByClassName( "fbw-games-remaining-td" );
+
+    while( elements.length > 0 )
+    {
+        elements[0].parentNode.removeChild( elements[0] );
+    }
 }
 
 renderGames = function()
@@ -262,6 +309,25 @@ renderGames = function()
     requestWeekNumberFromServer();
     requestDataFromServer();
 }
+
+
+
+$( 'body' ).on( 'click', 'li.PaginationNav__list__item', function() 
+{
+    console.log( $( this ).text() ) ;
+    var className = this.className;
+
+    if( className.indexOf( "PaginationNav__list__item--active" ) == -1 )
+    {
+        removeColumn();
+        requestDataFromServer();
+    //     initialRender = true;
+    //     updateHeaders = true;
+    //     removeColumn();
+    //     requestWeekNumberFromServer();  
+    //     requestDataFromServer();    
+    }
+});
 
 $( document ).ready( function()
 {

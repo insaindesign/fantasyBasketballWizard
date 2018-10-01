@@ -1,8 +1,11 @@
+# Fantasy Wizard Backend
+# est. 2017
 import datetime
 import pytz
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.db.models import Q
 from rest_framework.views import APIView
+from django.views.generic import TemplateView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from .utils.dataUtil import DataLoader
@@ -10,58 +13,48 @@ from .models import *
 from .serializers import *
 from decimal import *
 
-# Create your views here.
-# ignore
-class TestView(APIView):
-    def get(self, request):
-        test = Test.objects.all()
-        q = request.queryset
-        serializer = TestSerializer(test, many=True)
-        # you can return an http response with html to display a page
-        return Response(serializer.data)
-
+# ---------------------- API VIEWS -----------------------------
 class GamesRemaining(APIView):
     """
         Returns all gamesRemaining/GamesThisWeek for the given team and date. 
-        /?teams=LAL,OKC,GSW,BOS,&date=2019-1-1&format=json
+        /?pageName=javascriptPage&teams=LAL,OKC,GSW,BOS,&date=2019-1-1&format=json
     """
-    # gets called on a get request to this class.
     def get(self, request):
         dayBeforeSeasonStartDate = datetime.date(2018, 10, 15)
         gameCountList = []
-        # get the requested team and week objects from the database
         requestTeamsString = request.GET.get("teams")
         pageName = request.GET.get("pageName")
         requestTeams = self.getCleanedTeamsString(requestTeamsString)
-        
-        
         requestWeek = request.GET.get("weekNum")
         date = request.GET.get("date")
         print("Request: Games Remaining as of " + date)
         print(requestTeams)
         requestDate = DataLoader.stringDateToDateObject(date) # yyyy-m-d
         
-        if dayBeforeSeasonStartDate > requestDate:	       
+        #preseaosn dates should always return 0/0 because there is no week associated with preseason
+        if dayBeforeSeasonStartDate > requestDate and pageName != "weekSelect":	       
             print("pre season - no games")	  
             for teamAcronym in requestTeams:
                 gameCountList.append("0/0")
             print("Response for Games Remaining")
             print(gameCountList)
+            Use(useType = UseType.objects.get(pageName = pageName)).save()
             return Response(gameCountList)
         
         # if no week in the request, get the corresponding week
         if requestWeek == None:
             requestWeek = DataLoader.getWeekFromDate(date)
 
-
         # get each teams games remaining as of the request date
         for teamAcronym in requestTeams:
             requestTeam = DataLoader.getTeamFromAcronym(teamAcronym)
             gamesRemaining = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek,date__gte=requestDate)
             numGamesRemaining = gamesRemaining.count()
+            
             if(self.isTodaysGameOver(gamesRemaining, requestDate) == True):
                 print("Today's game for " + teamAcronym + " is over")
                 numGamesRemaining = numGamesRemaining - 1
+            
             numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek).count()
             fraction = str(numGamesRemaining) + "/" + str(numGames)            
             gameCountList.append(fraction)
@@ -69,21 +62,35 @@ class GamesRemaining(APIView):
 
         print("Response for Games Remaining")
         print(gameCountList)
+        Use(useType = UseType.objects.get(pageName = pageName)).save()
         #numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count()
-        return Response(gameCountList)
 
-   
+        return Response(gameCountList)
+        
     def isTodaysGameOver(self, gamesRemaining, requestDate):
+        """
+            Determines whether todays game is over
+
+            gamesRemaining - a list of Games
+                - if one of these games is today
+                    -is it currently 3 hours after this game start time?
+            requestDate - date that the request came in on
+        """
         #get nowtime
         now = datetime.datetime.now().astimezone(pytz.timezone('US/Eastern'))
         #get todays game
         todaysGameQuery = gamesRemaining.filter(date=requestDate)
+
         if todaysGameQuery.count() < 1:
             return False
+
         todaysGame = todaysGameQuery[0]
         gameTime = todaysGame.time
         gameDate = todaysGame.date
-        gameDateTime = datetime.datetime(gameDate.year, gameDate.month, gameDate.day, gameTime.hour, gameTime.minute, tzinfo=pytz.timezone('US/Eastern'))
+        gameDateTime = datetime.datetime(gameDate.year, gameDate.month, 
+                gameDate.day, gameTime.hour, gameTime.minute, 
+                tzinfo=pytz.timezone('US/Eastern')
+        )
         
         #for testing. change this to which time you want to test as of
         #now = datetime.datetime(gameDate.year, gameDate.month, gameDate.day, 23, 1, tzinfo=pytz.timezone('US/Eastern'))
@@ -119,30 +126,41 @@ class TotalGamesToday(APIView):
     def get(self, request):
         requestDate = request.GET.get("date")
         requestWeek = request.GET.get("weekNum")
+        
         if requestDate == None:
             requestDate= str(Week.objects.get(weekNum=requestWeek).startDate)
+        
         gameDate = DataLoader.stringDateToDateObject(requestDate)
         games = Game.objects.filter(date=gameDate).count()
         return Response(games)
 
-class AddUse(APIView):
-    def get(self, request):
-        requestUseType = request.GET.get("useType")
-        print(requestUseType)
-        useType=YahooUseType.objects.get(pageName=requestUseType)
-        yahooUser=YahooUser.objects.get(email="kobebryant5@yahoo.com")
-        YahooUse(useType=useType,user=yahooUser).save()
-        return Response("saved successfully")
 class GetPlayerStats(APIView):
+
     def get(self, request):
         playerID = request.GET.get("id")
-        # need to get serializer for Player class
-        return Response(Players.objects.get(playerID=playerID))
+        print("Request: Player stats for: " + playerID)
+
+        try:
+            player = Player.objects.get(playerID=playerID)
+        except:
+            return Response(playerID + " not found")
+
+        serializer = PlayerSerializer(player)
+        print("Response: " + str(serializer.data))
+        
+        return Response(serializer.data)
 
 class AddPlayer(APIView):
+    """  
+        Adds a player to the database
+        ?id=JHardenHou&team=HOU&ppg=22.1&rpg=7.4&apg=4.9&spg=2.0&bpg=1.5
+        &topg=2.2&ftmpg=7.4&ftapg=8.7&ftpct=85&fgapg=17.8&fgmpg=11.2
+        &fgpct=54.2&threepg=2.3&format=json
+    """
     def get(self, request):
         team = DataLoader.getTeamFromAcronym(request.GET.get("team"))
-        Player(playerID = request.GET.get("id"),
+        id = request.GET.get("id")
+        Player(playerID = id,
             team = team,
             ppg = Decimal(request.GET.get("ppg")),
             rpg = Decimal(request.GET.get("rpg")),
@@ -158,10 +176,13 @@ class AddPlayer(APIView):
             fgpct = Decimal(request.GET.get("fgpct")),
             threepg = Decimal(request.GET.get("threepg"))
         ).save()
-        return Response("successfully added player")
+        return Response("successfully added player: " + id)
 
 class GamesThisWeek(APIView):
-    """Returns all games for the given week and team - /?teams=LAL,OKC,GSW,BOS,&weekNum=3"""
+    """
+        Returns all games for the given week and team - 
+        /?teams=LAL,OKC,GSW,BOS,&weekNum=3
+    """
     def get(self, request):
         gameCountList = []
         # get the requested team and week objects from the database
@@ -187,7 +208,26 @@ class GamesThisWeek(APIView):
         #numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count() 
         return Response(gameCountList)
 
-# Data loading methods
+class GetWeekFromDate(APIView):
+    """ 
+        Returns the week object for the requested date -
+        /getweek/?date=2019-1-1
+    """
+    def get(self, request):
+        requestDate = request.GET.get("date")
+        serializer = WeekSerializer(DataLoader.getWeekFromDate(requestDate))
+        return Response(serializer.data)
+# -------------- Template Views --------------------------------
+class PrivacyPolicy(TemplateView):
+    def get(self, request):
+        return render(request, template_name='wizard/privacyPolicy.html')
+        
+class Contact(TemplateView):
+    def get(self, request):
+        return redirect('https://chrome.google.com/webstore/detail/fantasy-basketball-wizard/bmojbnihkmbdandkddobjnilkegcooll?hl=en')
+
+
+# -------------- Data loading methods --------------------------
 class LoadTeams(APIView):
     """loads all hard coded teams into database - /loadteams"""
     def get(self, request):

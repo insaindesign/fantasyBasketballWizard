@@ -32,13 +32,14 @@ function getGames() {
 }
 
 function displayGamesToday(data) {
-    var p = document.createElement("p");
-    p.innerText = " NBA games today: " + data;
-    p.setAttribute("class", "Ta-c C-grey Mt-10");
-    p.style.color = "#0078FF";
-    var section = document.getElementById("matchup-wall-header");
-    section.appendChild(p);
-    
-
+    var div = document.createElement("p");
+    div.innerText = " NBA games today: " + data;
+    div.setAttribute("class", "Ta-c C-grey Mt-10");
+    div.style.color = "#0078FF";
+    div.style.fontSize = "13px";
+    div.style.marginTop = "0px";
+    var className = "felo-matchup-button yfa-rapid-beacon yfa-rapid-module-felo-matchup-button F-link Cur-p Fz-m";
+    var parentDiv = document.getElementsByClassName(className)[0].parentNode;
+    parentDiv.appendChild(div);
 }
 getGames();

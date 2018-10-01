@@ -15,16 +15,16 @@ function init() {
     renderGames();
     addDropDown();
     var dropdown = document.getElementById("dropdown");
-     dropdown.addEventListener("change", function() {
-         var weekNum = getWeekNumFromDropdown();
-         resetGames(weekNum);
+    dropdown.addEventListener("change", function () {
+        var weekNum = getWeekNumFromDropdown();
+        resetGames(weekNum);
     });
 }
 
 //check values from that <td> to values from the Teams array to find the team abbreviation
 function getTeamFromInfo(playerInfo) {
-    for(var j=0; j<Teams.length; j++) {
-        if(Teams.includes(playerInfo[j])) {
+    for (var j = 0; j < Teams.length; j++) {
+        if (Teams.includes(playerInfo[j])) {
             var team = playerInfo[j];
             break;
         }
@@ -33,15 +33,15 @@ function getTeamFromInfo(playerInfo) {
 }
 
 //determine color based on number of games
-function getColor(games){
+function getColor(games) {
     var numGames = parseInt(games.split("/")[0], 10);
-    if (numGames > 3){
+    if (numGames > 3) {
         return highColor;
-    } else if (numGames == 3){
+    } else if (numGames == 3) {
         return medColor;
-    } else if (numGames == 2){
+    } else if (numGames == 2) {
         return lowColor;
-    } else if (numGames == 1){
+    } else if (numGames == 1) {
         return lowColor;
     } else if (numGames == 0) {
         return noneColor;
@@ -61,16 +61,19 @@ function getWeekNumFromDropdown() {
 function addDropDown() {
     var select = document.createElement("select");
     select.setAttribute("id", "dropdown");
-    for(var i=1; i<=24; i++) {
+    var option = document.createElement("option");
+    option.setAttribute("value", 0);
+    option.innerText = "Today";
+    select.appendChild(option);
+    for (var i = 1; i <= 24; i++) {
         var option = document.createElement("option");
         option.setAttribute("value", i);
         option.innerText = "Week " + i;
-        if(i!=18) {
+        if (i != 18) {
             option.innerText = "Week " + i;
-        }
-        else {
+        } else {
             option.innerText = "Week " + i + "/19";
-            i++;    
+            i++;
         }
         select.appendChild(option);
     }
@@ -78,10 +81,8 @@ function addDropDown() {
     var div = document.createElement("div");
     div.innerText = "wk";
     div.setAttribute("class", "navtarget");
-    select.style.cssFloat ="right";
+    select.style.cssFloat = "right";
     document.getElementsByClassName("Nav-h Py-med No-brdbot Tst-pos-nav")[0].appendChild(select);
-
-
 }
 
 //sets the number of games in the games column for the new week selected by the user
@@ -91,34 +92,34 @@ function resetGames(weekNum) {
     var playerInfo;
 
     console.log(teamsString)
-    var dateString = "date="+getFormattedDate();
+    var dateString = "date=" + getFormattedDate();
     console.log("dateString = " + dateString);
-    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=weekSelect&'+teamsString+'&format=json'+'&weekNum='+weekNum+'&'+dateString;
+    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=weekSelect&' + teamsString + '&format=json' + '&weekNum=' + weekNum + '&' + dateString;
     console.log("before request");
-    console.log("weekNum="+weekNum);
+    console.log("weekNum=" + weekNum);
     fetch(url)
-        .then(function(response){
-        if (response.status !== 200) {
-            console.log('Called to backend failed: ' + response.status);
-            return;
-        }
+        .then(function (response) {
+            if (response.status !== 200) {
+                console.log('Called to backend failed: ' + response.status);
+                return;
+            }
 
-        response.json().then(function(data) {
-            var gameColumn = document.getElementsByClassName("gameColumn");
-            console.log(data)
-            for(var i=0; i<rows.length; i++) {
-                gameColumn[i].innerText = data[i];
-                gameColumn[i].style.backgroundColor = getColor(data[i])
-            }    
+            response.json().then(function (data) {
+                var gameColumn = document.getElementsByClassName("gameColumn");
+                console.log(data)
+                for (var i = 0; i < rows.length; i++) {
+                    gameColumn[i].innerText = data[i];
+                    gameColumn[i].style.backgroundColor = getColor(data[i])
+                }
+            });
+        }).catch(function (err) {
+            console.log('Fetch Error :-S', err);
         });
-    }).catch(function(err) {
-        console.log('Fetch Error :-S', err);
-    });
 }
 
 function getFormattedDate() {
     var d = new Date();
-    return d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
+    return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
 }
 
 //initial appending of new colum for current week with games
@@ -127,29 +128,29 @@ function renderGames() {
     var playerInfo;
 
     //go through rows of table
-    for(var i=1; i<rows.length; i++) {
+    for (var i = 1; i < rows.length; i++) {
         //grab all text from the <td> that includes the team/player name
-        playerInfo = rows[i].cells[1].innerText.split(" "); 
+        playerInfo = rows[i].cells[1].innerText.split(" ");
         teamsString += getTeamFromInfo(playerInfo) + ",";
     }
     console.log(teamsString)
     var dateString = getFormattedDate();
     console.log("dateString = " + dateString);
-    var url = 'https://www.fantasywizard.site/gamesremaining/?'+teamsString+'&format=json&date='+dateString;
+    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=transactionTrends&' + teamsString + '&format=json&date=' + dateString;
     console.log("before request");
     fetch(url)
-        .then(function(response){
-        if (response.status !== 200) {
-            console.log('Called to backend failed: ' + response.status);
-            return;
-        }
+        .then(function (response) {
+            if (response.status !== 200) {
+                console.log('Called to backend failed: ' + response.status);
+                return;
+            }
 
-        response.json().then(function(data) {
-            addGames(data);
+            response.json().then(function (data) {
+                addGames(data);
+            });
+        }).catch(function (err) {
+            console.log('Fetch Error :-S', err);
         });
-    }).catch(function(err) {
-        console.log('Fetch Error :-S', err);
-    });
 
 }
 
@@ -167,10 +168,10 @@ function addGames(data) {
     document.getElementsByClassName("Hd No-p")[1].appendChild(gpTip);
 
 
-    for(var i=1; i<rows.length; i++) {
-        
+    for (var i = 1; i < rows.length; i++) {
+
         //create new cell and fill with proper attributes/data
-        var numGames = data[i-1];
+        var numGames = data[i - 1];
         newCell = rows[i].insertCell(9);
         rows[i].cells[5].setAttribute("class", "Bdrend");
         newCell.style.border.color = borderColor;
@@ -179,17 +180,17 @@ function addGames(data) {
         newCell.style.backgroundColor = getColor(numGames);
         newCell.setAttribute("class", "gameColumn");
     }
-    gpCell.addEventListener("mouseover", function() {
-        gpTip.innerText="*Games remaining this week / Games this week";
+    gpCell.addEventListener("mouseover", function () {
+        gpTip.innerText = "*Games remaining this week / Games this week";
     });
     gpCell.addEventListener("mouseout", function () {
-        gpTip.innerText="";
+        gpTip.innerText = "";
     });
-    gpTip.addEventListener("mouseover", function() {
-        gpTip.innerText="*Games remaining this week / Games this week";
+    gpTip.addEventListener("mouseover", function () {
+        gpTip.innerText = "*Games remaining this week / Games this week";
     });
     gpTip.addEventListener("mouseout", function () {
-        gpTip.innerText="";
+        gpTip.innerText = "";
     });
 }
 

@@ -41,3 +41,7 @@ backend/wizard/migrations/__pycache__/0002_auto_20180923_0906.cpython-37.pyc
 backend/wizard/migrations/__pycache__/0003_auto_20180923_0933.cpython-37.pyc
 backend/wizard/migrations/__pycache__/0004_auto_20180923_0934.cpython-37.pyc
 backend/wizard/migrations/__pycache__/0005_auto_20180923_0936.cpython-37.pyc
+backend/wizard/migrations/0006_auto_20180929_0233.py
+backend/wizard/migrations/__pycache__/0006_auto_20180929_0233.cpython-37.pyc
+backend/wizard/migrations/0007_use_timezone.py
+backend/wizard/migrations/__pycache__/0007_use_timezone.cpython-37.pyc

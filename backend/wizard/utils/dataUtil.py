@@ -2,12 +2,12 @@ import csv
 import datetime
 from wizard.models import *
 
-
 class DataLoader:
     """This class will load the base with the team and schedule data"""
 
     @staticmethod
     def loadTeams():
+        """Loads all teams into database"""
         Team(city="Atlanta", name="Hawks", acronym="ATL").save()
         Team(city="Boston", name="Celtics", acronym="BOS").save()
         Team(city="Brooklyn", name="Nets", acronym="BKN").save()
@@ -41,6 +41,7 @@ class DataLoader:
 
     @staticmethod    
     def loadWeeks():
+        """loads all weeks into database"""
         Week(weekNum=1, startDate="2018-10-15", endDate="2018-10-21").save()
         Week(weekNum=2, startDate="2018-10-22", endDate="2018-10-28").save()
         Week(weekNum=3, startDate="2018-10-29", endDate="2018-11-4").save()
@@ -73,6 +74,7 @@ class DataLoader:
 
     @staticmethod
     def loadGames():
+        """loads all games from schedule.csv into database"""
         file = open('wizard/utils/schedule.csv')
         csvReader = csv.reader(file, delimiter=',')
         i = 1
@@ -98,6 +100,7 @@ class DataLoader:
         
     @staticmethod
     def deleteAllGames():
+        """deletes all games in database"""
         i=1
         print("deleting all games...")
         for game in Game.objects.all():
@@ -107,6 +110,7 @@ class DataLoader:
         print("done")
     
     def deleteAllPlayers():
+        """Deletes all players stored in database"""
         i=1
         print("deleting all players...")
         for player in Player.objects.all():
@@ -136,4 +140,3 @@ class DataLoader:
     def getTeamFromAcronym(teamAcronym):
         """returns team object from an acronym string"""
         return Team.objects.get(acronym=teamAcronym)
-    

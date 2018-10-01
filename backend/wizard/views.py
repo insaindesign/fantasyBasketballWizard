@@ -38,6 +38,7 @@ class GamesRemaining(APIView):
                 gameCountList.append("0/0")
             print("Response for Games Remaining")
             print(gameCountList)
+            Use(useType = UseType.objects.get(pageName = pageName)).save()
             return Response(gameCountList)
         
         # if no week in the request, get the corresponding week

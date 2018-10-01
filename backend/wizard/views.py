@@ -2,7 +2,7 @@
 # est. 2017
 import datetime
 import pytz
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.db.models import Q
 from rest_framework.views import APIView
 from django.views.generic import TemplateView
@@ -222,7 +222,9 @@ class PrivacyPolicy(TemplateView):
     def get(self, request):
         return render(request, template_name='wizard/privacyPolicy.html')
         
-
+class Contact(TemplateView):
+    def get(self, request):
+        return redirect('https://chrome.google.com/webstore/detail/fantasy-basketball-wizard/bmojbnihkmbdandkddobjnilkegcooll?hl=en')
 
 
 # -------------- Data loading methods --------------------------

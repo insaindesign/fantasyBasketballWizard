@@ -4,9 +4,9 @@
     teamPage.js 
 */
 
-/*
-    Global Variables  
-*/
+/* ----------------------------------------------
+                Global Variables  
+---------------------------------------------- */
 var acronymEspnToYahoo = {};        // Dictionary to convert acronyms from ESPN to Yahoo
 var initialRender = true;           // Flag to tell if it is a complete render
 var localGamesDataDict = {};        // Holds the game remaining data
@@ -43,44 +43,11 @@ acronymEspnToYahoo["Tor"]  =  "Tor";
 acronymEspnToYahoo["Utah"] =  "Uta";
 acronymEspnToYahoo["Wsh"]  =  "Was";
 
-/* 
-    getBackgroundColor - returns the background color
-    associated with the number of games.
 
-    games - The number of games
-*/
-getBackgroundColor = function( games )
-{
-    if( games > 3 )
-    {
-        return "#adebad";
-    }
-    else if( games == 3 )
-    {
-        return "#d8ffcc";
-    }
-    else if( games == 2 )
-    {
-        return "#ffffcc";
-    }
-    else if( games == 1 )
-    {
-        return "#ffe1ba";
-    }
-    else if( games == 0 )
-    {
-        return "#ffd6cc";
-    }
-}
+/* ----------------------------------------------
+                Helper Functions  
+---------------------------------------------- */
 
-/* 
-    getTodaysDate - returns today's date by returning a new Date object.
-*/
-getTodaysDate = function()
-{
-    var todaysDate = new Date();
-    return todaysDate;
-}
 
 /*
     buildTeamsRequestString - creates part of the url for the teams to 
@@ -100,14 +67,6 @@ function buildTeamsRequestString()
     return teamsRequestString;
 }
 
-/*
-    sleep - to create a delay in some functions to help the dynamic ESPN
-    page load and change different settings
-*/
-function sleep( ms )
-{
-  return new Promise( resolve => setTimeout( resolve, ms ) );
-}
 
 /*
     buildDateRequestString - 
@@ -153,6 +112,66 @@ function buildDateRequestString()
     }
 }
 
+/*
+    buildTeamsRequestString - creates part of the url for the teams to 
+    request game data for.
+*/
+function buildTeamsRequestString()
+{
+    // console.log( "buildTeamsRequestString()" );
+
+    var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );
+    var teamsRequestString = "teams=";
+    for( var i = 0; i < listOfElements.length; i++ )
+    {
+        teamsRequestString += acronymEspnToYahoo[listOfElements[i].innerHTML] + ",";
+    }
+    // console.log( teamsRequestString );
+    return teamsRequestString;
+}
+
+/*
+    sleep - to create a delay in some functions to help the dynamic ESPN
+    page load and change different settings
+*/
+function sleep( ms )
+{
+  return new Promise( resolve => setTimeout( resolve, ms ) );
+}
+
+/* 
+    getBackgroundColor - returns the background color
+    associated with the number of games.
+
+    games - The number of games
+*/
+getBackgroundColor = function( games )
+{
+    if( games > 3 )
+    {
+        return "#adebad";
+    }
+    else if( games == 3 )
+    {
+        return "#d8ffcc";
+    }
+    else if( games == 2 )
+    {
+        return "#ffffcc";
+    }
+    else if( games == 1 )
+    {
+        return "#ffe1ba";
+    }
+    else if( games == 0 )
+    {
+        return "#ffd6cc";
+    }
+}
+
+/* ----------------------------------------------
+                Main Functions  
+---------------------------------------------- */
 /*
     requestWeekNumberFromServer - 
 */
@@ -230,7 +249,7 @@ function addWeekGamesHeaders( data )
 }
 
 /*
-
+    requestDataFromServer
 */
 async function requestDataFromServer()
 {
@@ -574,6 +593,9 @@ function renderGames( type )
     }
 }
 
+/* ----------------------------------------------
+                Document Ready  
+---------------------------------------------- */
 
 /*
     Main load of calling render games when the document is ready.

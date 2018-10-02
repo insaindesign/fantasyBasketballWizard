@@ -110,7 +110,7 @@ function sleep( ms )
 }
 
 /*
-
+    buildDateRequestString - 
 */
 function buildDateRequestString()
 {
@@ -154,7 +154,7 @@ function buildDateRequestString()
 }
 
 /*
-
+    requestWeekNumberFromServer - 
 */
 async function requestWeekNumberFromServer()
 {

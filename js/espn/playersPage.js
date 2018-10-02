@@ -5,6 +5,8 @@
 */
 
 var acronymEspnToYahoo = {};
+var localGamesDataDict = {};
+
 acronymEspnToYahoo["Atl"]  =  "Atl";
 acronymEspnToYahoo["Bos"]  =  "Bos";
 acronymEspnToYahoo["Bkn"]  =  "Bkn";
@@ -36,13 +38,18 @@ acronymEspnToYahoo["Tor"]  =  "Tor";
 acronymEspnToYahoo["Utah"] =  "Uta";
 acronymEspnToYahoo["Wsh"]  =  "Was";
 
-var localGamesDataDict = {};
 
+/*
+    sleep - 
+*/
 function sleep( ms )
 {
   return new Promise( resolve => setTimeout( resolve, ms ) );
 }
 
+/*
+    getFormattedTodaysDate - 
+*/
 function getFormattedTodaysDate()
 {
     var todaysDate = new Date();
@@ -87,6 +94,9 @@ getBackgroundColor = function( games )
     }
 }
 
+/*
+    requestWeekNumberFromServer - 
+*/
 function requestWeekNumberFromServer()
 {
     console.log( "requestWeekNumberFromServer()" );
@@ -141,6 +151,9 @@ function addWeekGamesHeaders( data )
     }
 }
 
+/*
+    buildTeamsRequestString - 
+*/
 function buildTeamsRequestString()
 {
     console.log( "buildTeamsRequestString()" );
@@ -158,7 +171,9 @@ function buildTeamsRequestString()
     return teamsRequestString;
 }
 
-
+/*
+    addGamesForPlayers - 
+*/
 function addGamesForPlayers()
 {
     console.log( "addGamesForPlayers()" );
@@ -216,7 +231,9 @@ function addGamesForPlayers()
     }
 }
 
-
+/*
+    addGamesDataToLocalDictionary - 
+*/
 function addGamesDataToLocalDictionary( data, teamsRequestString )
 {
     // Don't need to erase the local games info because the date doesn't change for free agents, can build onto
@@ -235,6 +252,9 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
     console.log( localGamesDataDict );
 }
 
+/*
+    requestDataFromServer - 
+*/
 async function requestDataFromServer()
 {
     console.log( "requestDataFromServer()" );
@@ -272,6 +292,9 @@ async function requestDataFromServer()
     }
 }
 
+/*
+    removeColumn - 
+*/
 function removeColumn()
 {
     console.log( "removeColumn()" );
@@ -283,16 +306,19 @@ function removeColumn()
     }
 }
 
-renderGames = function()
+/*
+    renderGames - 
+*/
+function renderGames()
 {
-    console.log("Fantasy Wizard rendering...");
 
     requestWeekNumberFromServer();
     requestDataFromServer();
 }
 
+/*
 
-
+*/
 $( 'body' ).on( 'click', 'li.PaginationNav__list__item', function() 
 {
     console.log( $( this ).text() ) ;
@@ -305,9 +331,12 @@ $( 'body' ).on( 'click', 'li.PaginationNav__list__item', function()
     }
 });
 
+/*
+
+*/
 $( document ).ready( function()
 {
-    setTimeout(function(){
+    setTimeout( function(){
         renderGames();
-    },5000);
+    }, 5000 );
 });   

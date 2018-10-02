@@ -149,15 +149,12 @@ function buildTeamsRequestString()
     var teamsRequestString = "teams=";
     for( var i = 0; i < listOfElements.length; i++ )
     {
-        teamsRequestString += acronymEspnToYahoo[listOfElements[i].innerHTML] + ",";
-        // teamsRequestString += acronymEspnToYahoo[listOfElements[i].innerHTML] + ",";
         if( !( acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] in localGamesDataDict ) )
         {
             localGamesDataDict[ acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] ] = "";
             teamsRequestString += acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] + ",";
         }
     }
-    console.log( teamsRequestString );
     return teamsRequestString;
 }
 
@@ -198,6 +195,7 @@ function addGamesForPlayers()
                 if( !isInjured )
                 {
                     var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                    // console.log( "teamName=" + teamName );
                     newGamesDiv.innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     totalGamesRemaining += parseInt( splitDataIndex[0] );
@@ -210,13 +208,8 @@ function addGamesForPlayers()
                     newGamesTd.style.backgroundColor = getBackgroundColor( 0 );
                 }
             }
+            // Don't have empty players in Free Agents, only for Team page    
             listOfTeamNameElementsIndex++;
-            // Don't have empty players in Free agents
-            // // Empty player
-            // else
-            // {
-            //     newGamesDiv.innerHTML = "-/-";    
-            // }
             newGamesTd.appendChild( newGamesDiv );
             listOfElementsTr.appendChild( newGamesTd );
         }
@@ -238,16 +231,6 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
         {
             localGamesDataDict[teamsList[i]] = data[i];
         }
-
-        // if( !( teamsList[i] in localGamesDataDict ) )
-        // {
-        //     // console.log( "OG team - " + teamsList[i]);
-        //     localGamesDataDict[teamsList[i]] = data[i];
-        // }
-        // else
-        // {
-        //     console.log( "Duplicate team - " + teamsList[i]);
-        // }
     }
     console.log( localGamesDataDict );
 }
@@ -257,7 +240,6 @@ async function requestDataFromServer()
     console.log( "requestDataFromServer()" );
     await sleep( 3000 );
     var teamsRequestString = buildTeamsRequestString(); 
-
 
     // Code did not find any new teams to request from the server
     if( teamsRequestString == "teams=" )
@@ -320,18 +302,12 @@ $( 'body' ).on( 'click', 'li.PaginationNav__list__item', function()
     {
         removeColumn();
         requestDataFromServer();
-    //     initialRender = true;
-    //     updateHeaders = true;
-    //     removeColumn();
-    //     requestWeekNumberFromServer();  
-    //     requestDataFromServer();    
     }
 });
 
 $( document ).ready( function()
 {
     setTimeout(function(){
-        console.log('after');
         renderGames();
     },5000);
 });   

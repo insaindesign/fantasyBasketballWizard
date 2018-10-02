@@ -4,7 +4,14 @@
     teamPage.js 
 */
 
-var acronymEspnToYahoo = {};
+/*
+    Global Variables  
+*/
+var acronymEspnToYahoo = {};        // Dictionary to convert acronyms from ESPN to Yahoo
+var initialRender = true;           // Flag to tell if it is a complete render
+var localGamesDataDict = {};        // Holds the game remaining data
+var updateHeaders = false;          // Flag to update headers
+
 acronymEspnToYahoo["Atl"]  =  "Atl";
 acronymEspnToYahoo["Bos"]  =  "Bos";
 acronymEspnToYahoo["Bkn"]  =  "Bkn";
@@ -75,10 +82,10 @@ getTodaysDate = function()
     return todaysDate;
 }
 
-var initialRender = true;
-var updateHeaders = false;
-var localGamesDataDict = {};
-
+/*
+    buildTeamsRequestString - creates part of the url for the teams to 
+    request game data for.
+*/
 function buildTeamsRequestString()
 {
     // console.log( "buildTeamsRequestString()" );

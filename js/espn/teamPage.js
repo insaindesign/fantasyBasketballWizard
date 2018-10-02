@@ -140,12 +140,24 @@ function sleep( ms )
 }
 
 /* 
+    getActiveMenu - 
+*/
+function getActiveMenu()
+{
+    console.log( "getActiveMenu" );
+    var activeMenuElements = document.getElementsByClassName( "tabs__list__item--active" );
+    var activeMenuElement = activeMenuElements[0].getElementsByClassName( "tabs__link w-100" );
+    var activeMenu = activeMenuElement[0];
+    return activeMenu;
+}
+
+/* 
     getBackgroundColor - returns the background color
     associated with the number of games.
 
     games - The number of games
 */
-getBackgroundColor = function( games )
+function getBackgroundColor( games )
 {
     if( games > 3 )
     {
@@ -318,7 +330,6 @@ function addGamesForPlayers()
     {
         // var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
         var index = 0;
-
 
         for( var i = 0; i < listOfElements.length; i++ )
         {
@@ -568,6 +579,7 @@ function renderGames( type )
 
     if( type == "Document Ready" )
     {
+        initialRender = true;
         requestWeekNumberFromServer();
         requestDataFromServer();
     }
@@ -605,6 +617,7 @@ $( document ).ready( function()
 {
     setTimeout( function()
     {
+        var activeMenu = getActiveMenu();
         renderGames( "Document Ready" );
     }, 3000 );
 });

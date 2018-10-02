@@ -556,16 +556,25 @@ $( 'body' ).on( 'click', 'li.tabs__list__item', function()
         // Update by page
         if( menuSelected == "Stats" )
         {
-            renderGames( "Stats" );
+            renderGames( menuSelected );
         }
-        else
+        else if( menuSelected == "Research" )
         {
-            renderGames( "Other Menus" );
+            renderGames( menuSelected );
+        }
+        else if( menuSelected == "Schedule" )
+        {
+            renderGames( menuSelected );
+        }
+        else if( menuSelected == "News" )
+        {
+            renderGames( menuSelected );
         }
     }
     else
     {
-        console.log( "Do nothing, same menu" );
+        // Do nothing, same menu
+        // console.log( "Do nothing, same menu" );
     }
 });
 
@@ -578,6 +587,12 @@ function renderGames( type )
     console.log( "renderGames - type=" + type );
 
     if( type == "Document Ready" )
+    {
+        initialRender = true;
+        requestWeekNumberFromServer();
+        requestDataFromServer();
+    }
+    else if( type == "Research" )
     {
         initialRender = true;
         requestWeekNumberFromServer();
@@ -618,6 +633,7 @@ $( document ).ready( function()
     setTimeout( function()
     {
         var activeMenu = getActiveMenu();
+        // renderGames( activeMenu );
         renderGames( "Document Ready" );
     }, 3000 );
 });

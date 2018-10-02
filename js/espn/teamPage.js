@@ -100,11 +100,18 @@ function buildTeamsRequestString()
     return teamsRequestString;
 }
 
+/*
+    sleep - to create a delay in some functions to help the dynamic ESPN
+    page load and change different settings
+*/
 function sleep( ms )
 {
   return new Promise( resolve => setTimeout( resolve, ms ) );
 }
 
+/*
+
+*/
 function buildDateRequestString()
 {
     // console.log( "buildDateRequestString()" );
@@ -146,7 +153,9 @@ function buildDateRequestString()
     }
 }
 
+/*
 
+*/
 async function requestWeekNumberFromServer()
 {
     console.log( "requestWeekNumberFromServer()" );
@@ -177,11 +186,11 @@ async function requestWeekNumberFromServer()
 function addWeekGamesHeaders( data )
 {
     console.log( "addWeekGamesHeaders()" );
+
     var weekNum = data.weekNum;
 
     if( updateHeaders == false )
     {
-        // Maybe loop through these elements and if innerHTML contains STATUS then append
         var listOfElements = document.getElementsByClassName( "Table2__header-row" );
 
         for( var i = 0; i < listOfElements.length; i++ )
@@ -220,7 +229,9 @@ function addWeekGamesHeaders( data )
     }
 }
 
+/*
 
+*/
 async function requestDataFromServer()
 {
     // console.log( "requestDataFromServer()" );
@@ -270,8 +281,10 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
     console.log( localGamesDataDict );
 }
 
+/*
 
-function addGamesForPlayers( )
+*/
+function addGamesForPlayers()
 {
     console.log( "addGamesForPlayers()" );
 
@@ -407,6 +420,9 @@ function addGamesForPlayers( )
     }
 }
 
+/*
+
+*/
 // Add an empty '-/-' cell for the EMPTY row created when a starter's 'MOVE'
 // button is pressed.
 function moveButtonStarterPressed()
@@ -431,6 +447,9 @@ function moveButtonStarterPressed()
     }
 }
 
+/*
+
+*/
 // Adjusting the roster by moving players around
 // Requires a call to render to load the correct games
 $( 'body' ).on( 'click', 'a.move-action-btn', function() 
@@ -460,6 +479,9 @@ $( 'body' ).on( 'click', 'a.move-action-btn', function()
     }
 });
 
+/*
+    removeColumn - removes the games data column to allow new data to be filled
+*/
 function removeColumn()
 {
     var elements = document.getElementsByClassName( "fbw-games-remaining-td" );
@@ -470,7 +492,9 @@ function removeColumn()
     }
 }
 
-
+/*
+    For showing the features after switching dates
+*/
 $( 'body' ).on( 'click', 'div.custom--day', function() 
 {
     var className = this.className;
@@ -482,7 +506,36 @@ $( 'body' ).on( 'click', 'div.custom--day', function()
         updateHeaders = true;
         removeColumn();
         requestWeekNumberFromServer();  
-        requestDataFromServer();    
+        requestDataFromServer();
+        // renderGames( "Switch Dates" );
+    }
+});
+
+/*
+    For showing the features after switching tab menus
+*/
+$( 'body' ).on( 'click', 'li.tabs__list__item', function() 
+{
+    console.log( $( this ).text() );
+    // Be able to tell if switching from active
+    var className = this.className;
+    var menuSelected = $( this ).text();
+    // console.log( "className= " + className );
+    if( className.indexOf( "tabs__list__item--active" ) == -1 )
+    {
+        // Update by page
+        if( menuSelected == "Stats" )
+        {
+            renderGames( "Stats" );
+        }
+        else
+        {
+            renderGames( "Other Menus" );
+        }
+    }
+    else
+    {
+        console.log( "Do nothing, same menu" );
     }
 });
 
@@ -490,12 +543,35 @@ $( 'body' ).on( 'click', 'div.custom--day', function()
 /*
     renderGames - 
 */
-renderGames = function()
+function renderGames( type )
 {
-    console.log("Fantasy Wizard rendering...");
+    console.log( "renderGames - type=" + type );
 
-    requestWeekNumberFromServer();
-    requestDataFromServer();
+    if( type == "Document Ready" )
+    {
+        requestWeekNumberFromServer();
+        requestDataFromServer();
+    }
+    else if( type == "Other Menus" )
+    {
+        initialRender = true;
+        requestWeekNumberFromServer();
+        requestDataFromServer();
+    }
+    else if( type == "Stats" )
+    {
+        initialRender = true;
+        requestWeekNumberFromServer();
+        requestDataFromServer();
+    }
+    else if( type = "Switched Dates" )
+    {
+        initialRender = true;
+        updateHeaders = true;
+        removeColumn();
+        requestWeekNumberFromServer();  
+        requestDataFromServer();
+    }
 }
 
 
@@ -503,11 +579,10 @@ renderGames = function()
     Main load of calling render games when the document is ready.
     Note: Have to wait a few seconds to load this dynamic page, otherwise it will not find any elements. 
 */
-$( document ).ready( function(){
-    console.log('before');
-    setTimeout(function(){
-        console.log('after');
-        renderGames();
-    },3000);
-    
+$( document ).ready( function()
+{
+    setTimeout( function()
+    {
+        renderGames( "Document Ready" );
+    }, 3000 );
 });

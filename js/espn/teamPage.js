@@ -8,7 +8,8 @@
                 Global Variables  
 ---------------------------------------------- */
 var acronymEspnToYahoo = {};        // Dictionary to convert acronyms from ESPN to Yahoo
-var initialRender = true;           // Flag to tell if it is a complete render
+var addGamesElements = true;           // Flag to tell if it is a complete render - ** change to updateGames
+// var addGamesElements = true;
 var localGamesDataDict = {};        // Holds the game remaining data
 var updateHeaders = false;          // Flag to update headers
 
@@ -219,7 +220,7 @@ function addWeekGamesHeaders( data )
     console.log( "addWeekGamesHeaders()" );
 
     var weekNum = data.weekNum;
-
+    console.log( "updateHeaders=" + updateHeaders );
     if( updateHeaders == false )
     {
         var listOfElements = document.getElementsByClassName( "Table2__header-row" );
@@ -231,7 +232,7 @@ function addWeekGamesHeaders( data )
                 var newGamesHeader = document.createElement( "th" );
                 newGamesHeader.title = "Week number " + weekNum.toString() + " of fantasy basketball";
                 newGamesHeader.colSpan = "1";
-                newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header";
+                newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header fbw-new-element";
                 newGamesHeader.innerHTML = "WEEK" + weekNum.toString();
                 listOfElements[i].appendChild( newGamesHeader );
             }
@@ -240,7 +241,7 @@ function addWeekGamesHeaders( data )
                 var newGamesHeader = document.createElement( "th" );
                 newGamesHeader.title = "Games Remaining / Games This Week";
                 newGamesHeader.colSpan = "1";
-                newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header";
+                newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header fbw-new-element";
                 newGamesHeader.innerHTML = "GR/G";
                 listOfElements[i].appendChild( newGamesHeader );
             }
@@ -265,7 +266,7 @@ function addWeekGamesHeaders( data )
 */
 async function requestDataFromServer()
 {
-    // console.log( "requestDataFromServer()" );
+    console.log( "requestDataFromServer()" );
 
     var teamsRequestString = buildTeamsRequestString();
     // Sleep before getting the date string to allow the selected date some time to be changed
@@ -275,19 +276,21 @@ async function requestDataFromServer()
     var url = "https://www.fantasywizard.site/gamesremaining/?pageName=eTeamsPage&" + teamsRequestString + "&format=json&date=" + dateRequestString;
     console.log( url );
 
-    fetch(url)
-        .then(function(response){
-        if (response.status !== 200) {
-            console.log('Called to backend failed: ' + response.status);
+    fetch( url )
+        .then( function( response ){
+        if ( response.status !== 200 )
+        {
+            console.log( 'Called to backend failed: ' + response.status );
             return;
         }
-        response.json().then(function(data) {
+        response.json().then( function( data )
+        {
             addGamesDataToLocalDictionary( data, teamsRequestString );
             // addGamesForPlayers( data );
             addGamesForPlayers();
         });
-    }).catch(function(err) {
-        console.log('Fetch Error :-S', err);
+    }).catch( function( err ) {
+        console.log( 'Fetch Error :-S', err );
     });
 }
 
@@ -326,7 +329,7 @@ function addGamesForPlayers()
     var listOfTeamNameElements = document.getElementsByClassName( "playerinfo__playerteam" );
     var listOfTeamNameElementsIndex = 0;
 
-    if( initialRender == true )
+    if( addGamesElements == true )
     {
         // var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
         var index = 0;
@@ -334,14 +337,15 @@ function addGamesForPlayers()
         for( var i = 0; i < listOfElements.length; i++ )
         {
             var listOfElementsTr = listOfElements[i];
-            // console.log( "listOfElementsTr.children.length=" + listOfElementsTr.children.length );
+            console.log( "listOfElementsTr.children.length=" + listOfElementsTr.children.length );
 
+            // Initial render for Stats menu
             if( listOfElementsTr.children.length == 5 )
             {
                 var newGamesTd = document.createElement( "td" );
                 var newGamesDiv = document.createElement( "div" );
-                newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td";
-                newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div";
+                newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
+                newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div fbw-new-element";
                 newGamesDiv.style.textAlign = "center";
 
                 var isInjured = false;
@@ -385,11 +389,59 @@ function addGamesForPlayers()
                 newGamesTd.appendChild( newGamesDiv );
                 listOfElementsTr.appendChild( newGamesTd );
             }
+            // Research & Schedule Menu
+            else if( listOfElementsTr.children.length == 13 || listOfElementsTr.children.length == 12 )
+            {
+                var newGamesTd = document.createElement( "td" );
+                var newGamesDiv = document.createElement( "div" );
+                newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
+                newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div fbw-new-element";
+                newGamesDiv.style.textAlign = "center";
+
+                var isInjured = false;
+                // 'O'ut, injured player
+                if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
+                {
+                    isInjured = true;
+                }
+                // Normal player
+                if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
+                {
+                    if( !isInjured )
+                    {
+                        var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                        newGamesDiv.innerHTML = localGamesDataDict[teamName];
+                        var splitDataIndex = localGamesDataDict[teamName].split( "/" );
+                        totalGamesRemaining += parseInt( splitDataIndex[0] );
+                        totalGamesForWeek += parseInt( splitDataIndex[1] );
+                        newGamesTd.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
+                    }
+                    else
+                    {
+                        newGamesDiv.innerHTML = "-/-";
+                        newGamesTd.style.backgroundColor = getBackgroundColor( 0 );
+                    }
+                    listOfTeamNameElementsIndex++;
+                }
+                // Empty player
+                else
+                {
+                    newGamesDiv.innerHTML = "-/-";    
+                }
+                newGamesTd.appendChild( newGamesDiv );
+                listOfElementsTr.appendChild( newGamesTd );
+            }
+            // News Menu
+            else if( listOfElementsTr.children.length == 6 )
+            {
+
+            }
         }
-        initialRender = false;
+        addGamesElements = false;
     }
     // Not initial render, do not create new elements, update them, 
     // For moving players around
+    // TODO - Maybe make this into a new function called updateGameRows
     else
     {
         var listOfGamesTd = document.getElementsByClassName( "fbw-games-remaining-td" );
@@ -467,8 +519,8 @@ function moveButtonStarterPressed()
         {
             var newGamesTd = document.createElement( "td" );
             var newGamesDiv = document.createElement( "div" );
-            newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td";
-            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div";
+            newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
+            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div fbw-new-element";
             newGamesDiv.innerHTML = "-/-";
             newGamesTd.appendChild( newGamesDiv );
             listOfElementsTr.appendChild( newGamesTd );
@@ -510,15 +562,31 @@ $( 'body' ).on( 'click', 'a.move-action-btn', function()
 });
 
 /*
-    removeColumn - removes the games data column to allow new data to be filled
+    removeGamesColumn - removes the games data column to allow new data to be filled
 */
-function removeColumn()
+function removeGamesColumn()
 {
+    console.log( "removeGamesColumn" );
     var elements = document.getElementsByClassName( "fbw-games-remaining-td" );
 
     while( elements.length > 0 )
     {
         elements[0].parentNode.removeChild( elements[0] );
+    }
+}
+
+/*
+    removeEntireColumn - removes the games data column to allow new data to be filled
+*/
+function removeEntireColumn()
+{
+    console.log( "removeEntireColumn" );
+    var elements = document.getElementsByClassName( "fbw-new-element" );
+
+    while( elements.length > 0 )
+    {
+        elements[0].parentNode.removeChild( elements[0] );
+        console.log( "deleted an element" );
     }
 }
 
@@ -532,9 +600,9 @@ $( 'body' ).on( 'click', 'div.custom--day', function()
     // Date other than the current one selected
     if( className.indexOf( "is-current" ) == -1 )
     {
-        initialRender = true;
+        addGamesElements = true;
         updateHeaders = true;
-        removeColumn();
+        removeGamesColumn();
         requestWeekNumberFromServer();  
         requestDataFromServer();
         // renderGames( "Switch Dates" );
@@ -553,7 +621,6 @@ $( 'body' ).on( 'click', 'li.tabs__list__item', function()
     // console.log( "className= " + className );
     if( className.indexOf( "tabs__list__item--active" ) == -1 )
     {
-        // Update by page
         if( menuSelected == "Stats" )
         {
             renderGames( menuSelected );
@@ -588,33 +655,47 @@ function renderGames( type )
 
     if( type == "Document Ready" )
     {
-        initialRender = true;
+        addGamesElements = true;
+        requestWeekNumberFromServer();
+        requestDataFromServer();
+    }
+    else if( type == "News" )
+    {
+        removeEntireColumn();
+        addGamesElements = true;
+        updateHeaders = false;
         requestWeekNumberFromServer();
         requestDataFromServer();
     }
     else if( type == "Research" )
     {
-        initialRender = true;
+        removeEntireColumn();
+        addGamesElements = true;
+        updateHeaders = false;
         requestWeekNumberFromServer();
         requestDataFromServer();
     }
-    else if( type == "Other Menus" )
+    else if( type == "Schedule" )
     {
-        initialRender = true;
+        removeEntireColumn();
+        addGamesElements = true;
+        updateHeaders = false;
         requestWeekNumberFromServer();
         requestDataFromServer();
     }
     else if( type == "Stats" )
     {
-        initialRender = true;
+        removeEntireColumn();
+        addGamesElements = true;
+        // updateHeaders = false;
         requestWeekNumberFromServer();
         requestDataFromServer();
     }
     else if( type = "Switched Dates" )
     {
-        initialRender = true;
+        addGamesElements = true;
         updateHeaders = true;
-        removeColumn();
+        removeGamesColumn();
         requestWeekNumberFromServer();  
         requestDataFromServer();
     }

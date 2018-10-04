@@ -4,9 +4,9 @@
     teamPage.js 
 */
 
-/* ----------------------------------------------
-                Global Variables  
----------------------------------------------- */
+/* ---------------------------------------------------------------------
+                            Global Variables  
+--------------------------------------------------------------------- */
 var acronymEspnToYahoo = {};        // Dictionary to convert acronyms from ESPN to Yahoo
 var addGamesElements = true;           // Flag to tell if it is a complete render - ** change to updateGames
 // var addGamesElements = true;
@@ -44,12 +44,9 @@ acronymEspnToYahoo["Tor"]  =  "Tor";
 acronymEspnToYahoo["Utah"] =  "Uta";
 acronymEspnToYahoo["Wsh"]  =  "Was";
 
-
-/* ----------------------------------------------
-                Helper Functions  
----------------------------------------------- */
-
-
+/* ---------------------------------------------------------------------
+                            Helper Functions 
+--------------------------------------------------------------------- */
 /*
     buildTeamsRequestString - creates part of the url for the teams to 
     request game data for.
@@ -199,9 +196,9 @@ function getBackgroundColor( games )
     }
 }
 
-/* ----------------------------------------------
-                Main Functions  
----------------------------------------------- */
+/* ---------------------------------------------------------------------
+                            Main Functions 
+--------------------------------------------------------------------- */
 /*
     requestHeaderFromServer - 
 */
@@ -327,7 +324,6 @@ async function requestGameDataFromServer( addOrUpdate )
     await sleep( 200 );     
     var dateRequestString = buildDateRequestString();
     var leagueIdRequestString = buildLeagueIdRequestString();
-    // var url = 'https://bilalsattar24.pythonanywhere.com/gamesremaining/?'+teamsRequestString+'&format=json&date='+dateString;
     var url = "https://www.fantasywizard.site/gamesremaining/?pageName=eTeamsPage&" + teamsRequestString + "&format=json&date=" + dateRequestString + "&" + leagueIdRequestString;
     console.log( url );
 
@@ -656,10 +652,9 @@ function removeEntireColumn()
     }
 }
 
-/* ----------------------------------------------
-            HTML Object Clicks  
----------------------------------------------- */
-
+/* ---------------------------------------------------------------------
+                            HTML Object Clicks 
+--------------------------------------------------------------------- */
 /*
     Adjusting the roster by moving players around
 */
@@ -732,9 +727,9 @@ $( 'body' ).on( 'click', 'li.tabs__list__item', function()
     {}
 });
 
-/* ----------------------------------------------
-            Render Games by Type  
----------------------------------------------- */
+/* ---------------------------------------------------------------------
+                            Render Games by Type 
+--------------------------------------------------------------------- */
 /*
     renderGames - 
 */

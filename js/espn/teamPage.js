@@ -683,16 +683,9 @@ function removeEntireColumn()
 $( 'body' ).on( 'click', 'div.custom--day', function() 
 {
     var className = this.className;
-    // Render games for new dates
-    // Date other than the current one selected
     if( className.indexOf( "is-current" ) == -1 )
     {
-        addGamesElements = true;
-        updateHeaders = true;
-        removeGamesColumn();
-        requestWeekNumberFromServer();  
-        requestDataFromServer();
-        // renderGames( "Switch Dates" );
+        renderGames( "Switch Dates" );
     }
 });
 

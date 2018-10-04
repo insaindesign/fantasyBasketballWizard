@@ -744,46 +744,35 @@ function renderGames( type )
 
     if( type == "Document Ready" )
     {
-        // addGamesElements = true;
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
     }
     else if( type == "News" )
     {
         removeEntireColumn();
-        // addGamesElements = true;
-        // updateHeaders = false;
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
     }
     else if( type == "Research" )
     {
         removeEntireColumn();
-        // addGamesElements = true;
-        // updateHeaders = false;
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
     }
     else if( type == "Schedule" )
     {
         removeEntireColumn();
-        // addGamesElements = true;
-        // updateHeaders = false;
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
     }
     else if( type == "Stats" )
     {
         removeEntireColumn();
-        // addGamesElements = true;
-        // updateHeaders = false;
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
     }
     else if( type = "Switched Dates" )
     {
-        // addGamesElements = true;
-        // updateHeaders = true;
         removeGamesColumn();
         requestHeaderFromServer( "Update" );  
         requestGameDataFromServer( "Add" );

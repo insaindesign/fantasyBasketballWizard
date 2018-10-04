@@ -148,7 +148,7 @@ function getActiveMenu()
     console.log( "getActiveMenu" );
     var activeMenuElements = document.getElementsByClassName( "tabs__list__item--active" );
     var activeMenuElement = activeMenuElements[0].getElementsByClassName( "tabs__link w-100" );
-    var activeMenu = activeMenuElement[0];
+    var activeMenu = activeMenuElement[0].innerHTML;
     return activeMenu;
 }
 
@@ -220,30 +220,59 @@ function addWeekGamesHeaders( data )
     console.log( "addWeekGamesHeaders()" );
 
     var weekNum = data.weekNum;
-    console.log( "updateHeaders=" + updateHeaders );
+    // console.log( "updateHeaders=" + updateHeaders );
+
+    var activeMenu = getActiveMenu();
+    console.log( "activeMenu=" + activeMenu );
+
     if( updateHeaders == false )
     {
         var listOfElements = document.getElementsByClassName( "Table2__header-row" );
+        console.log( listOfElements );
 
-        for( var i = 0; i < listOfElements.length; i++ )
+        if( activeMenu == "News" )
         {
-            if( listOfElements[i].innerHTML.indexOf( "STARTERS" ) != -1 )
+            
+            for( var i = 0; i < listOfElements.length; i++ )
             {
-                var newGamesHeader = document.createElement( "th" );
-                newGamesHeader.title = "Week number " + weekNum.toString() + " of fantasy basketball";
-                newGamesHeader.colSpan = "1";
-                newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header fbw-new-element";
-                newGamesHeader.innerHTML = "WEEK" + weekNum.toString();
-                listOfElements[i].appendChild( newGamesHeader );
+                if( i % 2 == 0 )
+                {
+                    var newCell = listOfElements[i].insertCell( 2 );
+                    newCell.outerHTML = "<th title=\"Week number " + weekNum.toString() + " of fantasy basketball " + "\" class=\"tc bg-clr-white Table2__th fbw-header fbw-new-element\">WEEK " + weekNum.toString() + "</th>";
+                }
+                else
+                {
+                    var newCell = listOfElements[i].insertCell( 5 );
+                    newCell.outerHTML = "<th title=\"Games Remaining / Games This Week\" class=\"tc bg-clr-white Table2__th fbw-header fbw-new-element\">GR/G</th>";;
+                }
             }
-            else if( listOfElements[i].innerHTML.indexOf( "STATUS" ) != -1 )
+
+        }
+        else
+        {
+            for( var i = 0; i < listOfElements.length; i++ )
             {
-                var newGamesHeader = document.createElement( "th" );
-                newGamesHeader.title = "Games Remaining / Games This Week";
-                newGamesHeader.colSpan = "1";
-                newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header fbw-new-element";
-                newGamesHeader.innerHTML = "GR/G";
-                listOfElements[i].appendChild( newGamesHeader );
+                console.log(listOfElements[i]);
+                if( listOfElements[i].innerHTML.indexOf( "STARTERS" ) != -1 )
+                {
+                    var newGamesHeader = document.createElement( "th" );
+                    newGamesHeader.title = "Week number " + weekNum.toString() + " of fantasy basketball";
+                    newGamesHeader.colSpan = "1";
+                    newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header fbw-new-element";
+                    newGamesHeader.innerHTML = "WEEK" + weekNum.toString();
+                    listOfElements[i].appendChild( newGamesHeader );
+                    // listOfElements[i].insertAdjacentElement( 'beforeend', newGamesHeader );
+                }
+                else if( listOfElements[i].innerHTML.indexOf( "STATUS" ) != -1 )
+                {
+                    var newGamesHeader = document.createElement( "th" );
+                    newGamesHeader.title = "Games Remaining / Games This Week";
+                    newGamesHeader.colSpan = "1";
+                    newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header fbw-new-element";
+                    newGamesHeader.innerHTML = "GR/G";
+                    listOfElements[i].appendChild( newGamesHeader );
+                    // listOfElements[i].insertAdjacentElement( 'beforeend', newGamesHeader );
+                }
             }
         }
     }
@@ -434,7 +463,47 @@ function addGamesForPlayers()
             // News Menu
             else if( listOfElementsTr.children.length == 6 )
             {
+                console.log( listOfElementsTr );
 
+                var newCell = listOfElementsTr.insertCell( 5 );
+                // var newGamesTd = document.createElement( "td" );
+                var newGamesDiv = document.createElement( "div" );
+                newCell.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
+                newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div fbw-new-element";
+                newGamesDiv.style.textAlign = "center";
+                // newGamesTd.appendChild( newGamesDiv );
+                var isInjured = false;
+                // 'O'ut, injured player
+                if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
+                {
+                    isInjured = true;
+                }
+                // Normal player
+                if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
+                {
+                    if( !isInjured )
+                    {
+                        var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                        newGamesDiv.innerHTML = localGamesDataDict[teamName];
+                        var splitDataIndex = localGamesDataDict[teamName].split( "/" );
+                        totalGamesRemaining += parseInt( splitDataIndex[0] );
+                        totalGamesForWeek += parseInt( splitDataIndex[1] );
+                        newCell.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
+                    }
+                    else
+                    {
+                        newGamesDiv.innerHTML = "-/-";
+                        newCell.style.backgroundColor = getBackgroundColor( 0 );
+                    }
+                    listOfTeamNameElementsIndex++;
+                }
+                // Empty player
+                else
+                {
+                    newGamesDiv.innerHTML = "-/-";    
+                }
+
+                newCell.appendChild( newGamesDiv );
             }
         }
         addGamesElements = false;
@@ -713,8 +782,8 @@ $( document ).ready( function()
 {
     setTimeout( function()
     {
-        var activeMenu = getActiveMenu();
+        // var activeMenu = getActiveMenu();
         // renderGames( activeMenu );
         renderGames( "Document Ready" );
-    }, 3000 );
+    }, 5000 );
 });

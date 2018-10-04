@@ -30,6 +30,9 @@ class GamesRemaining(APIView):
         requestTeams = self.getCleanedTeamsString(requestTeamsString)
         requestWeek = request.GET.get("weekNum")
         date = request.GET.get("date")
+        queryString = request.META.get("QUERY_STRING")
+        leagueID = request.GET.get("leagueID")
+        
         print("Request: Games Remaining as of " + date)
         print(requestTeams)
         requestDate = DataLoader.stringDateToDateObject(date)  # yyyy-m-d
@@ -41,7 +44,10 @@ class GamesRemaining(APIView):
                 gameCountList.append("0/0")
             print("Response for Games Remaining")
             print(gameCountList)
-            Use(useType=UseType.objects.get(pageName=pageName)).save()
+            Use(useType=UseType.objects.get(pageName=pageName),
+                    queryString=queryString,
+                    leagueID=leagueID
+            ).save()
             return Response(gameCountList)
 
         # if no week in the request, get the corresponding week
@@ -66,7 +72,10 @@ class GamesRemaining(APIView):
 
         print("Response for Games Remaining")
         print(gameCountList)
-        Use(useType=UseType.objects.get(pageName=pageName)).save()
+        Use(useType=UseType.objects.get(pageName=pageName),
+                queryString=queryString,
+                leagueID=leagueID
+        ).save()
         #numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count()
 
         return Response(gameCountList)
@@ -243,6 +252,10 @@ class Contact(TemplateView):
     def get(self, request):
         url = 'https://chrome.google.com/webstore/detail/fantasy-basketball-wizard/bmojbnihkmbdandkddobjnilkegcooll?hl=en'
         return redirect(url)
+
+class Home(TemplateView):
+    def get(self, request):
+        return render(request, template_name='wizard/index.html')
 
 
 # -------------- Data loading methods --------------------------

@@ -21,6 +21,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from wizard import views
 
 urlpatterns = [
+    path('', views.Home.as_view()),
     path('admin/', admin.site.urls),
     path('gamesremaining/', views.GamesRemaining.as_view()),
     path('teams/', views.AllTeams.as_view()),

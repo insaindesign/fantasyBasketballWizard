@@ -386,8 +386,6 @@ function addGamesForPlayers()
     var totalGamesRemaining = 0;
     var totalGamesForWeek = 0;
 
-    // if( addGamesElements == true )
-    // {
     for( var i = 0; i < listOfElements.length; i++ )
     {
         var listOfElementsTr = listOfElements[i];
@@ -611,13 +609,15 @@ function moveButtonStarterPressed()
     for( var i = listOfElements.length-1; i > 0; i-- )
     {
         var listOfElementsTr = listOfElements[i];
-        if( listOfElementsTr.children.length == 5 )
+        console.log( "listOfElementsTr.children.length= " + listOfElementsTr.children.length );
+        if( listOfElementsTr.children.length == 5 || listOfElementsTr.children.length == 12 )
         {
             var newGamesTd = document.createElement( "td" );
             var newGamesDiv = document.createElement( "div" );
             newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
             newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div fbw-new-element";
             newGamesDiv.innerHTML = "-/-";
+            newGamesDiv.style.textAlign = "center";
             newGamesTd.appendChild( newGamesDiv );
             listOfElementsTr.appendChild( newGamesTd );
             break;

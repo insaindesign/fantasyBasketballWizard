@@ -66,6 +66,8 @@ class Use(models.Model):
     timeStamp = models.DateTimeField(default = timezone.now)
     timeZone = models.CharField(max_length=25, default=timezone.get_current_timezone_name())
     useType = models.ForeignKey(UseType, on_delete=models.CASCADE)
+    queryString = models.CharField(max_length=500)
+    leagueID = models.CharField(max_length=15)
 
     def __str__(self):
         return str(self.useType) + " " + str(self.timeStamp)

@@ -591,10 +591,9 @@ function addGamesForPlayers()
 }
 
 /*
-
+    moveButtonStarterPressed - Add an empty '-/-' cell for the
+    EMPTY row created when a starter's 'MOVE' button is pressed.
 */
-// Add an empty '-/-' cell for the EMPTY row created when a starter's 'MOVE'
-// button is pressed.
 function moveButtonStarterPressed()
 {
     console.log( "moveButtonStarterPressed()" );
@@ -702,11 +701,8 @@ $( 'body' ).on( 'click', 'div.custom--day', function()
 */
 $( 'body' ).on( 'click', 'li.tabs__list__item', function() 
 {
-    console.log( $( this ).text() );
-    // Be able to tell if switching from active
     var className = this.className;
     var menuSelected = $( this ).text();
-    // console.log( "className= " + className );
     if( className.indexOf( "tabs__list__item--active" ) == -1 )
     {
         if( menuSelected == "Stats" )
@@ -726,11 +722,8 @@ $( 'body' ).on( 'click', 'li.tabs__list__item', function()
             renderGames( menuSelected );
         }
     }
-    else
-    {
-        // Do nothing, same menu
-        // console.log( "Do nothing, same menu" );
-    }
+    else // Do nothing, same menu
+    {}
 });
 
 
@@ -801,8 +794,6 @@ $( document ).ready( function()
 {
     setTimeout( function()
     {
-        // var activeMenu = getActiveMenu();
-        // renderGames( activeMenu );
         renderGames( "Document Ready" );
     }, 5000 );
 });

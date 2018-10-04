@@ -93,8 +93,9 @@ function resetGames(weekNum) {
 
     console.log(teamsString)
     var dateString = "date=" + getFormattedDate();
+    var leagueIDString = 'leagueID=' + getLeagueID();
     console.log("dateString = " + dateString);
-    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=weekSelect&' + teamsString + '&format=json' + '&weekNum=' + weekNum + '&' + dateString;
+    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=weekSelect&' + teamsString + '&format=json' + '&weekNum=' + weekNum + '&' + dateString + '&' + leagueIDString;
     console.log("before request");
     console.log("weekNum=" + weekNum);
     fetch(url)
@@ -122,6 +123,12 @@ function getFormattedDate() {
     return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
 }
 
+function getLeagueID() {
+    return document.getElementById("league-info").
+    firstElementChild.firstElementChild.
+    innerText.split("# ")[1].replace(')','');
+}
+
 //initial appending of new colum for current week with games
 function renderGames() {
     var rows = document.getElementsByClassName("Tst-table Table")[0].rows;
@@ -135,8 +142,9 @@ function renderGames() {
     }
     console.log(teamsString)
     var dateString = getFormattedDate();
+    var leagueIDString = 'leagueID=' + getLeagueID();
     console.log("dateString = " + dateString);
-    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=transactionTrends&' + teamsString + '&format=json&date=' + dateString;
+    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=transactionTrends&' + teamsString + '&format=json&date=' + dateString + '&' + leagueIDString;
     console.log("before request");
     fetch(url)
         .then(function (response) {

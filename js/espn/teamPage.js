@@ -114,6 +114,23 @@ function buildDateRequestString()
 }
 
 /*
+    buildLeagueIdRequestString - creates part of the url for the teams to 
+    request game data for.
+*/
+function buildLeagueIdRequestString()
+{
+    console.log( "buildLeagueIdRequestString()" );
+    var entireUrl = window.location.href;
+    // console.log( url );
+    var url = new URL( entireUrl );
+    var leagueId = url.searchParams.get( "leagueId" );
+    console.log( leagueId );
+    var leagueIdRequestString = "leagueID="+leagueId;
+    console.log( leagueIdRequestString );
+    return leagueIdRequestString;
+}
+
+/*
     buildTeamsRequestString - creates part of the url for the teams to 
     request game data for.
 */
@@ -194,7 +211,8 @@ async function requestWeekNumberFromServer()
     // Sleep before getting the date string to allow the selected date some time to be changed
     await sleep( 200 );
     var dateRequestString = buildDateRequestString();
-    var url = "http://www.fantasywizard.site/getweek/?pageName=eTeamsPage&format=json&date=" + dateRequestString;
+    var leagueIdRequestString = buildLeagueIdRequestString();
+    var url = "http://www.fantasywizard.site/getweek/?pageName=eTeamsPage&format=json&date=" + dateRequestString + "&" + leagueIdRequestString;
 
     fetch(url)
         .then(function(response){
@@ -301,8 +319,9 @@ async function requestDataFromServer()
     // Sleep before getting the date string to allow the selected date some time to be changed
     await sleep( 200 );     
     var dateRequestString = buildDateRequestString();
+    var leagueIdRequestString = buildLeagueIdRequestString();
     // var url = 'https://bilalsattar24.pythonanywhere.com/gamesremaining/?'+teamsRequestString+'&format=json&date='+dateString;
-    var url = "https://www.fantasywizard.site/gamesremaining/?pageName=eTeamsPage&" + teamsRequestString + "&format=json&date=" + dateRequestString;
+    var url = "https://www.fantasywizard.site/gamesremaining/?pageName=eTeamsPage&" + teamsRequestString + "&format=json&date=" + dateRequestString + "&" + leagueIdRequestString;
     console.log( url );
 
     fetch( url )

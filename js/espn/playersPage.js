@@ -4,6 +4,9 @@
     playersPage.js
 */
 
+/* ---------------------------------------------------------------------
+                            Global Variables  
+--------------------------------------------------------------------- */
 var acronymEspnToYahoo = {};
 var localGamesDataDict = {};
 
@@ -38,9 +41,32 @@ acronymEspnToYahoo["Tor"]  =  "Tor";
 acronymEspnToYahoo["Utah"] =  "Uta";
 acronymEspnToYahoo["Wsh"]  =  "Was";
 
+/* ---------------------------------------------------------------------
+                            Helper Functions 
+--------------------------------------------------------------------- */
 
 /*
-    sleep - 
+    buildTeamsRequestString - 
+*/
+function buildTeamsRequestString()
+{
+    console.log( "buildTeamsRequestString()" );
+
+    var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );
+    var teamsRequestString = "teams=";
+    for( var i = 0; i < listOfElements.length; i++ )
+    {
+        if( !( acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] in localGamesDataDict ) )
+        {
+            localGamesDataDict[ acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] ] = "";
+            teamsRequestString += acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] + ",";
+        }
+    }
+    return teamsRequestString;
+}
+
+/*
+    sleep - provides a delay
 */
 function sleep( ms )
 {
@@ -93,6 +119,24 @@ getBackgroundColor = function( games )
         return "#ffd6cc";
     }
 }
+
+/*
+    removeGamesDataColumn - 
+*/
+function removeGamesDataColumn()
+{
+    console.log( "removeGamesDataColumn()" );
+    var elements = document.getElementsByClassName( "fbw-games-remaining-td" );
+
+    while( elements.length > 0 )
+    {
+        elements[0].parentNode.removeChild( elements[0] );
+    }
+}
+
+/* ---------------------------------------------------------------------
+                            Main Functions 
+--------------------------------------------------------------------- */
 
 /*
     requestWeekNumberFromServer - 
@@ -149,26 +193,6 @@ function addWeekGamesHeaders( data )
             listOfElements[i].appendChild( newGamesHeader );
         }
     }
-}
-
-/*
-    buildTeamsRequestString - 
-*/
-function buildTeamsRequestString()
-{
-    console.log( "buildTeamsRequestString()" );
-
-    var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );
-    var teamsRequestString = "teams=";
-    for( var i = 0; i < listOfElements.length; i++ )
-    {
-        if( !( acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] in localGamesDataDict ) )
-        {
-            localGamesDataDict[ acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] ] = "";
-            teamsRequestString += acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] + ",";
-        }
-    }
-    return teamsRequestString;
 }
 
 /*
@@ -292,32 +316,12 @@ async function requestDataFromServer()
     }
 }
 
-/*
-    removeColumn - 
-*/
-function removeColumn()
-{
-    console.log( "removeColumn()" );
-    var elements = document.getElementsByClassName( "fbw-games-remaining-td" );
-
-    while( elements.length > 0 )
-    {
-        elements[0].parentNode.removeChild( elements[0] );
-    }
-}
+/* ---------------------------------------------------------------------
+                            HTML Object Clicks 
+--------------------------------------------------------------------- */
 
 /*
-    renderGames - 
-*/
-function renderGames()
-{
-
-    requestWeekNumberFromServer();
-    requestDataFromServer();
-}
-
-/*
-
+    Changing pages
 */
 $( 'body' ).on( 'click', 'li.PaginationNav__list__item', function() 
 {
@@ -326,17 +330,18 @@ $( 'body' ).on( 'click', 'li.PaginationNav__list__item', function()
 
     if( className.indexOf( "PaginationNav__list__item--active" ) == -1 )
     {
-        removeColumn();
+        removeGamesDataColumn();
         requestDataFromServer();
     }
 });
 
-/*
-
-*/
+/* ---------------------------------------------------------------------
+                            Document Ready 
+--------------------------------------------------------------------- */
 $( document ).ready( function()
 {
     setTimeout( function(){
-        renderGames();
+        requestWeekNumberFromServer();
+        requestDataFromServer();
     }, 5000 );
 });   

@@ -5,6 +5,8 @@
 */
 
 var acronymEspnToYahoo = {};
+var localGamesDataDict = {};
+
 acronymEspnToYahoo["Atl"]  =  "Atl";
 acronymEspnToYahoo["Bos"]  =  "Bos";
 acronymEspnToYahoo["Bkn"]  =  "Bkn";
@@ -36,13 +38,18 @@ acronymEspnToYahoo["Tor"]  =  "Tor";
 acronymEspnToYahoo["Utah"] =  "Uta";
 acronymEspnToYahoo["Wsh"]  =  "Was";
 
-var localGamesDataDict = {};
 
+/*
+    sleep - 
+*/
 function sleep( ms )
 {
   return new Promise( resolve => setTimeout( resolve, ms ) );
 }
 
+/*
+    getFormattedTodaysDate - 
+*/
 function getFormattedTodaysDate()
 {
     var todaysDate = new Date();
@@ -87,6 +94,9 @@ getBackgroundColor = function( games )
     }
 }
 
+/*
+    requestWeekNumberFromServer - 
+*/
 function requestWeekNumberFromServer()
 {
     console.log( "requestWeekNumberFromServer()" );
@@ -141,6 +151,9 @@ function addWeekGamesHeaders( data )
     }
 }
 
+/*
+    buildTeamsRequestString - 
+*/
 function buildTeamsRequestString()
 {
     console.log( "buildTeamsRequestString()" );
@@ -149,19 +162,18 @@ function buildTeamsRequestString()
     var teamsRequestString = "teams=";
     for( var i = 0; i < listOfElements.length; i++ )
     {
-        teamsRequestString += acronymEspnToYahoo[listOfElements[i].innerHTML] + ",";
-        // teamsRequestString += acronymEspnToYahoo[listOfElements[i].innerHTML] + ",";
         if( !( acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] in localGamesDataDict ) )
         {
             localGamesDataDict[ acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] ] = "";
             teamsRequestString += acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] + ",";
         }
     }
-    console.log( teamsRequestString );
     return teamsRequestString;
 }
 
-
+/*
+    addGamesForPlayers - 
+*/
 function addGamesForPlayers()
 {
     console.log( "addGamesForPlayers()" );
@@ -198,6 +210,7 @@ function addGamesForPlayers()
                 if( !isInjured )
                 {
                     var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                    // console.log( "teamName=" + teamName );
                     newGamesDiv.innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     totalGamesRemaining += parseInt( splitDataIndex[0] );
@@ -210,20 +223,17 @@ function addGamesForPlayers()
                     newGamesTd.style.backgroundColor = getBackgroundColor( 0 );
                 }
             }
+            // Don't have empty players in Free Agents, only for Team page    
             listOfTeamNameElementsIndex++;
-            // Don't have empty players in Free agents
-            // // Empty player
-            // else
-            // {
-            //     newGamesDiv.innerHTML = "-/-";    
-            // }
             newGamesTd.appendChild( newGamesDiv );
             listOfElementsTr.appendChild( newGamesTd );
         }
     }
 }
 
-
+/*
+    addGamesDataToLocalDictionary - 
+*/
 function addGamesDataToLocalDictionary( data, teamsRequestString )
 {
     // Don't need to erase the local games info because the date doesn't change for free agents, can build onto
@@ -238,26 +248,18 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
         {
             localGamesDataDict[teamsList[i]] = data[i];
         }
-
-        // if( !( teamsList[i] in localGamesDataDict ) )
-        // {
-        //     // console.log( "OG team - " + teamsList[i]);
-        //     localGamesDataDict[teamsList[i]] = data[i];
-        // }
-        // else
-        // {
-        //     console.log( "Duplicate team - " + teamsList[i]);
-        // }
     }
     console.log( localGamesDataDict );
 }
 
+/*
+    requestDataFromServer - 
+*/
 async function requestDataFromServer()
 {
     console.log( "requestDataFromServer()" );
     await sleep( 3000 );
     var teamsRequestString = buildTeamsRequestString(); 
-
 
     // Code did not find any new teams to request from the server
     if( teamsRequestString == "teams=" )
@@ -290,6 +292,9 @@ async function requestDataFromServer()
     }
 }
 
+/*
+    removeColumn - 
+*/
 function removeColumn()
 {
     console.log( "removeColumn()" );
@@ -301,16 +306,19 @@ function removeColumn()
     }
 }
 
-renderGames = function()
+/*
+    renderGames - 
+*/
+function renderGames()
 {
-    console.log("Fantasy Wizard rendering...");
 
     requestWeekNumberFromServer();
     requestDataFromServer();
 }
 
+/*
 
-
+*/
 $( 'body' ).on( 'click', 'li.PaginationNav__list__item', function() 
 {
     console.log( $( this ).text() ) ;
@@ -320,18 +328,15 @@ $( 'body' ).on( 'click', 'li.PaginationNav__list__item', function()
     {
         removeColumn();
         requestDataFromServer();
-    //     initialRender = true;
-    //     updateHeaders = true;
-    //     removeColumn();
-    //     requestWeekNumberFromServer();  
-    //     requestDataFromServer();    
     }
 });
 
+/*
+
+*/
 $( document ).ready( function()
 {
-    setTimeout(function(){
-        console.log('after');
+    setTimeout( function(){
         renderGames();
-    },5000);
+    }, 5000 );
 });   

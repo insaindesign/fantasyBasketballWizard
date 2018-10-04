@@ -121,7 +121,7 @@ getBackgroundColor = function( games )
 }
 
 /*
-    removeGamesDataColumn - 
+    removeGamesDataColumn - removes the game remaining cells
 */
 function removeGamesDataColumn()
 {
@@ -139,7 +139,8 @@ function removeGamesDataColumn()
 --------------------------------------------------------------------- */
 
 /*
-    requestWeekNumberFromServer - 
+    requestWeekNumberFromServer - requests the week number from the
+    server and calls a function to add that data to the headers
 */
 function requestWeekNumberFromServer()
 {
@@ -164,7 +165,8 @@ function requestWeekNumberFromServer()
 }
 
 /*
-    addGamesWeekHeaders - adds the 'GAMES' and 'WEEK' headers to the HTML of the page.
+    addGamesWeekHeaders - adds the 'WEEK #' and 'GR/G' headers
+    to the HTML of the page.
 */
 function addWeekGamesHeaders( data )
 {
@@ -196,7 +198,8 @@ function addWeekGamesHeaders( data )
 }
 
 /*
-    addGamesForPlayers - 
+    addGamesForPlayers - creates the games remaining cells and
+    adds the data to the HTML of the page
 */
 function addGamesForPlayers()
 {
@@ -256,7 +259,8 @@ function addGamesForPlayers()
 }
 
 /*
-    addGamesDataToLocalDictionary - 
+    addGamesDataToLocalDictionary - gets the games remaining data
+    from the server and adds it to a local dictionary
 */
 function addGamesDataToLocalDictionary( data, teamsRequestString )
 {
@@ -277,7 +281,8 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
 }
 
 /*
-    requestDataFromServer - 
+    requestDataFromServer - requests the game data from the server and
+    calls functions to handle the data after it gets received
 */
 async function requestDataFromServer()
 {

@@ -180,7 +180,7 @@ function requestGameDataFromServer()
     console.log( "teamsRequestString=" + teamsRequestString );
     console.log( "dateRequestString=" + dateRequestString );
     console.log( "leagueIdRequestString=" + leagueIdRequestString );
-    var url = "https://www.fantasywizard.site/gamesremaining/?pageName=eTeamsPage&" + teamsRequestString + "&format=json&date=" + dateRequestString + "&" + leagueIdRequestString;
+    var url = "https://www.fantasywizard.site/gamesremaining/?pageName=espnMatchups&" + teamsRequestString + "&format=json&date=" + dateRequestString + "&" + leagueIdRequestString;
     console.log( url );
 
     fetch( url )

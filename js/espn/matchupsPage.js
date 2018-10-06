@@ -4,9 +4,9 @@
     matchupsPage.js 
 */
 
-/* ----------------------------------------------
-                Global Variables  
----------------------------------------------- */
+/* ---------------------------------------------------------------------
+                            Global Variables  
+--------------------------------------------------------------------- */
 var acronymEspnToYahoo = {};
 var localGamesDataDict = {};
 
@@ -356,11 +356,18 @@ function removeEntireColumn()
 
 $( 'body' ).on( 'change', 'select.dropdown__select', function() 
 {
-    // console.log( $(".dropdown__select option:selected").text() );
-    console.log( "option changed" );
-    // getDate();
     removeEntireColumn();
     requestGameDataFromServer();
+});
+
+$( 'body' ).on( 'click', 'li.carousel__slide', function() 
+{
+    var className = this.className;
+    if( className.indexOf( "selected" ) == -1 )
+    {
+        removeEntireColumn();
+        setTimeout( requestGameDataFromServer, 1000 );
+    }
 });
 
 $( document ).ready( function()

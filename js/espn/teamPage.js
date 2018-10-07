@@ -8,6 +8,7 @@
                             Global Variables  
 --------------------------------------------------------------------- */
 var acronymEspnToYahoo = {};        // Dictionary to convert acronyms from ESPN to Yahoo
+var dailyOrWeekly = "";
 var addGamesElements = true;           // Flag to tell if it is a complete render - ** change to updateGames
 // var addGamesElements = true;
 var localGamesDataDict = {};        // Holds the game remaining data
@@ -196,6 +197,37 @@ function getBackgroundColor( games )
     }
 }
 
+/*
+    getFormattedTodaysDate - 
+*/
+function getFormattedTodaysDate()
+{
+    var todaysDate = new Date();
+    // Getting today's date before regular season starts
+    if( ( todaysDate.getTime() <= new Date("2018-10-16").getTime() ) ) 
+    {
+        return "2018-10-16";
+    }
+    else
+    {
+        return todaysDate.getFullYear() + "-" + ( todaysDate.getMonth() + 1 ) + "-" + todaysDate.getDate();
+    }
+}
+
+function isLeagueDailyOrWeekly()
+{
+    console.log( "isLeagueDailyOrWeekly()" );
+    var dateElements = document.getElementsByClassName( "is-current" );
+    if( dateElements[0].innerHTML.indexOf( "day" ) != -1 )
+    {
+        dailyOrWeekly = "Daily";
+    }
+    else if( dateElements[0].innerHTML.indexOf( "week" ) != -1 )
+    {
+        dailyOrWeekly = "Weekly";
+    }
+}
+
 /* ---------------------------------------------------------------------
                             Main Functions 
 --------------------------------------------------------------------- */
@@ -207,7 +239,16 @@ async function requestHeaderFromServer( addOrUpdate )
     console.log( "requestHeaderFromServer()" );
     // Sleep before getting the date string to allow the selected date some time to be changed
     await sleep( 200 );
-    var dateRequestString = buildDateRequestString();
+    var dateRequestString = "";
+    if( dailyOrWeekly == "Daily" )
+    {
+        dateRequestString = getDate();
+    }
+    else if( dailyOrWeekly == "Weekly" )
+    {
+        dateRequestString = getFormattedTodaysDate();
+    }
+    console.log( "dateRequestString=" + dateRequestString );
     var leagueIdRequestString = buildLeagueIdRequestString();
     var url = "http://www.fantasywizard.site/getweek/?pageName=eTeamsPage&format=json&date=" + dateRequestString + "&" + leagueIdRequestString;
 
@@ -322,7 +363,16 @@ async function requestGameDataFromServer( addOrUpdate )
     var teamsRequestString = buildTeamsRequestString();
     // Sleep before getting the date string to allow the selected date some time to be changed
     await sleep( 200 );     
-    var dateRequestString = buildDateRequestString();
+    var dateRequestString = "";
+    if( dailyOrWeekly == "Daily" )
+    {
+        dateRequestString = getDate();
+    }
+    else if( dailyOrWeekly == "Weekly" )
+    {
+        dateRequestString = getFormattedTodaysDate();
+    }
+    console.log( "dateRequestString=" + dateRequestString );
     var leagueIdRequestString = buildLeagueIdRequestString();
     var url = "https://www.fantasywizard.site/gamesremaining/?pageName=eTeamsPage&" + teamsRequestString + "&format=json&date=" + dateRequestString + "&" + leagueIdRequestString;
     console.log( url );
@@ -739,6 +789,7 @@ function renderGames( type )
 
     if( type == "Document Ready" )
     {
+        isLeagueDailyOrWeekly();
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
     }
@@ -770,6 +821,11 @@ function renderGames( type )
     {
         removeGamesColumn();
         requestHeaderFromServer( "Update" );  
+        requestGameDataFromServer( "Add" );
+    }
+    else if( type == "Weekly" )
+    {
+        requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
     }
 }

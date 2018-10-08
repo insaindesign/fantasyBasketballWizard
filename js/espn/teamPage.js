@@ -220,9 +220,9 @@ function getActiveMenu()
 */
 function getBackgroundColor( games )
 {
-    if( games > 3 )
+    if( games >= 4 )
     {
-        return "#adebad";
+        return "#0c5b05";
     }
     else if( games == 3 )
     {

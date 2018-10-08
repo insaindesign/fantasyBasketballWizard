@@ -48,6 +48,7 @@ acronymEspnToYahoo["Wsh"]  =  "Was";
 /* ---------------------------------------------------------------------
                             Helper Functions 
 --------------------------------------------------------------------- */
+
 /*
     buildTeamsRequestString - creates part of the url for the teams to 
     request game data for.
@@ -66,48 +67,93 @@ function buildTeamsRequestString()
     return teamsRequestString;
 }
 
-
 /*
-    buildDateRequestString - 
+    formatDateString - formats a date string in YYYY-MM-DD
 */
-function buildDateRequestString()
+function formatDateString( month, date )
 {
-    // console.log( "buildDateRequestString()" );
-    var currentElements = document.getElementsByClassName( "is-current" );
-    var currentDateDiv = currentElements[0];
-    var currentDateChildren = currentDateDiv.children[0];
-    var currentMonthDate = currentDateChildren.innerHTML;
-    var currentMonthDateSplit = currentMonthDate.split( " " );
-    var month = currentMonthDateSplit[0];
-    var date = currentMonthDateSplit[1];
+    var dateString = "";
 
     if( month == "Oct" )
     {
-        return ( "2018-10-" + date );
+        dateString = ( "2018-10-" + date );
     }
     else if( month == "Nov" )
     {
-        return ( "2018-11-" + date );
+        dateString = ( "2018-11-" + date );
     }
     else if( month == "Dec" )
     {
-        return ( "2018-12-" + date );
+        dateString = ( "2018-12-" + date );
     }
     else if( month == "Jan" )
     {
-        return ( "2019-01-" + date );
+        dateString = ( "2019-01-" + date );
     }
     else if( month == "Feb" )
     {
-        return ( "2019-02-" + date );
+        dateString = ( "2019-02-" + date );
     }
     else if( month == "Mar" )
     {
-        return ( "2019-03-" + date );
+        dateString = ( "2019-03-" + date );
     }
     else if( month == "Apr" )
     {
-        return ( "2019-04-" + date );
+        dateString = ( "2019-04-" + date );
+    }
+
+    return dateString;
+}
+
+/*
+    buildDateRequestString - creates a date request string for the
+    the parameter for the server request for either daily or weekly leagues
+*/
+function buildDateRequestString()
+{
+    console.log( "buildDateRequestString()" );
+    var currentElements = document.getElementsByClassName( "is-current" );
+
+    if( dailyOrWeekly == "Daily" )
+    {
+        var currentDateDiv = currentElements[0];
+        var currentDateChildren = currentDateDiv.children[0];
+        var currentMonthDate = currentDateChildren.innerHTML;
+        var currentMonthDateSplit = currentMonthDate.split( " " );
+        var selectedMonth = currentMonthDateSplit[0];
+        var selectedDate = currentMonthDateSplit[1];
+
+        return formatDateString( selectedMonth, selectedDate );
+    }
+    else if( dailyOrWeekly == "Weekly" )
+    {
+        var currentDateDiv = currentElements[0];
+        var currentDateChildren = currentDateDiv.children[1];
+        var currentMonthDate = currentDateChildren.innerHTML;
+        var currentMonthDateSplit = currentMonthDate.split( " " );
+        var selectedMonth = currentMonthDateSplit[0];
+        var selectedDateLowerRange = currentMonthDateSplit[1];
+        var selectedDateEndRange = currentMonthDateSplit[3];
+        var formattedDateLowerRange = formatDateString( selectedMonth, selectedDateLowerRange );
+        var formattedDateEndRange = formatDateString( selectedMonth, selectedDateEndRange );
+        var todaysDate = new Date();
+        // Compare today's date with the lower range, if its less than then use the
+        // lower range date to get the full amount of games
+        if( ( todaysDate.getTime() <= new Date( formattedDateLowerRange ).getTime() ) ) 
+        {
+            return formattedDateLowerRange;
+        }
+        // Today's date in between the week ranges then use today's date to get the accurate date
+        else if( ( todaysDate.getTime() > new Date( formattedDateLowerRange ).getTime() ) && 
+                 ( todaysDate.getTime() < new Date( formattedDateEndRange ).getTime() ) )
+        {
+            return formatDateString( todaysDate.getMonth()+1, todaysDate.getDate() )
+        }
+        else if( ( todaysDate.getTime() > new Date( formattedDateEndRange ).getTime() ) )
+        {
+            return formattedDateEndRange;
+        }
     }
 }
 
@@ -117,14 +163,13 @@ function buildDateRequestString()
 */
 function buildLeagueIdRequestString()
 {
-    console.log( "buildLeagueIdRequestString()" );
+    // console.log( "buildLeagueIdRequestString()" );
     var entireUrl = window.location.href;
     // console.log( url );
     var url = new URL( entireUrl );
     var leagueId = url.searchParams.get( "leagueId" );
-    console.log( leagueId );
     var leagueIdRequestString = "leagueID="+leagueId;
-    console.log( leagueIdRequestString );
+
     return leagueIdRequestString;
 }
 
@@ -142,7 +187,7 @@ function buildTeamsRequestString()
     {
         teamsRequestString += acronymEspnToYahoo[listOfElements[i].innerHTML] + ",";
     }
-    // console.log( teamsRequestString );
+
     return teamsRequestString;
 }
 
@@ -156,11 +201,11 @@ function sleep( ms )
 }
 
 /* 
-    getActiveMenu - 
+    getActiveMenu - returns the active menu
 */
 function getActiveMenu()
 {
-    console.log( "getActiveMenu" );
+    // console.log( "getActiveMenu" );
     var activeMenuElements = document.getElementsByClassName( "tabs__list__item--active" );
     var activeMenuElement = activeMenuElements[0].getElementsByClassName( "tabs__link w-100" );
     var activeMenu = activeMenuElement[0].innerHTML;
@@ -198,22 +243,8 @@ function getBackgroundColor( games )
 }
 
 /*
-    getFormattedTodaysDate - 
+    isLeagueDailyOrWeekly - returns whether the league is daily or weekly
 */
-function getFormattedTodaysDate()
-{
-    var todaysDate = new Date();
-    // Getting today's date before regular season starts
-    if( ( todaysDate.getTime() <= new Date("2018-10-16").getTime() ) ) 
-    {
-        return "2018-10-16";
-    }
-    else
-    {
-        return todaysDate.getFullYear() + "-" + ( todaysDate.getMonth() + 1 ) + "-" + todaysDate.getDate();
-    }
-}
-
 function isLeagueDailyOrWeekly()
 {
     console.log( "isLeagueDailyOrWeekly()" );
@@ -231,6 +262,7 @@ function isLeagueDailyOrWeekly()
 /* ---------------------------------------------------------------------
                             Main Functions 
 --------------------------------------------------------------------- */
+
 /*
     requestHeaderFromServer - 
 */
@@ -239,16 +271,8 @@ async function requestHeaderFromServer( addOrUpdate )
     console.log( "requestHeaderFromServer()" );
     // Sleep before getting the date string to allow the selected date some time to be changed
     await sleep( 200 );
-    var dateRequestString = "";
-    if( dailyOrWeekly == "Daily" )
-    {
-        dateRequestString = getDate();
-    }
-    else if( dailyOrWeekly == "Weekly" )
-    {
-        dateRequestString = getFormattedTodaysDate();
-    }
-    console.log( "dateRequestString=" + dateRequestString );
+    var dateRequestString = buildDateRequestString();
+    // console.log( "dateRequestString=" + dateRequestString );
     var leagueIdRequestString = buildLeagueIdRequestString();
     var url = "http://www.fantasywizard.site/getweek/?pageName=eTeamsPage&format=json&date=" + dateRequestString + "&" + leagueIdRequestString;
 
@@ -310,7 +334,7 @@ function addWeekGamesHeaders( data )
     {
         for( var i = 0; i < listOfElements.length; i++ )
         {
-            console.log(listOfElements[i]);
+            // console.log(listOfElements[i]);
             if( listOfElements[i].innerHTML.indexOf( "STARTERS" ) != -1 )
             {
                 var newGamesHeader = document.createElement( "th" );
@@ -338,7 +362,7 @@ function addWeekGamesHeaders( data )
 /*
     updateWeekNumberHeader - updates the 'GAMES' and 'WEEK' headers
 */
-function updateWeekNumberHeader()
+function updateWeekNumberHeader( data )
 {
     var weekNum = data.weekNum;
     var listOfHeaders = document.getElementsByClassName( "fbw-header" );
@@ -363,15 +387,7 @@ async function requestGameDataFromServer( addOrUpdate )
     var teamsRequestString = buildTeamsRequestString();
     // Sleep before getting the date string to allow the selected date some time to be changed
     await sleep( 200 );     
-    var dateRequestString = "";
-    if( dailyOrWeekly == "Daily" )
-    {
-        dateRequestString = getDate();
-    }
-    else if( dailyOrWeekly == "Weekly" )
-    {
-        dateRequestString = getFormattedTodaysDate();
-    }
+    var dateRequestString = buildDateRequestString();
     console.log( "dateRequestString=" + dateRequestString );
     var leagueIdRequestString = buildLeagueIdRequestString();
     var url = "https://www.fantasywizard.site/gamesremaining/?pageName=eTeamsPage&" + teamsRequestString + "&format=json&date=" + dateRequestString + "&" + leagueIdRequestString;
@@ -736,9 +752,21 @@ $( 'body' ).on( 'click', 'a.move-action-btn', function()
 });
 
 /*
-    For showing the features after switching dates
+    For showing the features after switching dates for daily leagues
 */
 $( 'body' ).on( 'click', 'div.custom--day', function() 
+{
+    var className = this.className;
+    if( className.indexOf( "is-current" ) == -1 )
+    {
+        renderGames( "Switch Dates" );
+    }
+});
+
+/*
+    For showing the features after switching dates for weekly leagues
+*/
+$( 'body' ).on( 'click', 'div.custom--week', function() 
 {
     var className = this.className;
     if( className.indexOf( "is-current" ) == -1 )

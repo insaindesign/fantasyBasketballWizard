@@ -74,6 +74,36 @@ function sleep( ms )
   return new Promise( resolve => setTimeout( resolve, ms ) );
 }
 
+/* 
+    getBackgroundColor - returns the background color
+    associated with the number of games.
+
+    games - The number of games
+*/
+getBackgroundColor = function( games )
+{
+    if( games > 3 )
+    {
+        return "#adebad";
+    }
+    else if( games == 3 )
+    {
+        return "#d8ffcc";
+    }
+    else if( games == 2 )
+    {
+        return "#ffffcc";
+    }
+    else if( games == 1 )
+    {
+        return "#ffe1ba";
+    }
+    else if( games == 0 )
+    {
+        return "#ffd6cc";
+    }
+}
+
 /*
     getFormattedTodaysDate - 
 */
@@ -107,8 +137,6 @@ function addWeekGamesHeaders( data )
 
     for( var i = 0; i < listOfElements.length; i++ )
     {
-        console.log( listOfElements[i] );
-
         var newHeaderTh = document.createElement( "th" );
         var newHeaderSpan = document.createElement( "span" );
         newHeaderTh.title = "Games Remaining / Games This Week";
@@ -117,6 +145,88 @@ function addWeekGamesHeaders( data )
         newHeaderSpan.innerHTML = "GR/G";
         newHeaderTh.appendChild( newHeaderSpan );
         listOfElements[i].appendChild( newHeaderTh );
+    }
+}
+
+/*
+    addGamesDataToLocalDictionary - gets the games remaining data
+    from the server and adds it to a local dictionary
+*/
+function addGamesDataToLocalDictionary( data, teamsRequestString )
+{
+    // Don't need to erase the local games info because the date doesn't change for free agents, can build onto
+    // The data structure as I use it
+    // localGamesDataDict = {};
+    console.log( "addDataToLocalDictionary()" );
+    var teamsRequestStringConcise = teamsRequestString.substring( 6, teamsRequestString.length-1 );
+    var teamsList = teamsRequestStringConcise.split( "," );
+    for( var i = 0; i < data.length; i++ )
+    {
+        if( localGamesDataDict[teamsList[i]] == "" )
+        {
+            localGamesDataDict[teamsList[i]] = data[i];
+        }
+    }
+    console.log( localGamesDataDict );
+}
+
+/*
+    addGamesForPlayers - creates the games remaining cells and
+    adds the data to the HTML of the page
+*/
+function addGamesForPlayers()
+{
+    console.log( "addGamesForPlayers()" );
+
+    var listOfElements = document.getElementsByClassName( "Table2__tr--sm" );
+    var totalGamesRemaining = 0;
+    var totalGamesForWeek = 0;
+
+    var listOfTeamNameElements = document.getElementsByClassName( "playerinfo__playerteam" );
+    var listOfTeamNameElementsIndex = 0;
+
+    for( var i = 0; i < listOfElements.length; i++ )
+    {
+        var listOfElementsTr = listOfElements[i];
+
+        if( listOfElementsTr.children.length == 5 )
+        {
+            var newGamesTd = document.createElement( "td" );
+            var newGamesDiv = document.createElement( "div" );
+            newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td";
+            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div";
+            newGamesDiv.style.textAlign = "center";
+
+            var isInjured = false;
+            // 'O'ut, injured player
+            if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
+            {
+                isInjured = true;
+            }
+            // Normal player
+            if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
+            {
+                if( !isInjured )
+                {
+                    var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                    // console.log( "teamName=" + teamName );
+                    newGamesDiv.innerHTML = localGamesDataDict[teamName];
+                    var splitDataIndex = localGamesDataDict[teamName].split( "/" );
+                    totalGamesRemaining += parseInt( splitDataIndex[0] );
+                    totalGamesForWeek += parseInt( splitDataIndex[1] );
+                    newGamesTd.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
+                }
+                else
+                {
+                    newGamesDiv.innerHTML = "-/-";
+                    newGamesTd.style.backgroundColor = getBackgroundColor( 0 );
+                }
+            }
+            // Don't have empty players in Free Agents, only for Team page    
+            listOfTeamNameElementsIndex++;
+            newGamesTd.appendChild( newGamesDiv );
+            listOfElementsTr.appendChild( newGamesTd );
+        }
     }
 }
 
@@ -193,6 +303,6 @@ $( document ).ready( function()
 {
     setTimeout( function(){
         requestWeekNumberFromServer();
-        // requestDataFromServer();
+        requestDataFromServer();
     }, 5000 );
 });   

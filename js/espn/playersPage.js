@@ -58,7 +58,6 @@ function buildTeamsRequestString()
     {
         if( !( acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] in localGamesDataDict ) )
         {
-            localGamesDataDict[ acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] ] = "";
             teamsRequestString += acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] + ",";
         }
     }

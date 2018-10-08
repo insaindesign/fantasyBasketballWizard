@@ -805,6 +805,18 @@ $( 'body' ).on( 'click', 'li.tabs__list__item', function()
     {}
 });
 
+/*
+    Current button that returns to the current date
+*/
+$( 'body' ).on( 'click', 'a.scoring--period-today', function() 
+{
+    var className = this.className;
+    if( className.indexOf( "is-current" ) == -1 )
+    {
+        renderGames( "Switch Dates" );
+    }
+});
+
 /* ---------------------------------------------------------------------
                             Render Games by Type 
 --------------------------------------------------------------------- */

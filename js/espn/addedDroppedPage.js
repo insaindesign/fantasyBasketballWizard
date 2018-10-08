@@ -59,7 +59,6 @@ function buildTeamsRequestString()
     {
         if( !( acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] in localGamesDataDict ) )
         {
-            localGamesDataDict[ acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] ] = "";
             teamsRequestString += acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] + ",";
         }
     }
@@ -121,6 +120,19 @@ function getFormattedTodaysDate()
     }
 }
 
+/*
+    removeGamesDataColumn - removes the game remaining cells
+*/
+function removeGamesDataColumn()
+{
+    console.log( "removeGamesDataColumn()" );
+    var elements = document.getElementsByClassName( "fbw-new-element" );
+
+    while( elements.length > 0 )
+    {
+        elements[0].parentNode.removeChild( elements[0] );
+    }
+}
 
 /* ---------------------------------------------------------------------
                             Main Functions 
@@ -162,12 +174,9 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
     var teamsList = teamsRequestStringConcise.split( "," );
     for( var i = 0; i < data.length; i++ )
     {
-        if( localGamesDataDict[teamsList[i]] == "" )
-        {
-            localGamesDataDict[teamsList[i]] = data[i];
-        }
+        localGamesDataDict[teamsList[i]] = data[i];
     }
-    console.log( localGamesDataDict );
+    // console.log( localGamesDataDict );
 }
 
 /*
@@ -193,8 +202,8 @@ function addGamesForPlayers()
         {
             var newGamesTd = document.createElement( "td" );
             var newGamesDiv = document.createElement( "div" );
-            newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td";
-            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div";
+            newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
+            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div fbw-new-element";
             newGamesDiv.style.textAlign = "center";
 
             var isInjured = false;
@@ -209,7 +218,7 @@ function addGamesForPlayers()
                 if( !isInjured )
                 {
                     var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
-                    // console.log( "teamName=" + teamName );
+                    
                     newGamesDiv.innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     totalGamesRemaining += parseInt( splitDataIndex[0] );
@@ -262,12 +271,12 @@ function requestWeekNumberFromServer()
 async function requestDataFromServer()
 {
     console.log( "requestDataFromServer()" );
-    await sleep( 3000 );
     var teamsRequestString = buildTeamsRequestString(); 
 
     // Code did not find any new teams to request from the server
     if( teamsRequestString == "teams=" )
     {
+        sleep( 4000 );
         addGamesForPlayers();
     }
     else
@@ -287,6 +296,7 @@ async function requestDataFromServer()
                 response.json().then( function( data )
                 {
                     addGamesDataToLocalDictionary( data, teamsRequestString );
+                    sleep( 4000 );
                     addGamesForPlayers();
                 });
             }).catch( function( err )
@@ -295,6 +305,24 @@ async function requestDataFromServer()
             });
     }
 }
+
+
+/* ---------------------------------------------------------------------
+                            HTML Object Clicks 
+--------------------------------------------------------------------- */
+
+/*
+    Changing pages
+*/
+$( 'body' ).on( 'click', 'label.control--radio', function() 
+    var className = this.className;
+
+    if( className.indexOf( "checked" ) == -1 )
+    {
+        removeGamesDataColumn();
+        setTimeout( requestDataFromServer, 3000 );
+    }
+});
 
 /* ---------------------------------------------------------------------
                             Document Ready 

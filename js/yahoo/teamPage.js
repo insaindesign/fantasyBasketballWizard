@@ -13,7 +13,7 @@ games = JSON.parse(getGames(teams))
 //-----------------------------------------------------------------------------
 var getColor = function(games) {
     if (games == '0/0'){
-        return "#56d2ff"
+        return "#fc8d8d"
     }
     games = parseInt(games.split('/')[0]);
     if (games > 3) {
@@ -24,19 +24,36 @@ var getColor = function(games) {
         return "#ffffcc"
     } else if (games == 1) {
         return "#ffd6cc"
+    } else if (games == 0) {
+        return "#f97a7a"
     } else {
         return "white"
     }
 }
+
 
 function getFormattedDate() {
     var d = new Date();
     return d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
 }
 
+function getDateFromURL(url){
+    url = url.split("date=")[1]
+    date = url.split("&")[0]
+    return date
+}
+
 function getGames(team){
-    var dateString = getFormattedDate();
+    var dateString;
+    url = window.location.href;
+    if (url.includes("date=")){
+        dateString = getDateFromURL(url);
+    } else {
+        dateString = getFormattedDate();
+    }
+    
     var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yTeamsPage&teams='+team+'&format=json&date='+dateString;
+    console.log("url: ", dateString);
     var req = new XMLHttpRequest();
     req.open("GET", url, false);
     req.send(null);
@@ -138,8 +155,7 @@ renderGames = function(from_view) {
     }
 
     console.log("rendering games...")
-
-
+    
     //init stats table
     table = document.getElementById("statTable0");
 
@@ -177,7 +193,6 @@ renderGames = function(from_view) {
         }
     }
 
-
     //replace Fantasy headers
     //find Fantasy header column
     th = table.rows[0];
@@ -213,7 +228,6 @@ renderGames = function(from_view) {
     if (fantasy_col == -1) {
         fantasy_col = i;
     }
-
 
     //read team names, write games
     row = 2;
@@ -365,9 +379,6 @@ countStats = function() {
             break;
         }
     }
-
-    console.log("counting col: ", col);
-
 
     //col = gp_col + 1;
     offset = false;

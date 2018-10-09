@@ -582,7 +582,8 @@ function updateGameData()
     {
         var listOfElementsTr = listOfElements[i];
 
-        if( listOfElementsTr.children.length == 6 || listOfElementsTr.children.length == 13 )
+        console.log( "listOfElementsTr.children.length= " + listOfElementsTr.children.length );
+        if( listOfElementsTr.children.length == 6 || listOfElementsTr.children.length == 7 || listOfElementsTr.children.length == 13 || listOfElementsTr.children.length == 14 )
         {
             var isInjured = false;
             // 'O'ut, injured player
@@ -641,8 +642,7 @@ function moveButtonStarterPressed()
     for( var i = listOfElements.length-1; i > 0; i-- )
     {
         var listOfElementsTr = listOfElements[i];
-        console.log( "listOfElementsTr.children.length= " + listOfElementsTr.children.length );
-        if( listOfElementsTr.children.length == 5 || listOfElementsTr.children.length == 12 )
+        if( listOfElementsTr.children.length == 5 || listOfElementsTr.children.length == 12 || listOfElementsTr.children.length == 13 )
         {
             var newGamesTd = document.createElement( "td" );
             var newGamesDiv = document.createElement( "div" );

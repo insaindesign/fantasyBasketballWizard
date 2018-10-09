@@ -654,6 +654,17 @@ function moveButtonStarterPressed()
             listOfElementsTr.appendChild( newGamesTd );
             break;
         }
+        else if( listOfElementsTr.children.length == 6 )
+        {
+            var newCell = listOfElementsTr.insertCell( 5 );
+            var newGamesDiv = document.createElement( "div" );
+            newCell.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
+            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div fbw-new-element";
+            newGamesDiv.style.textAlign = "center";
+            newGamesDiv.innerHTML = "-/-";
+            newCell.appendChild( newGamesDiv );
+            break;
+        }
     }
 }
 

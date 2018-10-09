@@ -7,39 +7,7 @@
 /* ---------------------------------------------------------------------
                             Global Variables  
 --------------------------------------------------------------------- */
-var acronymEspnToYahoo = {};
 var localGamesDataDict = {};
-
-acronymEspnToYahoo["Atl"]  =  "Atl";
-acronymEspnToYahoo["Bos"]  =  "Bos";
-acronymEspnToYahoo["Bkn"]  =  "Bkn";
-acronymEspnToYahoo["Cha"]  =  "Cha";
-acronymEspnToYahoo["Chi"]  =  "Chi";
-acronymEspnToYahoo["Cle"]  =  "Cle";
-acronymEspnToYahoo["Dal"]  =  "Dal";
-acronymEspnToYahoo["Den"]  =  "Den";
-acronymEspnToYahoo["Det"]  =  "Det";
-acronymEspnToYahoo["GS"]   =  "GS";
-acronymEspnToYahoo["Hou"]  =  "Hou";
-acronymEspnToYahoo["Ind"]  =  "Ind";
-acronymEspnToYahoo["LAC"]  =  "LAC";
-acronymEspnToYahoo["LAL"]  =  "LAL";
-acronymEspnToYahoo["Mem"]  =  "Mem";
-acronymEspnToYahoo["Mia"]  =  "Mia";
-acronymEspnToYahoo["Mil"]  =  "Mil";
-acronymEspnToYahoo["Min"]  =  "Min";
-acronymEspnToYahoo["No"]   =  "NO";
-acronymEspnToYahoo["NY"]   =  "NY";
-acronymEspnToYahoo["OKC"]  =  "OKC";
-acronymEspnToYahoo["Orl"]  =  "Orl";
-acronymEspnToYahoo["Phi"]  =  "Phi";
-acronymEspnToYahoo["Phx"]  =  "Pho";
-acronymEspnToYahoo["Por"]  =  "Por";
-acronymEspnToYahoo["Sac"]  =  "Sac";
-acronymEspnToYahoo["SA"]   =  "SA";
-acronymEspnToYahoo["Tor"]  =  "Tor";
-acronymEspnToYahoo["Utah"] =  "Uta";
-acronymEspnToYahoo["Wsh"]  =  "Was";
 
 /* ---------------------------------------------------------------------
                             Helper Functions 
@@ -56,9 +24,9 @@ function buildTeamsRequestString()
     var teamsRequestString = "teams=";
     for( var i = 0; i < listOfElements.length; i++ )
     {
-        if( !( acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] in localGamesDataDict ) )
+        if( !( listOfElements[ i ].innerHTML in localGamesDataDict ) )
         {
-            teamsRequestString += acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] + ",";
+            teamsRequestString += listOfElements[ i ].innerHTML + ",";
         }
     }
     return teamsRequestString;
@@ -146,7 +114,7 @@ function requestWeekNumberFromServer()
     console.log( "requestWeekNumberFromServer()" );
     // Sleep before getting the date string to allow the selected date some time to be changed
     var dateRequestString = getFormattedTodaysDate();
-    var url = "http://www.fantasywizard.site/getweek/?&format=json&date=" + dateRequestString;
+    var url = "http://www.fantasywizard.site/getweek/?pageName=ePlayersPage&format=json&date=" + dateRequestString;
 
     fetch(url)
         .then(function(response){
@@ -235,7 +203,7 @@ function addGamesForPlayers()
             {
                 if( !isInjured )
                 {
-                    var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
                     // console.log( "teamName=" + teamName );
                     newGamesDiv.innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
@@ -271,10 +239,7 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
     var teamsList = teamsRequestStringConcise.split( "," );
     for( var i = 0; i < data.length; i++ )
     {
-        if( localGamesDataDict[teamsList[i]] == "" )
-        {
-            localGamesDataDict[teamsList[i]] = data[i];
-        }
+        localGamesDataDict[teamsList[i]] = data[i];
     }
     console.log( localGamesDataDict );
 }

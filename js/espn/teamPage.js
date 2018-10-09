@@ -7,43 +7,12 @@
 /* ---------------------------------------------------------------------
                             Global Variables  
 --------------------------------------------------------------------- */
-var acronymEspnToYahoo = {};        // Dictionary to convert acronyms from ESPN to Yahoo
+
 var dailyOrWeekly = "";
 var addGamesElements = true;           // Flag to tell if it is a complete render - ** change to updateGames
 // var addGamesElements = true;
 var localGamesDataDict = {};        // Holds the game remaining data
 var updateHeaders = false;          // Flag to update headers
-
-acronymEspnToYahoo["Atl"]  =  "Atl";
-acronymEspnToYahoo["Bos"]  =  "Bos";
-acronymEspnToYahoo["Bkn"]  =  "Bkn";
-acronymEspnToYahoo["Cha"]  =  "Cha";
-acronymEspnToYahoo["Chi"]  =  "Chi";
-acronymEspnToYahoo["Cle"]  =  "Cle";
-acronymEspnToYahoo["Dal"]  =  "Dal";
-acronymEspnToYahoo["Den"]  =  "Den";
-acronymEspnToYahoo["Det"]  =  "Det";
-acronymEspnToYahoo["GS"]   =  "GS";
-acronymEspnToYahoo["Hou"]  =  "Hou";
-acronymEspnToYahoo["Ind"]  =  "Ind";
-acronymEspnToYahoo["LAC"]  =  "LAC";
-acronymEspnToYahoo["LAL"]  =  "LAL";
-acronymEspnToYahoo["Mem"]  =  "Mem";
-acronymEspnToYahoo["Mia"]  =  "Mia";
-acronymEspnToYahoo["Mil"]  =  "Mil";
-acronymEspnToYahoo["Min"]  =  "Min";
-acronymEspnToYahoo["No"]   =  "NO";
-acronymEspnToYahoo["NY"]   =  "NY";
-acronymEspnToYahoo["OKC"]  =  "OKC";
-acronymEspnToYahoo["Orl"]  =  "Orl";
-acronymEspnToYahoo["Phi"]  =  "Phi";
-acronymEspnToYahoo["Phx"]  =  "Pho";
-acronymEspnToYahoo["Por"]  =  "Por";
-acronymEspnToYahoo["Sac"]  =  "Sac";
-acronymEspnToYahoo["SA"]   =  "SA";
-acronymEspnToYahoo["Tor"]  =  "Tor";
-acronymEspnToYahoo["Utah"] =  "Uta";
-acronymEspnToYahoo["Wsh"]  =  "Was";
 
 /* ---------------------------------------------------------------------
                             Helper Functions 
@@ -61,7 +30,7 @@ function buildTeamsRequestString()
     var teamsRequestString = "teams=";
     for( var i = 0; i < listOfElements.length; i++ )
     {
-        teamsRequestString += acronymEspnToYahoo[listOfElements[i].innerHTML] + ",";
+        teamsRequestString += listOfElements[i].innerHTML + ",";
     }
     // console.log( teamsRequestString );
     return teamsRequestString;
@@ -185,7 +154,7 @@ function buildTeamsRequestString()
     var teamsRequestString = "teams=";
     for( var i = 0; i < listOfElements.length; i++ )
     {
-        teamsRequestString += acronymEspnToYahoo[listOfElements[i].innerHTML] + ",";
+        teamsRequestString += listOfElements[i].innerHTML + ",";
     }
 
     return teamsRequestString;
@@ -483,7 +452,7 @@ function addGamesForPlayers()
             {
                 if( !isInjured )
                 {
-                    var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
                     newGamesDiv.innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     totalGamesRemaining += parseInt( splitDataIndex[0] );
@@ -524,7 +493,7 @@ function addGamesForPlayers()
             {
                 if( !isInjured )
                 {
-                    var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
                     newGamesDiv.innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     totalGamesRemaining += parseInt( splitDataIndex[0] );
@@ -568,7 +537,7 @@ function addGamesForPlayers()
             {
                 if( !isInjured )
                 {
-                    var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
                     newGamesDiv.innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     totalGamesRemaining += parseInt( splitDataIndex[0] );
@@ -633,7 +602,7 @@ function updateGameData()
                 // Healthy player 
                 if( !isInjured )
                 {
-                    var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
                     listOfGamesDiv[listOfGamesIndex].innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     totalGamesRemaining += parseInt( splitDataIndex[0] );

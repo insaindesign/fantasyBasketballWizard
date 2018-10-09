@@ -251,7 +251,7 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
 async function requestDataFromServer()
 {
     console.log( "requestDataFromServer()" );
-    await sleep( 3000 );
+    await sleep( 2000 );
     var teamsRequestString = buildTeamsRequestString(); 
 
     // Code did not find any new teams to request from the server
@@ -304,6 +304,20 @@ $( 'body' ).on( 'click', 'li.PaginationNav__list__item', function()
     }
 });
 
+/*
+    Changing positions of available free agents
+*/
+$( 'body' ).on( 'click', 'label.picker-option', function() 
+{
+    var className = this.className;
+
+    if( className.indexOf( "checked" ) == -1 )
+    {
+        removeGamesDataColumn();
+        setTimeout( requestDataFromServer, 2000 );
+    }
+});
+
 /* ---------------------------------------------------------------------
                             Document Ready 
 --------------------------------------------------------------------- */
@@ -312,5 +326,5 @@ $( document ).ready( function()
     setTimeout( function(){
         requestWeekNumberFromServer();
         requestDataFromServer();
-    }, 5000 );
+    }, 3000 );
 });   

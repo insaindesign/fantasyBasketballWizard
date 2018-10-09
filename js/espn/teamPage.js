@@ -222,7 +222,7 @@ function getBackgroundColor( games )
 {
     if( games >= 4 )
     {
-        return "#0c5b05";
+        return "#a5d394";
     }
     else if( games == 3 )
     {
@@ -234,11 +234,11 @@ function getBackgroundColor( games )
     }
     else if( games == 1 )
     {
-        return "#ffe1ba";
+        return "#ffd6cc";
     }
     else if( games == 0 )
     {
-        return "#ffd6cc";
+        return "#ff5c54";
     }
 }
 
@@ -262,6 +262,25 @@ function isLeagueDailyOrWeekly()
 /* ---------------------------------------------------------------------
                             Main Functions 
 --------------------------------------------------------------------- */
+
+/*
+    addGamesDataToLocalDictionary - 
+*/
+function addGamesDataToLocalDictionary( data, teamsRequestString )
+{
+    // console.log( "addDataToLocalDictionary()" );
+    localGamesDataDict = {};
+    var teamsRequestStringConcise = teamsRequestString.substring( 6, teamsRequestString.length-1 );
+    var teamsList = teamsRequestStringConcise.split( "," );
+    for( var i = 0; i < data.length; i++ )
+    {
+        if( !( teamsList[i] in localGamesDataDict ) )
+        {
+            localGamesDataDict[teamsList[i]] = data[i];
+        }
+    }
+    // console.log( localGamesDataDict );
+}
 
 /*
     requestHeaderFromServer - 
@@ -376,7 +395,6 @@ function updateWeekNumberHeader( data )
     }
 }
 
-
 /*
     requestGameDataFromServer
 */
@@ -418,22 +436,6 @@ async function requestGameDataFromServer( addOrUpdate )
     });
 }
 
-function addGamesDataToLocalDictionary( data, teamsRequestString )
-{
-    console.log( "addDataToLocalDictionary()" );
-    localGamesDataDict = {};
-    var teamsRequestStringConcise = teamsRequestString.substring( 6, teamsRequestString.length-1 );
-    var teamsList = teamsRequestStringConcise.split( "," );
-    for( var i = 0; i < data.length; i++ )
-    {
-        if( !( teamsList[i] in localGamesDataDict ) )
-        {
-            localGamesDataDict[teamsList[i]] = data[i];
-        }
-    }
-    console.log( localGamesDataDict );
-}
-
 /*
     addGamesForPlayers - add the games remaining data to the HTML
     of the page
@@ -451,7 +453,7 @@ function addGamesForPlayers()
     for( var i = 0; i < listOfElements.length; i++ )
     {
         var listOfElementsTr = listOfElements[i];
-        console.log( "listOfElementsTr.children.length=" + listOfElementsTr.children.length );
+        // console.log( "listOfElementsTr.children.length=" + listOfElementsTr.children.length );
 
         // Initial render for Stats menu
         if( listOfElementsTr.children.length == 5 )
@@ -491,7 +493,6 @@ function addGamesForPlayers()
                 else
                 {
                     newGamesDiv.innerHTML = "-/-";
-                    newGamesTd.style.backgroundColor = getBackgroundColor( 0 );
                 }
                 listOfTeamNameElementsIndex++;
             }
@@ -533,7 +534,6 @@ function addGamesForPlayers()
                 else
                 {
                     newGamesDiv.innerHTML = "-/-";
-                    newGamesTd.style.backgroundColor = getBackgroundColor( 0 );
                 }
                 listOfTeamNameElementsIndex++;
             }
@@ -573,7 +573,8 @@ function addGamesForPlayers()
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     totalGamesRemaining += parseInt( splitDataIndex[0] );
                     totalGamesForWeek += parseInt( splitDataIndex[1] );
-                    newCell.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
+                    // newCell.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
+                    newGamesDiv.style.color = getBackgroundColor( splitDataIndex[0] );
                 }
                 else
                 {
@@ -820,6 +821,7 @@ $( 'body' ).on( 'click', 'a.scoring--period-today', function()
 /* ---------------------------------------------------------------------
                             Render Games by Type 
 --------------------------------------------------------------------- */
+
 /*
     renderGames - 
 */

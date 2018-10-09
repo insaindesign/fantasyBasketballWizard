@@ -800,6 +800,19 @@ $( 'body' ).on( 'click', 'a.scoring--period-today', function()
     }
 });
 
+/*
+    Changing dates with the calendar
+*/
+$( 'body' ).on( 'click', 'li.monthContainer__day--noEvent', function() 
+{
+    var className = this.className;
+    if( ( className.indexOf( "monthContainer__day--disabled" ) == -1 ) && ( ( className.indexOf( "monthContainer__day--selected" ) == -1 ) ) )
+    {
+        renderGames( "Switch Dates" );
+    }
+});
+
+
 /* ---------------------------------------------------------------------
                             Render Games by Type 
 --------------------------------------------------------------------- */

@@ -582,7 +582,7 @@ function updateGameData()
     {
         var listOfElementsTr = listOfElements[i];
 
-        if( listOfElementsTr.children.length == 6 )
+        if( listOfElementsTr.children.length == 6 || listOfElementsTr.children.length == 13 )
         {
             var isInjured = false;
             // 'O'ut, injured player
@@ -613,7 +613,7 @@ function updateGameData()
                 else
                 {
                     listOfGamesDiv[listOfGamesIndex].innerHTML = "-/-";
-                    listOfGamesTd[listOfGamesIndex].style.backgroundColor = getBackgroundColor( 0 );
+                    listOfGamesTd[listOfGamesIndex].style.backgroundColor = "";
                 }
                 backendIndex++;
                 listOfTeamNameElementsIndex++;
@@ -622,7 +622,7 @@ function updateGameData()
             else
             {
                 listOfGamesDiv[listOfGamesIndex].innerHTML = "-/-";
-                listOfGamesTd[listOfGamesIndex].style.backgroundColor = getBackgroundColor( 0 );
+                listOfGamesTd[listOfGamesIndex].style.backgroundColor = "";
             }
             listOfGamesIndex++;
         }

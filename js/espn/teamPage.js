@@ -642,7 +642,8 @@ function moveButtonStarterPressed()
     for( var i = listOfElements.length-1; i > 0; i-- )
     {
         var listOfElementsTr = listOfElements[i];
-        if( listOfElementsTr.children.length == 5 || listOfElementsTr.children.length == 12 || listOfElementsTr.children.length == 13 )
+        if( listOfElementsTr.children.length == 5 || listOfElementsTr.children.length == 12
+        ||( listOfElementsTr.children.length == 13 && getActiveMenu() != "Schedule" ) )
         {
             var newGamesTd = document.createElement( "td" );
             var newGamesDiv = document.createElement( "div" );
@@ -654,7 +655,7 @@ function moveButtonStarterPressed()
             listOfElementsTr.appendChild( newGamesTd );
             break;
         }
-        else if( listOfElementsTr.children.length == 6 )
+        else if( listOfElementsTr.children.length == 6 && getActiveMenu() != "Stats" )
         {
             var newCell = listOfElementsTr.insertCell( 5 );
             var newGamesDiv = document.createElement( "div" );
@@ -707,15 +708,16 @@ function removeEntireColumn()
 */
 $( 'body' ).on( 'click', 'a.move-action-btn', function() 
 {
+    var className = this.className;
     var closestTd = $( this ).closest( "td" )[0];
     var slotTd = $( closestTd ).siblings( "td" )[0];
     var slotTdInnerDiv = slotTd.getElementsByClassName( "table--cell" )[0];
     var benchOrStarter = slotTdInnerDiv.innerHTML;
-
+    
     if( $( this ).text() == "MOVE" )
     {
         // A Starter Player's 'MOVE' button has been pressed
-        if( benchOrStarter != "BE" )
+        if( benchOrStarter != "BE" && className.indexOf( "isActive" ) == -1 )
         {
             // Need a small delay for the new EMPTY bench spot to be created dynamically
             setTimeout( moveButtonStarterPressed, 200 );

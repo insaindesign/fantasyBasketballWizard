@@ -207,16 +207,6 @@ function addGamesForPlayers()
             newRightGamesDiv.className += " fbw-right-total";
             newLeftGamesDiv.innerHTML = leftTotalGamesString;
             newRightGamesDiv.innerHTML = rightTotalGamesString;
-
-            if( leftTotalGamesRemaining > rightTotalGamesRemaining )
-            {
-                newLeftGamesDiv.style.color = "#acd888";
-            }
-            else if( rightTotalGamesRemaining > leftTotalGamesRemaining )
-            {
-                newRightGamesDiv.style.color = "#acd888";
-            }
-            else if( leftTotalGamesRemaining == rightTotalGamesRemaining ){}
         }
         // Player Row
         else
@@ -304,6 +294,20 @@ function addGamesForPlayers()
         var rightTotalGamesString = rightTotalGamesRemaining.toString() + "/" + rightTotalGamesForWeek.toString();
         leftTotalElements[0].innerHTML = leftTotalGamesString;
         rightTotalElements[0].innerHTML = rightTotalGamesString;
+    }
+    // Make the greater number of total games font color green
+    console.log( "leftTotalGamesRemaining=" + leftTotalGamesRemaining + ", rightTotalGamesRemaining=" + rightTotalGamesRemaining );
+    if( leftTotalGamesRemaining > rightTotalGamesRemaining )
+    {
+        leftTotalElements[0].style.color = "#acd888";
+    }
+    else if( rightTotalGamesRemaining > leftTotalGamesRemaining )
+    {
+        rightTotalElements[0].style.color = "#acd888";
+    }
+    else if( leftTotalGamesRemaining == rightTotalGamesRemaining )
+    { 
+        // Do nothing in a tie 
     }
 }
 

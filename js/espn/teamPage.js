@@ -7,43 +7,12 @@
 /* ---------------------------------------------------------------------
                             Global Variables  
 --------------------------------------------------------------------- */
-var acronymEspnToYahoo = {};        // Dictionary to convert acronyms from ESPN to Yahoo
+
 var dailyOrWeekly = "";
 var addGamesElements = true;           // Flag to tell if it is a complete render - ** change to updateGames
 // var addGamesElements = true;
 var localGamesDataDict = {};        // Holds the game remaining data
 var updateHeaders = false;          // Flag to update headers
-
-acronymEspnToYahoo["Atl"]  =  "Atl";
-acronymEspnToYahoo["Bos"]  =  "Bos";
-acronymEspnToYahoo["Bkn"]  =  "Bkn";
-acronymEspnToYahoo["Cha"]  =  "Cha";
-acronymEspnToYahoo["Chi"]  =  "Chi";
-acronymEspnToYahoo["Cle"]  =  "Cle";
-acronymEspnToYahoo["Dal"]  =  "Dal";
-acronymEspnToYahoo["Den"]  =  "Den";
-acronymEspnToYahoo["Det"]  =  "Det";
-acronymEspnToYahoo["GS"]   =  "GS";
-acronymEspnToYahoo["Hou"]  =  "Hou";
-acronymEspnToYahoo["Ind"]  =  "Ind";
-acronymEspnToYahoo["LAC"]  =  "LAC";
-acronymEspnToYahoo["LAL"]  =  "LAL";
-acronymEspnToYahoo["Mem"]  =  "Mem";
-acronymEspnToYahoo["Mia"]  =  "Mia";
-acronymEspnToYahoo["Mil"]  =  "Mil";
-acronymEspnToYahoo["Min"]  =  "Min";
-acronymEspnToYahoo["No"]   =  "NO";
-acronymEspnToYahoo["NY"]   =  "NY";
-acronymEspnToYahoo["OKC"]  =  "OKC";
-acronymEspnToYahoo["Orl"]  =  "Orl";
-acronymEspnToYahoo["Phi"]  =  "Phi";
-acronymEspnToYahoo["Phx"]  =  "Pho";
-acronymEspnToYahoo["Por"]  =  "Por";
-acronymEspnToYahoo["Sac"]  =  "Sac";
-acronymEspnToYahoo["SA"]   =  "SA";
-acronymEspnToYahoo["Tor"]  =  "Tor";
-acronymEspnToYahoo["Utah"] =  "Uta";
-acronymEspnToYahoo["Wsh"]  =  "Was";
 
 /* ---------------------------------------------------------------------
                             Helper Functions 
@@ -61,7 +30,7 @@ function buildTeamsRequestString()
     var teamsRequestString = "teams=";
     for( var i = 0; i < listOfElements.length; i++ )
     {
-        teamsRequestString += acronymEspnToYahoo[listOfElements[i].innerHTML] + ",";
+        teamsRequestString += listOfElements[i].innerHTML + ",";
     }
     // console.log( teamsRequestString );
     return teamsRequestString;
@@ -185,7 +154,7 @@ function buildTeamsRequestString()
     var teamsRequestString = "teams=";
     for( var i = 0; i < listOfElements.length; i++ )
     {
-        teamsRequestString += acronymEspnToYahoo[listOfElements[i].innerHTML] + ",";
+        teamsRequestString += listOfElements[i].innerHTML + ",";
     }
 
     return teamsRequestString;
@@ -222,7 +191,7 @@ function getBackgroundColor( games )
 {
     if( games >= 4 )
     {
-        return "#0c5b05";
+        return "#a5d394";
     }
     else if( games == 3 )
     {
@@ -234,11 +203,11 @@ function getBackgroundColor( games )
     }
     else if( games == 1 )
     {
-        return "#ffe1ba";
+        return "#ffd6cc";
     }
     else if( games == 0 )
     {
-        return "#ffd6cc";
+        return "#ff5c54";
     }
 }
 
@@ -262,6 +231,25 @@ function isLeagueDailyOrWeekly()
 /* ---------------------------------------------------------------------
                             Main Functions 
 --------------------------------------------------------------------- */
+
+/*
+    addGamesDataToLocalDictionary - 
+*/
+function addGamesDataToLocalDictionary( data, teamsRequestString )
+{
+    // console.log( "addDataToLocalDictionary()" );
+    localGamesDataDict = {};
+    var teamsRequestStringConcise = teamsRequestString.substring( 6, teamsRequestString.length-1 );
+    var teamsList = teamsRequestStringConcise.split( "," );
+    for( var i = 0; i < data.length; i++ )
+    {
+        if( !( teamsList[i] in localGamesDataDict ) )
+        {
+            localGamesDataDict[teamsList[i]] = data[i];
+        }
+    }
+    // console.log( localGamesDataDict );
+}
 
 /*
     requestHeaderFromServer - 
@@ -376,7 +364,6 @@ function updateWeekNumberHeader( data )
     }
 }
 
-
 /*
     requestGameDataFromServer
 */
@@ -418,22 +405,6 @@ async function requestGameDataFromServer( addOrUpdate )
     });
 }
 
-function addGamesDataToLocalDictionary( data, teamsRequestString )
-{
-    console.log( "addDataToLocalDictionary()" );
-    localGamesDataDict = {};
-    var teamsRequestStringConcise = teamsRequestString.substring( 6, teamsRequestString.length-1 );
-    var teamsList = teamsRequestStringConcise.split( "," );
-    for( var i = 0; i < data.length; i++ )
-    {
-        if( !( teamsList[i] in localGamesDataDict ) )
-        {
-            localGamesDataDict[teamsList[i]] = data[i];
-        }
-    }
-    console.log( localGamesDataDict );
-}
-
 /*
     addGamesForPlayers - add the games remaining data to the HTML
     of the page
@@ -451,7 +422,7 @@ function addGamesForPlayers()
     for( var i = 0; i < listOfElements.length; i++ )
     {
         var listOfElementsTr = listOfElements[i];
-        console.log( "listOfElementsTr.children.length=" + listOfElementsTr.children.length );
+        // console.log( "listOfElementsTr.children.length=" + listOfElementsTr.children.length );
 
         // Initial render for Stats menu
         if( listOfElementsTr.children.length == 5 )
@@ -481,7 +452,7 @@ function addGamesForPlayers()
             {
                 if( !isInjured )
                 {
-                    var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
                     newGamesDiv.innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     totalGamesRemaining += parseInt( splitDataIndex[0] );
@@ -491,7 +462,6 @@ function addGamesForPlayers()
                 else
                 {
                     newGamesDiv.innerHTML = "-/-";
-                    newGamesTd.style.backgroundColor = getBackgroundColor( 0 );
                 }
                 listOfTeamNameElementsIndex++;
             }
@@ -523,7 +493,7 @@ function addGamesForPlayers()
             {
                 if( !isInjured )
                 {
-                    var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
                     newGamesDiv.innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     totalGamesRemaining += parseInt( splitDataIndex[0] );
@@ -533,7 +503,6 @@ function addGamesForPlayers()
                 else
                 {
                     newGamesDiv.innerHTML = "-/-";
-                    newGamesTd.style.backgroundColor = getBackgroundColor( 0 );
                 }
                 listOfTeamNameElementsIndex++;
             }
@@ -568,12 +537,13 @@ function addGamesForPlayers()
             {
                 if( !isInjured )
                 {
-                    var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
                     newGamesDiv.innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     totalGamesRemaining += parseInt( splitDataIndex[0] );
                     totalGamesForWeek += parseInt( splitDataIndex[1] );
-                    newCell.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
+                    // newCell.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
+                    newGamesDiv.style.color = getBackgroundColor( splitDataIndex[0] );
                 }
                 else
                 {
@@ -612,7 +582,8 @@ function updateGameData()
     {
         var listOfElementsTr = listOfElements[i];
 
-        if( listOfElementsTr.children.length == 6 )
+        console.log( "listOfElementsTr.children.length= " + listOfElementsTr.children.length );
+        if( listOfElementsTr.children.length == 6 || listOfElementsTr.children.length == 7 || listOfElementsTr.children.length == 13 || listOfElementsTr.children.length == 14 )
         {
             var isInjured = false;
             // 'O'ut, injured player
@@ -632,7 +603,7 @@ function updateGameData()
                 // Healthy player 
                 if( !isInjured )
                 {
-                    var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
                     listOfGamesDiv[listOfGamesIndex].innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     totalGamesRemaining += parseInt( splitDataIndex[0] );
@@ -643,7 +614,7 @@ function updateGameData()
                 else
                 {
                     listOfGamesDiv[listOfGamesIndex].innerHTML = "-/-";
-                    listOfGamesTd[listOfGamesIndex].style.backgroundColor = getBackgroundColor( 0 );
+                    listOfGamesTd[listOfGamesIndex].style.backgroundColor = "";
                 }
                 backendIndex++;
                 listOfTeamNameElementsIndex++;
@@ -652,7 +623,7 @@ function updateGameData()
             else
             {
                 listOfGamesDiv[listOfGamesIndex].innerHTML = "-/-";
-                listOfGamesTd[listOfGamesIndex].style.backgroundColor = getBackgroundColor( 0 );
+                listOfGamesTd[listOfGamesIndex].style.backgroundColor = "";
             }
             listOfGamesIndex++;
         }
@@ -671,8 +642,8 @@ function moveButtonStarterPressed()
     for( var i = listOfElements.length-1; i > 0; i-- )
     {
         var listOfElementsTr = listOfElements[i];
-        console.log( "listOfElementsTr.children.length= " + listOfElementsTr.children.length );
-        if( listOfElementsTr.children.length == 5 || listOfElementsTr.children.length == 12 )
+        if( listOfElementsTr.children.length == 5 || listOfElementsTr.children.length == 12
+        ||( listOfElementsTr.children.length == 13 && getActiveMenu() != "Schedule" ) )
         {
             var newGamesTd = document.createElement( "td" );
             var newGamesDiv = document.createElement( "div" );
@@ -682,6 +653,17 @@ function moveButtonStarterPressed()
             newGamesDiv.style.textAlign = "center";
             newGamesTd.appendChild( newGamesDiv );
             listOfElementsTr.appendChild( newGamesTd );
+            break;
+        }
+        else if( listOfElementsTr.children.length == 6 && getActiveMenu() != "Stats" )
+        {
+            var newCell = listOfElementsTr.insertCell( 5 );
+            var newGamesDiv = document.createElement( "div" );
+            newCell.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
+            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div fbw-new-element";
+            newGamesDiv.style.textAlign = "center";
+            newGamesDiv.innerHTML = "-/-";
+            newCell.appendChild( newGamesDiv );
             break;
         }
     }
@@ -726,15 +708,16 @@ function removeEntireColumn()
 */
 $( 'body' ).on( 'click', 'a.move-action-btn', function() 
 {
+    var className = this.className;
     var closestTd = $( this ).closest( "td" )[0];
     var slotTd = $( closestTd ).siblings( "td" )[0];
     var slotTdInnerDiv = slotTd.getElementsByClassName( "table--cell" )[0];
     var benchOrStarter = slotTdInnerDiv.innerHTML;
-
+    
     if( $( this ).text() == "MOVE" )
     {
         // A Starter Player's 'MOVE' button has been pressed
-        if( benchOrStarter != "BE" )
+        if( benchOrStarter != "BE" && className.indexOf( "isActive" ) == -1 )
         {
             // Need a small delay for the new EMPTY bench spot to be created dynamically
             setTimeout( moveButtonStarterPressed, 200 );
@@ -817,9 +800,23 @@ $( 'body' ).on( 'click', 'a.scoring--period-today', function()
     }
 });
 
+/*
+    Changing dates with the calendar
+*/
+$( 'body' ).on( 'click', 'li.monthContainer__day--noEvent', function() 
+{
+    var className = this.className;
+    if( ( className.indexOf( "monthContainer__day--disabled" ) == -1 ) && ( ( className.indexOf( "monthContainer__day--selected" ) == -1 ) ) )
+    {
+        renderGames( "Switch Dates" );
+    }
+});
+
+
 /* ---------------------------------------------------------------------
                             Render Games by Type 
 --------------------------------------------------------------------- */
+
 /*
     renderGames - 
 */

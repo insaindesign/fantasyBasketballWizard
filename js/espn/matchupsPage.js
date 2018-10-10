@@ -7,39 +7,12 @@
 /* ---------------------------------------------------------------------
                             Global Variables  
 --------------------------------------------------------------------- */
-var acronymEspnToYahoo = {};
+
 var localGamesDataDict = {};
 
-acronymEspnToYahoo["Atl"]  =  "Atl";
-acronymEspnToYahoo["Bos"]  =  "Bos";
-acronymEspnToYahoo["Bkn"]  =  "Bkn";
-acronymEspnToYahoo["Cha"]  =  "Cha";
-acronymEspnToYahoo["Chi"]  =  "Chi";
-acronymEspnToYahoo["Cle"]  =  "Cle";
-acronymEspnToYahoo["Dal"]  =  "Dal";
-acronymEspnToYahoo["Den"]  =  "Den";
-acronymEspnToYahoo["Det"]  =  "Det";
-acronymEspnToYahoo["GS"]   =  "GS";
-acronymEspnToYahoo["Hou"]  =  "Hou";
-acronymEspnToYahoo["Ind"]  =  "Ind";
-acronymEspnToYahoo["LAC"]  =  "LAC";
-acronymEspnToYahoo["LAL"]  =  "LAL";
-acronymEspnToYahoo["Mem"]  =  "Mem";
-acronymEspnToYahoo["Mia"]  =  "Mia";
-acronymEspnToYahoo["Mil"]  =  "Mil";
-acronymEspnToYahoo["Min"]  =  "Min";
-acronymEspnToYahoo["No"]   =  "NO";
-acronymEspnToYahoo["NY"]   =  "NY";
-acronymEspnToYahoo["OKC"]  =  "OKC";
-acronymEspnToYahoo["Orl"]  =  "Orl";
-acronymEspnToYahoo["Phi"]  =  "Phi";
-acronymEspnToYahoo["Phx"]  =  "Pho";
-acronymEspnToYahoo["Por"]  =  "Por";
-acronymEspnToYahoo["Sac"]  =  "Sac";
-acronymEspnToYahoo["SA"]   =  "SA";
-acronymEspnToYahoo["Tor"]  =  "Tor";
-acronymEspnToYahoo["Utah"] =  "Uta";
-acronymEspnToYahoo["Wsh"]  =  "Was";
+/* ---------------------------------------------------------------------
+                            Helper Functions 
+--------------------------------------------------------------------- */
 
 /*
     buildLeagueIdRequestString - creates part of the url for the teams to 
@@ -67,7 +40,7 @@ function buildTeamsRequestString()
     var teamsRequestString = "teams=";
     for( var i = 0; i < listOfElements.length; i++ )
     {
-        teamsRequestString += acronymEspnToYahoo[ listOfElements[ i ].innerHTML ] + ",";
+        teamsRequestString += listOfElements[ i ].innerHTML + ",";
     }
     return teamsRequestString;
 }
@@ -234,16 +207,6 @@ function addGamesForPlayers()
             newRightGamesDiv.className += " fbw-right-total";
             newLeftGamesDiv.innerHTML = leftTotalGamesString;
             newRightGamesDiv.innerHTML = rightTotalGamesString;
-
-            if( leftTotalGamesRemaining > rightTotalGamesRemaining )
-            {
-                newLeftGamesDiv.style.color = "#acd888";
-            }
-            else if( rightTotalGamesRemaining > leftTotalGamesRemaining )
-            {
-                newRightGamesDiv.style.color = "#acd888";
-            }
-            else if( leftTotalGamesRemaining == rightTotalGamesRemaining ){}
         }
         // Player Row
         else
@@ -274,7 +237,6 @@ function addGamesForPlayers()
             if( playerColumnLeft.innerHTML.indexOf( "</div>Empty</div>" ) != -1 )
             {
                 newLeftGamesDiv.innerHTML = "-/-";
-                newLeftGamesDiv.style.backgroundColor = getBackgroundColor( 0 );
             }
             // Normal Left Player
             else
@@ -282,7 +244,7 @@ function addGamesForPlayers()
                 if( !isLeftInjured )
                 {
                     var teamNameElements = playerColumnLeft.getElementsByClassName( "playerinfo__playerteam" );
-                    var teamName = acronymEspnToYahoo[teamNameElements[0].innerHTML];
+                    var teamName = teamNameElements[0].innerHTML;
                     newLeftGamesDiv.innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     leftTotalGamesRemaining += parseInt( splitDataIndex[0] );
@@ -292,14 +254,12 @@ function addGamesForPlayers()
                 else
                 {
                     newLeftGamesDiv.innerHTML = "-/-";
-                    newLeftGamesDiv.style.backgroundColor = getBackgroundColor( 0 );
                 }
             }
             // Empty Right Player
             if( playerColumnRight.innerHTML.indexOf( "</div>Empty</div>" ) != -1 )
             {
                 newRightGamesDiv.innerHTML = "-/-";
-                newRightGamesDiv.style.backgroundColor = getBackgroundColor( 0 );
             }
             // Normal Right Player
             else
@@ -307,7 +267,7 @@ function addGamesForPlayers()
                 if( !isRightInjured )
                 {
                     var teamNameElements = playerColumnRight.getElementsByClassName( "playerinfo__playerteam" );
-                    var teamName = acronymEspnToYahoo[teamNameElements[0].innerHTML];
+                    var teamName = teamNameElements[0].innerHTML;
                     newRightGamesDiv.innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     rightTotalGamesRemaining += parseInt( splitDataIndex[0] );
@@ -317,7 +277,6 @@ function addGamesForPlayers()
                 else
                 {
                     newRightGamesDiv.innerHTML = "-/-";
-                    newRightGamesDiv.style.backgroundColor = getBackgroundColor( 0 );
                 }
             }
         }
@@ -335,7 +294,20 @@ function addGamesForPlayers()
         var rightTotalGamesString = rightTotalGamesRemaining.toString() + "/" + rightTotalGamesForWeek.toString();
         leftTotalElements[0].innerHTML = leftTotalGamesString;
         rightTotalElements[0].innerHTML = rightTotalGamesString;
-
+    }
+    // Make the greater number of total games font color green
+    console.log( "leftTotalGamesRemaining=" + leftTotalGamesRemaining + ", rightTotalGamesRemaining=" + rightTotalGamesRemaining );
+    if( leftTotalGamesRemaining > rightTotalGamesRemaining )
+    {
+        leftTotalElements[0].style.color = "#acd888";
+    }
+    else if( rightTotalGamesRemaining > leftTotalGamesRemaining )
+    {
+        rightTotalElements[0].style.color = "#acd888";
+    }
+    else if( leftTotalGamesRemaining == rightTotalGamesRemaining )
+    { 
+        // Do nothing in a tie 
     }
 }
 

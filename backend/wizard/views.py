@@ -154,19 +154,20 @@ class TotalGamesToday(APIView):
 class GetPlayerStats(APIView):
 
     def get(self, request):
-        playerID = request.GET.get("id")
-        print("Request: Player stats for: " + playerID)
+        playersString = request.GET.get("players")
+        players = playersString[:-1].split(",")
+        playerList = []
+        print("Request: Player stats for: " + playersString)
 
-        try:
-            player = Player.objects.get(playerID=playerID)
-        except:
-            return Response(playerID + " not found")
+        for playerID in players:
+            try:
+                playerList.append(Player.objects.get(playerID=playerID))
+            except:
+                print(playerID + " not found")
 
-        serializer = PlayerSerializer(player)
-        print("Response: " + str(serializer.data))
-
+        serializer = PlayerSerializer(playerList, many=True)
+        print("Response: " + str(playerList))
         return Response(serializer.data)
-
 
 class AddPlayer(APIView):
     """  

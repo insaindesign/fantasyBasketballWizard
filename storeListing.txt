@@ -1,0 +1,67 @@
+Fantasy Basketball Wizard gives ESPN & Yahoo Fantasy Basketball players extra tools to help them succeed.
+The new and improved #1 Yahoo and ESPN Fantasy Basketball extension!
+
+Fantasy Basketball Wizard 3.0
+
+Now with games remaining!
+
+Fantasy Basketball Wizard Chrome Extension is FOR Fantasy Basketball lovers, created BY Fantasy Basketball lovers. We designed the extension make your life easy.
+
+- Yahoo! and ESPN Support!
+- Games remaining for the week! (NEW)
+- Total games this week!
+- Updated colors! (NEW)
+- Weekly and daily projections on matchups page!* (NEW)
+- Total team averages!
+- Future games per week! (NEW)
+- Number of games on tonights NBA Schedule on matchups page! (NEW)
+
+*Standard 9 category and points leagues
+**Contact us for custom league configurations
+
+Please leave us feedback, suggestions, frustrations, etc. We read and act on everything that comes in.
+
+Enjoy!
+
+
+Release notes:
+Version 3.0 (October 11, 2018):
+- New and improved Fantasy Basketball Wizard!
+
+Version 2.3 (March 8, 2018):
+- Fixed bug where games played broke when top position had a "gray" player note
+- Fixed NaN bug on stat projections. 
+
+Version 2.2 (Feb 18, 2018):
+- Fixed games played bug for all star week.
+- Fixed bug where injured players games were being counted in the total (ESPN)
+
+Version 2.1.1 (Jan 12, 2018):
+- Minor bug fixes & improvements
+
+Version 2.1 (Jan 9, 2018):
+- Fixed bug where games played were not showing on weekly lock leagues(ESPN)
+- Fixed bug in average stats tab(Yahoo)
+- Other minor bug fixes & improvements.
+
+Version 2.0.2 (Jan 2, 2018):
+- Fixed bug where players with "INJ" status had stats being counted in projections(Yahoo)
+
+Version 2.0.1 (Jan 1, 2018):
+- ESPN compatibility (weekly number of games).
+- Firefox compatibility (Yahoo & ESPN)
+- Total Sum of average stats & weekly total stats projections for your team or your opponents team. (Yahoo)
+- Bug fixes & improvements
+
+Version 1.3.1 (Dec 15, 2017): 
+- Removed permission requested by mistake.
+
+Version 1.3 (Dec 14, 2017):
+- Fixed bug where games played column would disappear when switching between tabs on the "My Team" page.
+
+Version 1.2 (Dec 7, 2017):
+- Added color for injured players.
+- Fixed bug where other league members games were showing in incorrect column.
+- New links on extension popup.
+
+**Not affiliated with Yahoo! Sports or ESPN

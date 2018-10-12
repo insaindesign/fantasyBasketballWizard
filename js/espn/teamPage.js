@@ -7,47 +7,17 @@
 /* ---------------------------------------------------------------------
                             Global Variables  
 --------------------------------------------------------------------- */
-var acronymEspnToYahoo = {};        // Dictionary to convert acronyms from ESPN to Yahoo
+
 var dailyOrWeekly = "";
 var addGamesElements = true;           // Flag to tell if it is a complete render - ** change to updateGames
 // var addGamesElements = true;
 var localGamesDataDict = {};        // Holds the game remaining data
 var updateHeaders = false;          // Flag to update headers
 
-acronymEspnToYahoo["Atl"]  =  "Atl";
-acronymEspnToYahoo["Bos"]  =  "Bos";
-acronymEspnToYahoo["Bkn"]  =  "Bkn";
-acronymEspnToYahoo["Cha"]  =  "Cha";
-acronymEspnToYahoo["Chi"]  =  "Chi";
-acronymEspnToYahoo["Cle"]  =  "Cle";
-acronymEspnToYahoo["Dal"]  =  "Dal";
-acronymEspnToYahoo["Den"]  =  "Den";
-acronymEspnToYahoo["Det"]  =  "Det";
-acronymEspnToYahoo["GS"]   =  "GS";
-acronymEspnToYahoo["Hou"]  =  "Hou";
-acronymEspnToYahoo["Ind"]  =  "Ind";
-acronymEspnToYahoo["LAC"]  =  "LAC";
-acronymEspnToYahoo["LAL"]  =  "LAL";
-acronymEspnToYahoo["Mem"]  =  "Mem";
-acronymEspnToYahoo["Mia"]  =  "Mia";
-acronymEspnToYahoo["Mil"]  =  "Mil";
-acronymEspnToYahoo["Min"]  =  "Min";
-acronymEspnToYahoo["No"]   =  "NO";
-acronymEspnToYahoo["NY"]   =  "NY";
-acronymEspnToYahoo["OKC"]  =  "OKC";
-acronymEspnToYahoo["Orl"]  =  "Orl";
-acronymEspnToYahoo["Phi"]  =  "Phi";
-acronymEspnToYahoo["Phx"]  =  "Pho";
-acronymEspnToYahoo["Por"]  =  "Por";
-acronymEspnToYahoo["Sac"]  =  "Sac";
-acronymEspnToYahoo["SA"]   =  "SA";
-acronymEspnToYahoo["Tor"]  =  "Tor";
-acronymEspnToYahoo["Utah"] =  "Uta";
-acronymEspnToYahoo["Wsh"]  =  "Was";
-
 /* ---------------------------------------------------------------------
                             Helper Functions 
 --------------------------------------------------------------------- */
+
 /*
     buildTeamsRequestString - creates part of the url for the teams to 
     request game data for.
@@ -60,54 +30,99 @@ function buildTeamsRequestString()
     var teamsRequestString = "teams=";
     for( var i = 0; i < listOfElements.length; i++ )
     {
-        teamsRequestString += acronymEspnToYahoo[listOfElements[i].innerHTML] + ",";
+        teamsRequestString += listOfElements[i].innerHTML + ",";
     }
     // console.log( teamsRequestString );
     return teamsRequestString;
 }
 
-
 /*
-    buildDateRequestString - 
+    formatDateString - formats a date string in YYYY-MM-DD
 */
-function buildDateRequestString()
+function formatDateString( month, date )
 {
-    // console.log( "buildDateRequestString()" );
-    var currentElements = document.getElementsByClassName( "is-current" );
-    var currentDateDiv = currentElements[0];
-    var currentDateChildren = currentDateDiv.children[0];
-    var currentMonthDate = currentDateChildren.innerHTML;
-    var currentMonthDateSplit = currentMonthDate.split( " " );
-    var month = currentMonthDateSplit[0];
-    var date = currentMonthDateSplit[1];
+    var dateString = "";
 
     if( month == "Oct" )
     {
-        return ( "2018-10-" + date );
+        dateString = ( "2018-10-" + date );
     }
     else if( month == "Nov" )
     {
-        return ( "2018-11-" + date );
+        dateString = ( "2018-11-" + date );
     }
     else if( month == "Dec" )
     {
-        return ( "2018-12-" + date );
+        dateString = ( "2018-12-" + date );
     }
     else if( month == "Jan" )
     {
-        return ( "2019-01-" + date );
+        dateString = ( "2019-01-" + date );
     }
     else if( month == "Feb" )
     {
-        return ( "2019-02-" + date );
+        dateString = ( "2019-02-" + date );
     }
     else if( month == "Mar" )
     {
-        return ( "2019-03-" + date );
+        dateString = ( "2019-03-" + date );
     }
     else if( month == "Apr" )
     {
-        return ( "2019-04-" + date );
+        dateString = ( "2019-04-" + date );
+    }
+
+    return dateString;
+}
+
+/*
+    buildDateRequestString - creates a date request string for the
+    the parameter for the server request for either daily or weekly leagues
+*/
+function buildDateRequestString()
+{
+    console.log( "buildDateRequestString()" );
+    var currentElements = document.getElementsByClassName( "is-current" );
+
+    if( dailyOrWeekly == "Daily" )
+    {
+        var currentDateDiv = currentElements[0];
+        var currentDateChildren = currentDateDiv.children[0];
+        var currentMonthDate = currentDateChildren.innerHTML;
+        var currentMonthDateSplit = currentMonthDate.split( " " );
+        var selectedMonth = currentMonthDateSplit[0];
+        var selectedDate = currentMonthDateSplit[1];
+
+        return formatDateString( selectedMonth, selectedDate );
+    }
+    else if( dailyOrWeekly == "Weekly" )
+    {
+        var currentDateDiv = currentElements[0];
+        var currentDateChildren = currentDateDiv.children[1];
+        var currentMonthDate = currentDateChildren.innerHTML;
+        var currentMonthDateSplit = currentMonthDate.split( " " );
+        var selectedMonth = currentMonthDateSplit[0];
+        var selectedDateLowerRange = currentMonthDateSplit[1];
+        var selectedDateEndRange = currentMonthDateSplit[3];
+        var formattedDateLowerRange = formatDateString( selectedMonth, selectedDateLowerRange );
+        var formattedDateEndRange = formatDateString( selectedMonth, selectedDateEndRange );
+        var todaysDate = new Date();
+        // Compare today's date with the lower range, if its less than then use the
+        // lower range date to get the full amount of games
+        if( ( todaysDate.getTime() <= new Date( formattedDateLowerRange ).getTime() ) ) 
+        {
+            return formattedDateLowerRange;
+        }
+        // Today's date in between the week ranges then use today's date to get the accurate date
+        else if( ( todaysDate.getTime() > new Date( formattedDateLowerRange ).getTime() ) && 
+                 ( todaysDate.getTime() < new Date( formattedDateEndRange ).getTime() ) )
+        {
+            return formatDateString( todaysDate.getMonth()+1, todaysDate.getDate() )
+        }
+        else if( ( todaysDate.getTime() > new Date( formattedDateEndRange ).getTime() ) )
+        {
+            return formattedDateEndRange;
+        }
     }
 }
 
@@ -117,14 +132,13 @@ function buildDateRequestString()
 */
 function buildLeagueIdRequestString()
 {
-    console.log( "buildLeagueIdRequestString()" );
+    // console.log( "buildLeagueIdRequestString()" );
     var entireUrl = window.location.href;
     // console.log( url );
     var url = new URL( entireUrl );
     var leagueId = url.searchParams.get( "leagueId" );
-    console.log( leagueId );
     var leagueIdRequestString = "leagueID="+leagueId;
-    console.log( leagueIdRequestString );
+
     return leagueIdRequestString;
 }
 
@@ -140,9 +154,9 @@ function buildTeamsRequestString()
     var teamsRequestString = "teams=";
     for( var i = 0; i < listOfElements.length; i++ )
     {
-        teamsRequestString += acronymEspnToYahoo[listOfElements[i].innerHTML] + ",";
+        teamsRequestString += listOfElements[i].innerHTML + ",";
     }
-    // console.log( teamsRequestString );
+
     return teamsRequestString;
 }
 
@@ -156,11 +170,11 @@ function sleep( ms )
 }
 
 /* 
-    getActiveMenu - 
+    getActiveMenu - returns the active menu
 */
 function getActiveMenu()
 {
-    console.log( "getActiveMenu" );
+    // console.log( "getActiveMenu" );
     var activeMenuElements = document.getElementsByClassName( "tabs__list__item--active" );
     var activeMenuElement = activeMenuElements[0].getElementsByClassName( "tabs__link w-100" );
     var activeMenu = activeMenuElement[0].innerHTML;
@@ -175,9 +189,9 @@ function getActiveMenu()
 */
 function getBackgroundColor( games )
 {
-    if( games > 3 )
+    if( games >= 4 )
     {
-        return "#adebad";
+        return "#a5d394";
     }
     else if( games == 3 )
     {
@@ -189,31 +203,17 @@ function getBackgroundColor( games )
     }
     else if( games == 1 )
     {
-        return "#ffe1ba";
+        return "#ffd6cc";
     }
     else if( games == 0 )
     {
-        return "#ffd6cc";
+        return "#ff5c54";
     }
 }
 
 /*
-    getFormattedTodaysDate - 
+    isLeagueDailyOrWeekly - returns whether the league is daily or weekly
 */
-function getFormattedTodaysDate()
-{
-    var todaysDate = new Date();
-    // Getting today's date before regular season starts
-    if( ( todaysDate.getTime() <= new Date("2018-10-16").getTime() ) ) 
-    {
-        return "2018-10-16";
-    }
-    else
-    {
-        return todaysDate.getFullYear() + "-" + ( todaysDate.getMonth() + 1 ) + "-" + todaysDate.getDate();
-    }
-}
-
 function isLeagueDailyOrWeekly()
 {
     console.log( "isLeagueDailyOrWeekly()" );
@@ -231,6 +231,26 @@ function isLeagueDailyOrWeekly()
 /* ---------------------------------------------------------------------
                             Main Functions 
 --------------------------------------------------------------------- */
+
+/*
+    addGamesDataToLocalDictionary - 
+*/
+function addGamesDataToLocalDictionary( data, teamsRequestString )
+{
+    // console.log( "addDataToLocalDictionary()" );
+    localGamesDataDict = {};
+    var teamsRequestStringConcise = teamsRequestString.substring( 6, teamsRequestString.length-1 );
+    var teamsList = teamsRequestStringConcise.split( "," );
+    for( var i = 0; i < data.length; i++ )
+    {
+        if( !( teamsList[i] in localGamesDataDict ) )
+        {
+            localGamesDataDict[teamsList[i]] = data[i];
+        }
+    }
+    // console.log( localGamesDataDict );
+}
+
 /*
     requestHeaderFromServer - 
 */
@@ -239,16 +259,8 @@ async function requestHeaderFromServer( addOrUpdate )
     console.log( "requestHeaderFromServer()" );
     // Sleep before getting the date string to allow the selected date some time to be changed
     await sleep( 200 );
-    var dateRequestString = "";
-    if( dailyOrWeekly == "Daily" )
-    {
-        dateRequestString = getDate();
-    }
-    else if( dailyOrWeekly == "Weekly" )
-    {
-        dateRequestString = getFormattedTodaysDate();
-    }
-    console.log( "dateRequestString=" + dateRequestString );
+    var dateRequestString = buildDateRequestString();
+    // console.log( "dateRequestString=" + dateRequestString );
     var leagueIdRequestString = buildLeagueIdRequestString();
     var url = "http://www.fantasywizard.site/getweek/?pageName=eTeamsPage&format=json&date=" + dateRequestString + "&" + leagueIdRequestString;
 
@@ -310,7 +322,7 @@ function addWeekGamesHeaders( data )
     {
         for( var i = 0; i < listOfElements.length; i++ )
         {
-            console.log(listOfElements[i]);
+            // console.log(listOfElements[i]);
             if( listOfElements[i].innerHTML.indexOf( "STARTERS" ) != -1 )
             {
                 var newGamesHeader = document.createElement( "th" );
@@ -338,7 +350,7 @@ function addWeekGamesHeaders( data )
 /*
     updateWeekNumberHeader - updates the 'GAMES' and 'WEEK' headers
 */
-function updateWeekNumberHeader()
+function updateWeekNumberHeader( data )
 {
     var weekNum = data.weekNum;
     var listOfHeaders = document.getElementsByClassName( "fbw-header" );
@@ -352,7 +364,6 @@ function updateWeekNumberHeader()
     }
 }
 
-
 /*
     requestGameDataFromServer
 */
@@ -363,15 +374,7 @@ async function requestGameDataFromServer( addOrUpdate )
     var teamsRequestString = buildTeamsRequestString();
     // Sleep before getting the date string to allow the selected date some time to be changed
     await sleep( 200 );     
-    var dateRequestString = "";
-    if( dailyOrWeekly == "Daily" )
-    {
-        dateRequestString = getDate();
-    }
-    else if( dailyOrWeekly == "Weekly" )
-    {
-        dateRequestString = getFormattedTodaysDate();
-    }
+    var dateRequestString = buildDateRequestString();
     console.log( "dateRequestString=" + dateRequestString );
     var leagueIdRequestString = buildLeagueIdRequestString();
     var url = "https://www.fantasywizard.site/gamesremaining/?pageName=eTeamsPage&" + teamsRequestString + "&format=json&date=" + dateRequestString + "&" + leagueIdRequestString;
@@ -402,22 +405,6 @@ async function requestGameDataFromServer( addOrUpdate )
     });
 }
 
-function addGamesDataToLocalDictionary( data, teamsRequestString )
-{
-    console.log( "addDataToLocalDictionary()" );
-    localGamesDataDict = {};
-    var teamsRequestStringConcise = teamsRequestString.substring( 6, teamsRequestString.length-1 );
-    var teamsList = teamsRequestStringConcise.split( "," );
-    for( var i = 0; i < data.length; i++ )
-    {
-        if( !( teamsList[i] in localGamesDataDict ) )
-        {
-            localGamesDataDict[teamsList[i]] = data[i];
-        }
-    }
-    console.log( localGamesDataDict );
-}
-
 /*
     addGamesForPlayers - add the games remaining data to the HTML
     of the page
@@ -435,7 +422,7 @@ function addGamesForPlayers()
     for( var i = 0; i < listOfElements.length; i++ )
     {
         var listOfElementsTr = listOfElements[i];
-        console.log( "listOfElementsTr.children.length=" + listOfElementsTr.children.length );
+        // console.log( "listOfElementsTr.children.length=" + listOfElementsTr.children.length );
 
         // Initial render for Stats menu
         if( listOfElementsTr.children.length == 5 )
@@ -465,7 +452,7 @@ function addGamesForPlayers()
             {
                 if( !isInjured )
                 {
-                    var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
                     newGamesDiv.innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     totalGamesRemaining += parseInt( splitDataIndex[0] );
@@ -475,7 +462,6 @@ function addGamesForPlayers()
                 else
                 {
                     newGamesDiv.innerHTML = "-/-";
-                    newGamesTd.style.backgroundColor = getBackgroundColor( 0 );
                 }
                 listOfTeamNameElementsIndex++;
             }
@@ -507,7 +493,7 @@ function addGamesForPlayers()
             {
                 if( !isInjured )
                 {
-                    var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
                     newGamesDiv.innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     totalGamesRemaining += parseInt( splitDataIndex[0] );
@@ -517,7 +503,6 @@ function addGamesForPlayers()
                 else
                 {
                     newGamesDiv.innerHTML = "-/-";
-                    newGamesTd.style.backgroundColor = getBackgroundColor( 0 );
                 }
                 listOfTeamNameElementsIndex++;
             }
@@ -552,12 +537,13 @@ function addGamesForPlayers()
             {
                 if( !isInjured )
                 {
-                    var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
                     newGamesDiv.innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     totalGamesRemaining += parseInt( splitDataIndex[0] );
                     totalGamesForWeek += parseInt( splitDataIndex[1] );
-                    newCell.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
+                    // newCell.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
+                    newGamesDiv.style.color = getBackgroundColor( splitDataIndex[0] );
                 }
                 else
                 {
@@ -596,7 +582,8 @@ function updateGameData()
     {
         var listOfElementsTr = listOfElements[i];
 
-        if( listOfElementsTr.children.length == 6 )
+        console.log( "listOfElementsTr.children.length= " + listOfElementsTr.children.length );
+        if( listOfElementsTr.children.length == 6 || listOfElementsTr.children.length == 7 || listOfElementsTr.children.length == 13 || listOfElementsTr.children.length == 14 )
         {
             var isInjured = false;
             // 'O'ut, injured player
@@ -616,7 +603,7 @@ function updateGameData()
                 // Healthy player 
                 if( !isInjured )
                 {
-                    var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
                     listOfGamesDiv[listOfGamesIndex].innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     totalGamesRemaining += parseInt( splitDataIndex[0] );
@@ -627,7 +614,7 @@ function updateGameData()
                 else
                 {
                     listOfGamesDiv[listOfGamesIndex].innerHTML = "-/-";
-                    listOfGamesTd[listOfGamesIndex].style.backgroundColor = getBackgroundColor( 0 );
+                    listOfGamesTd[listOfGamesIndex].style.backgroundColor = "";
                 }
                 backendIndex++;
                 listOfTeamNameElementsIndex++;
@@ -636,7 +623,7 @@ function updateGameData()
             else
             {
                 listOfGamesDiv[listOfGamesIndex].innerHTML = "-/-";
-                listOfGamesTd[listOfGamesIndex].style.backgroundColor = getBackgroundColor( 0 );
+                listOfGamesTd[listOfGamesIndex].style.backgroundColor = "";
             }
             listOfGamesIndex++;
         }
@@ -655,8 +642,8 @@ function moveButtonStarterPressed()
     for( var i = listOfElements.length-1; i > 0; i-- )
     {
         var listOfElementsTr = listOfElements[i];
-        console.log( "listOfElementsTr.children.length= " + listOfElementsTr.children.length );
-        if( listOfElementsTr.children.length == 5 || listOfElementsTr.children.length == 12 )
+        if( listOfElementsTr.children.length == 5 || listOfElementsTr.children.length == 12
+        ||( listOfElementsTr.children.length == 13 && getActiveMenu() != "Schedule" ) )
         {
             var newGamesTd = document.createElement( "td" );
             var newGamesDiv = document.createElement( "div" );
@@ -666,6 +653,17 @@ function moveButtonStarterPressed()
             newGamesDiv.style.textAlign = "center";
             newGamesTd.appendChild( newGamesDiv );
             listOfElementsTr.appendChild( newGamesTd );
+            break;
+        }
+        else if( listOfElementsTr.children.length == 6 && getActiveMenu() != "Stats" )
+        {
+            var newCell = listOfElementsTr.insertCell( 5 );
+            var newGamesDiv = document.createElement( "div" );
+            newCell.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
+            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div fbw-new-element";
+            newGamesDiv.style.textAlign = "center";
+            newGamesDiv.innerHTML = "-/-";
+            newCell.appendChild( newGamesDiv );
             break;
         }
     }
@@ -710,15 +708,16 @@ function removeEntireColumn()
 */
 $( 'body' ).on( 'click', 'a.move-action-btn', function() 
 {
+    var className = this.className;
     var closestTd = $( this ).closest( "td" )[0];
     var slotTd = $( closestTd ).siblings( "td" )[0];
     var slotTdInnerDiv = slotTd.getElementsByClassName( "table--cell" )[0];
     var benchOrStarter = slotTdInnerDiv.innerHTML;
-
+    
     if( $( this ).text() == "MOVE" )
     {
         // A Starter Player's 'MOVE' button has been pressed
-        if( benchOrStarter != "BE" )
+        if( benchOrStarter != "BE" && className.indexOf( "isActive" ) == -1 )
         {
             // Need a small delay for the new EMPTY bench spot to be created dynamically
             setTimeout( moveButtonStarterPressed, 200 );
@@ -736,9 +735,21 @@ $( 'body' ).on( 'click', 'a.move-action-btn', function()
 });
 
 /*
-    For showing the features after switching dates
+    For showing the features after switching dates for daily leagues
 */
 $( 'body' ).on( 'click', 'div.custom--day', function() 
+{
+    var className = this.className;
+    if( className.indexOf( "is-current" ) == -1 )
+    {
+        renderGames( "Switch Dates" );
+    }
+});
+
+/*
+    For showing the features after switching dates for weekly leagues
+*/
+$( 'body' ).on( 'click', 'div.custom--week', function() 
 {
     var className = this.className;
     if( className.indexOf( "is-current" ) == -1 )
@@ -777,9 +788,35 @@ $( 'body' ).on( 'click', 'li.tabs__list__item', function()
     {}
 });
 
+/*
+    Current button that returns to the current date
+*/
+$( 'body' ).on( 'click', 'a.scoring--period-today', function() 
+{
+    var className = this.className;
+    if( className.indexOf( "is-current" ) == -1 )
+    {
+        renderGames( "Switch Dates" );
+    }
+});
+
+/*
+    Changing dates with the calendar
+*/
+$( 'body' ).on( 'click', 'li.monthContainer__day--noEvent', function() 
+{
+    var className = this.className;
+    if( ( className.indexOf( "monthContainer__day--disabled" ) == -1 ) && ( ( className.indexOf( "monthContainer__day--selected" ) == -1 ) ) )
+    {
+        renderGames( "Switch Dates" );
+    }
+});
+
+
 /* ---------------------------------------------------------------------
                             Render Games by Type 
 --------------------------------------------------------------------- */
+
 /*
     renderGames - 
 */

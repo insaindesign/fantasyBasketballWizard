@@ -7,6 +7,7 @@
 /* ---------------------------------------------------------------------
                             Global Variables  
 --------------------------------------------------------------------- */
+
 var localGamesDataDict = {};
 
 /* ---------------------------------------------------------------------
@@ -40,23 +41,6 @@ function sleep( ms )
   return new Promise( resolve => setTimeout( resolve, ms ) );
 }
 
-/*
-    getFormattedTodaysDate - 
-*/
-function getFormattedTodaysDate()
-{
-    var todaysDate = new Date();
-    // Getting today's date before regular season starts
-    if( ( todaysDate.getTime() <= new Date("2018-10-16").getTime() ) ) 
-    {
-        return "2018-10-16";
-    }
-    else
-    {
-        return todaysDate.getFullYear() + "-" + ( todaysDate.getMonth() + 1 ) + "-" + todaysDate.getDate();
-    }
-}
-
 /* 
     getBackgroundColor - returns the background color
     associated with the number of games.
@@ -88,12 +72,29 @@ getBackgroundColor = function( games )
 }
 
 /*
+    getFormattedTodaysDate - 
+*/
+function getFormattedTodaysDate()
+{
+    var todaysDate = new Date();
+    // Getting today's date before regular season starts
+    if( ( todaysDate.getTime() <= new Date("2018-10-16").getTime() ) ) 
+    {
+        return "2018-10-16";
+    }
+    else
+    {
+        return todaysDate.getFullYear() + "-" + ( todaysDate.getMonth() + 1 ) + "-" + todaysDate.getDate();
+    }
+}
+
+/*
     removeGamesDataColumn - removes the game remaining cells
 */
 function removeGamesDataColumn()
 {
     console.log( "removeGamesDataColumn()" );
-    var elements = document.getElementsByClassName( "fbw-games-remaining-td" );
+    var elements = document.getElementsByClassName( "fbw-new-element" );
 
     while( elements.length > 0 )
     {
@@ -106,34 +107,7 @@ function removeGamesDataColumn()
 --------------------------------------------------------------------- */
 
 /*
-    requestWeekNumberFromServer - requests the week number from the
-    server and calls a function to add that data to the headers
-*/
-function requestWeekNumberFromServer()
-{
-    console.log( "requestWeekNumberFromServer()" );
-    // Sleep before getting the date string to allow the selected date some time to be changed
-    var dateRequestString = getFormattedTodaysDate();
-    var url = "http://www.fantasywizard.site/getweek/?pageName=ePlayersPage&format=json&date=" + dateRequestString;
-
-    fetch(url)
-        .then(function(response){
-        if (response.status !== 200) {
-            console.log('Called to backend failed: ' + response.status);
-            return;
-        }
-        response.json().then(function(data) {
-            var weekNum = data.weekNum;
-            addWeekGamesHeaders( data );
-        });
-    }).catch(function(err) {
-        console.log('Fetch Error :-S', err);
-    });
-}
-
-/*
-    addGamesWeekHeaders - adds the 'WEEK #' and 'GR/G' headers
-    to the HTML of the page.
+    addGamesWeekHeaders - adds the 'GR/G' header to the HTML of the page.
 */
 function addWeekGamesHeaders( data )
 {
@@ -143,25 +117,34 @@ function addWeekGamesHeaders( data )
 
     for( var i = 0; i < listOfElements.length; i++ )
     {
-        if( listOfElements[i].innerHTML.indexOf( "All Players" ) != -1 )
-        {
-            var newGamesHeader = document.createElement( "th" );
-            newGamesHeader.title = "Week number " + weekNum.toString() + " of fantasy basketball";
-            newGamesHeader.colSpan = "1";
-            newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header";
-            newGamesHeader.innerHTML = "WEEK" + weekNum.toString();
-            listOfElements[i].appendChild( newGamesHeader );
-        }
-        else if( listOfElements[i].innerHTML.indexOf( "STATUS" ) != -1 )
-        {
-            var newGamesHeader = document.createElement( "th" );
-            newGamesHeader.title = "Games Remaining / Games This Week";
-            newGamesHeader.colSpan = "1";
-            newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header";
-            newGamesHeader.innerHTML = "GR/G";
-            listOfElements[i].appendChild( newGamesHeader );
-        }
+        var newHeaderTh = document.createElement( "th" );
+        var newHeaderSpan = document.createElement( "span" );
+        newHeaderTh.title = "Games Remaining / Games This Week";
+        newHeaderTh.colSpan = "1";
+        newHeaderTh.className = "jsx-2810852873 table--cell poc tar header";
+        newHeaderSpan.innerHTML = "GR/G";
+        newHeaderTh.appendChild( newHeaderSpan );
+        listOfElements[i].appendChild( newHeaderTh );
     }
+}
+
+/*
+    addGamesDataToLocalDictionary - gets the games remaining data
+    from the server and adds it to a local dictionary
+*/
+function addGamesDataToLocalDictionary( data, teamsRequestString )
+{
+    // Don't need to erase the local games info because the date doesn't change for free agents, can build onto
+    // The data structure as I use it
+    // localGamesDataDict = {};
+    console.log( "addDataToLocalDictionary()" );
+    var teamsRequestStringConcise = teamsRequestString.substring( 6, teamsRequestString.length-1 );
+    var teamsList = teamsRequestStringConcise.split( "," );
+    for( var i = 0; i < data.length; i++ )
+    {
+        localGamesDataDict[teamsList[i]] = data[i];
+    }
+    // console.log( localGamesDataDict );
 }
 
 /*
@@ -172,7 +155,7 @@ function addGamesForPlayers()
 {
     console.log( "addGamesForPlayers()" );
 
-    var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
+    var listOfElements = document.getElementsByClassName( "Table2__tr--sm" );
     var totalGamesRemaining = 0;
     var totalGamesForWeek = 0;
 
@@ -182,14 +165,13 @@ function addGamesForPlayers()
     for( var i = 0; i < listOfElements.length; i++ )
     {
         var listOfElementsTr = listOfElements[i];
-        // console.log( "listOfElementsTr.children.length=" + listOfElementsTr.children.length );
 
         if( listOfElementsTr.children.length == 5 )
         {
             var newGamesTd = document.createElement( "td" );
             var newGamesDiv = document.createElement( "div" );
-            newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td";
-            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div";
+            newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
+            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div fbw-new-element";
             newGamesDiv.style.textAlign = "center";
 
             var isInjured = false;
@@ -204,7 +186,7 @@ function addGamesForPlayers()
                 if( !isInjured )
                 {
                     var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
-                    // console.log( "teamName=" + teamName );
+                    
                     newGamesDiv.innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     totalGamesRemaining += parseInt( splitDataIndex[0] );
@@ -226,24 +208,30 @@ function addGamesForPlayers()
 }
 
 /*
-    addGamesDataToLocalDictionary - gets the games remaining data
-    from the server and adds it to a local dictionary
+    requestWeekNumberFromServer - requests the week number from the
+    server and calls a function to add that data to the headers
 */
-function addGamesDataToLocalDictionary( data, teamsRequestString )
+function requestWeekNumberFromServer()
 {
-    // Don't need to erase the local games info because the date doesn't change for free agents, can build onto
-    // The data structure as I use it
-    // localGamesDataDict = {};
-    console.log( "addDataToLocalDictionary()" );
-    var teamsRequestStringConcise = teamsRequestString.substring( 6, teamsRequestString.length-1 );
-    var teamsList = teamsRequestStringConcise.split( "," );
-    for( var i = 0; i < data.length; i++ )
-    {
-        localGamesDataDict[teamsList[i]] = data[i];
-    }
-    console.log( localGamesDataDict );
-}
+    console.log( "requestWeekNumberFromServer()" );
+    // Sleep before getting the date string to allow the selected date some time to be changed
+    var dateRequestString = getFormattedTodaysDate();
+    var url = "http://www.fantasywizard.site/getweek/?pageName=espnAddedDropped&format=json&date=" + dateRequestString;
 
+    fetch(url)
+        .then(function(response){
+        if (response.status !== 200) {
+            console.log('Called to backend failed: ' + response.status);
+            return;
+        }
+        response.json().then(function(data) {
+            var weekNum = data.weekNum;
+            addWeekGamesHeaders( data );
+        });
+    }).catch(function(err) {
+        console.log('Fetch Error :-S', err);
+    });
+}
 /*
     requestDataFromServer - requests the game data from the server and
     calls functions to handle the data after it gets received
@@ -251,18 +239,18 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
 async function requestDataFromServer()
 {
     console.log( "requestDataFromServer()" );
-    await sleep( 2000 );
     var teamsRequestString = buildTeamsRequestString(); 
 
     // Code did not find any new teams to request from the server
     if( teamsRequestString == "teams=" )
     {
+        sleep( 4000 );
         addGamesForPlayers();
     }
     else
     {
         var dateRequestString = getFormattedTodaysDate();
-        var url = "https://www.fantasywizard.site/gamesremaining/?pageName=ePlayersPage&" + teamsRequestString + "&format=json&date=" + dateRequestString;
+        var url = "https://www.fantasywizard.site/gamesremaining/?pageName=espnAddedDropped&" + teamsRequestString + "&format=json&date=" + dateRequestString;
         console.log( url );
 
         fetch( url )
@@ -276,6 +264,7 @@ async function requestDataFromServer()
                 response.json().then( function( data )
                 {
                     addGamesDataToLocalDictionary( data, teamsRequestString );
+                    sleep( 4000 );
                     addGamesForPlayers();
                 });
             }).catch( function( err )
@@ -285,36 +274,21 @@ async function requestDataFromServer()
     }
 }
 
+
 /* ---------------------------------------------------------------------
-                            HTML Object Changes 
+                            HTML Object Clicks 
 --------------------------------------------------------------------- */
 
 /*
     Changing pages
 */
-$( 'body' ).on( 'click', 'li.PaginationNav__list__item', function() 
-{
-    console.log( $( this ).text() ) ;
-    var className = this.className;
-
-    if( className.indexOf( "PaginationNav__list__item--active" ) == -1 )
-    {
-        removeGamesDataColumn();
-        requestDataFromServer();
-    }
-});
-
-/*
-    Changing positions of available free agents
-*/
-$( 'body' ).on( 'click', 'label.picker-option', function() 
-{
+$( 'body' ).on( 'click', 'label.control--radio', function() 
     var className = this.className;
 
     if( className.indexOf( "checked" ) == -1 )
     {
         removeGamesDataColumn();
-        setTimeout( requestDataFromServer, 2000 );
+        setTimeout( requestDataFromServer, 3000 );
     }
 });
 
@@ -326,5 +300,5 @@ $( document ).ready( function()
     setTimeout( function(){
         requestWeekNumberFromServer();
         requestDataFromServer();
-    }, 3000 );
+    }, 5000 );
 });   

@@ -2,13 +2,6 @@
 //Populates the transaction trends page with number of games for the week
 Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"]
 var teamsString = "teams=";
-//--------Colors-----------
-var noneColor = "#56d2ff";
-var lowColor = "#FF9E9A";
-var medColor = "#d8ffcc";
-var highColor = "#adebad";
-var whiteColor = "white";
-var borderColor = "#e7e7e7";
 
 //main function that initializes everything. 
 function init() {
@@ -34,19 +27,24 @@ function getTeamFromInfo(playerInfo) {
 
 //determine color based on number of games
 function getColor(games) {
-    var numGames = parseInt(games.split("/")[0], 10);
-    if (numGames > 3) {
-        return highColor;
-    } else if (numGames == 3) {
-        return medColor;
-    } else if (numGames == 2) {
-        return lowColor;
-    } else if (numGames == 1) {
-        return lowColor;
-    } else if (numGames == 0) {
-        return noneColor;
+    if (games == '0/0') {
+        return "#56d2ff"
+    }
+    var games = parseInt(games.split('/')[0]);
+    if (games == 5) {
+        return "#7ee57e"
+    } else if (games == 4) {
+        return "#adebad"
+    } else if (games == 3) {
+        return "#d8ffcc"
+    } else if (games == 2) {
+        return "#ffffcc"
+    } else if (games == 1) {
+        return "#ffd6cc"
+    } else if (games == 0) {
+        return "#f97a7a"
     } else {
-        return whiteColor;
+        return "white"
     }
 }
 

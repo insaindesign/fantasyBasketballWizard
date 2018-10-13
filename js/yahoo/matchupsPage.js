@@ -199,8 +199,6 @@ function getPlayers(){
             playersLeft.push(playerLeft)
         }
         
-        //console.log("left: ", playersLeft);
-        
         row = row.slice(noteIndex+2, row.length)
         
         noteIndex = getNoteIndex(row)
@@ -209,7 +207,7 @@ function getPlayers(){
         if ((!playerRight.includes("Empty")) && (playerRight != "O")  && (playerRight.length > 0)){
             playersRight.push(playerRight)
         }
-        //console.log("right: ", playersRight);
+
     }
     
     leftString = playersLeft.join(",") + ",";
@@ -243,6 +241,8 @@ function getProjections(playersString, side){
 
 function showProjections(data, side){
     
+    console.log("showProjections -- ", side, ": ", data);
+    
     //add text
     for (cat = 0; cat < categories.length; cat++){
         if (side == "left"){
@@ -260,25 +260,15 @@ function showProjections(data, side){
     for (cat = 1; cat < categories.length+1; cat++){
         num = parseFloat(pTable.rows[1].cells[cat].innerHTML);
         den = parseFloat(pTable.rows[2].cells[cat].innerHTML);
-        console.log("num: ", num);
-        console.log("den: ", den);
         ratio = num / den;
-        console.log("ratio: ", ratio);
         color = getProjectionsColor(ratio);
-        console.log("color: ", color);
         pTable.rows[1].cells[cat].style.backgroundColor = color;
-        statsLeft.push(stat);
         
         num = parseFloat(pTable.rows[2].cells[cat].innerHTML);
         den = parseFloat(pTable.rows[1].cells[cat].innerHTML);
-        console.log("num: ", num);
-        console.log("den: ", den);
         ratio = num / den;
-        console.log("ratio: ", ratio);
         color = getProjectionsColor(ratio);
-        console.log("color: ", color);
         pTable.rows[2].cells[cat].style.backgroundColor = color;
-        statsRight.push(stat);
     }
     
     if (side == "left"){
@@ -289,6 +279,7 @@ function showProjections(data, side){
 }
 
 function calculateStats(data, cat){
+    
     console.log("calculating... ", cat);
     if (cat == "FG%"){
         var fgm = 0;
@@ -297,6 +288,7 @@ function calculateStats(data, cat){
             fgm += parseFloat(data[i]['fgmpg']);
             fga += parseFloat(data[i]['fgapg']);
         }
+
         return parseFloat(fgm/fga).toFixed(3);
         
     } if (cat == "FT%") {
@@ -306,6 +298,7 @@ function calculateStats(data, cat){
             ftm += parseFloat(data[i]['ftmpg']);
             fta += parseFloat(data[i]['ftapg']);
         }
+
         return parseFloat(ftm/fta).toFixed(3);
         
     } if (cat == "PTS") {
@@ -323,8 +316,9 @@ function calculateStats(data, cat){
     } if (cat == "AST") {
         var ast = 0;
         for (var i = 0; i < data.length; i++){
-            ast += data[i]['apg'];
+            ast += parseFloat(data[i]['apg']);
         }
+        console.log("ast: ", ast);
         return parseFloat(ast).toFixed(1);
     } if (cat == "ST") {
         var stl = 0;

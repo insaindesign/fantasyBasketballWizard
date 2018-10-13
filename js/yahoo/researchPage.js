@@ -109,7 +109,7 @@ function addGames(data) {
         var numGames = data[i - 1];
         newCell = rows[i].insertCell(6);
         rows[i].cells[5].setAttribute("class", "Bdrend");
-        newCell.style.border.color = borderColor;
+        newCell.style.border.color = "#e7e7e7";
         newCell.style.textAlign = "center";
         newCell.style.backgroundColor = getColor(numGames);
         newCell.innerText = data[i - 1];

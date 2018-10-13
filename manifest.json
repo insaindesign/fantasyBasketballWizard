@@ -39,6 +39,10 @@
     {
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/matchup*"],
       "js": ["js/yahoo/matchupsPage.js"]
+    },
+    {
+      "matches": ["http://fantasy.espn.com/basketball/*"],
+      "js": ["js/jquery-3.3.1.min.js", "js/espn/espn.js"]
     }
   ],
   "permissions": [

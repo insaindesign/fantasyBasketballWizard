@@ -94,7 +94,6 @@ function resetGames(weekNum) {
     var leagueIDString = 'leagueID=' + getLeagueID();
     console.log("dateString = " + dateString);
     var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=weekSelect&' + teamsString + '&format=json' + '&weekNum=' + weekNum + '&' + dateString + '&' + leagueIDString;
-    console.log("before request");
     console.log("weekNum=" + weekNum);
     fetch(url)
         .then(function (response) {
@@ -106,7 +105,7 @@ function resetGames(weekNum) {
             response.json().then(function (data) {
                 var gameColumn = document.getElementsByClassName("gameColumn");
                 console.log(data)
-                for (var i = 0; i < rows.length; i++) {
+                for (var i = 0; i < rows.length-1; i++) {
                     gameColumn[i].innerText = data[i];
                     gameColumn[i].style.backgroundColor = getColor(data[i])
                 }
@@ -180,7 +179,7 @@ function addGames(data) {
         var numGames = data[i - 1];
         newCell = rows[i].insertCell(9);
         rows[i].cells[5].setAttribute("class", "Bdrend");
-        newCell.style.border.color = borderColor;
+        newCell.style.border.color = "#e7e7e7";
         newCell.innerText = numGames;
         newCell.style.textAlign = "center";
         newCell.style.backgroundColor = getColor(numGames);

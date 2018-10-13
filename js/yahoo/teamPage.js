@@ -530,7 +530,7 @@ countStats = function() {
     }
 }
 
-var init_AS_subnav = function() {
+function init_AS_subnav() {
     try {
         var subNav = document.getElementById("subnav_AS");
         var today = document.getElementById("subnav_AS").childNodes[1];

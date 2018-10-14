@@ -169,6 +169,7 @@ function serializePlayer(p){
     p = p.replace(/ /g,'');
     p = p.replace("-", "");
     p = p.replace(".", "");
+    p = p.replace(".", "");
     return p;
 }
 
@@ -190,30 +191,35 @@ function getPlayers(){
     playersRight = []
     for (var i = 1; i < num_rows; i++){
         row = table.rows[i].innerText.split('\n')
+        
+        console.log("row: ", row);
 
         noteIndex = getNoteIndex(row.slice(0, row.length/2 - 1));
         playerLeft = row[noteIndex+1].split(" - ")[0]
         
         playerLeft = serializePlayer(playerLeft)
         if ((!playerLeft.includes("Empty")) && (playerLeft != "O") && (playerLeft.length > 0)){
-            playersLeft.push(playerLeft)
+            playersLeft.push(playerLeft);
         }
         
         row = row.slice(noteIndex+2, row.length)
+        console.log("right row: ", row);
         
         noteIndex = getNoteIndex(row)
         playerRight = row[noteIndex+1].split(" - ")[0]
         playerRight = serializePlayer(playerRight)
         if ((!playerRight.includes("Empty")) && (playerRight != "O")  && (playerRight.length > 0)){
-            playersRight.push(playerRight)
+            playersRight.push(playerRight);
         }
 
     }
     
     leftString = playersLeft.join(",") + ",";
+    console.log("leftString: ", leftString);
     getProjections(leftString, "left");
     
     rightString = playersRight.join(",") + ",";
+    console.log("rightString: ", rightString);
     getProjections(rightString, "right");
     
 }
@@ -288,9 +294,7 @@ function calculateStats(data, cat){
             fgm += parseFloat(data[i]['fgmpg']);
             fga += parseFloat(data[i]['fgapg']);
         }
-
         return parseFloat(fgm/fga).toFixed(3);
-        
     } if (cat == "FT%") {
         var ftm = 0;
         var fta = 0;
@@ -298,9 +302,7 @@ function calculateStats(data, cat){
             ftm += parseFloat(data[i]['ftmpg']);
             fta += parseFloat(data[i]['ftapg']);
         }
-
         return parseFloat(ftm/fta).toFixed(3);
-        
     } if (cat == "PTS") {
         var pts = 0;
         for (var i = 0; i < data.length; i++){
@@ -346,15 +348,6 @@ function calculateStats(data, cat){
         return parseFloat(threes).toFixed(1);
     }
 
-}
-
-function getPlayerStats(player){
-    var url = 'https://www.fantasywizard.site/getplayer/?id='+player;
-    console.log("url: ", url);
-    var req = new XMLHttpRequest();
-    req.open("GET", url, false);
-    req.send(null);
-    return req.responseText;
 }
 
 function displayGamesToday(data) {

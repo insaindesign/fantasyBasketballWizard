@@ -1,9 +1,10 @@
-Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"]
+Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"];
 
-Schedule = {}
+Schedule = {};
 
-teams = Teams.join(",") + ","
+teams = Teams.join(",") + ",";
 
+console.log("teams: ", teams);
 
 var leftName;
 var rightName;
@@ -64,6 +65,48 @@ function getProjectionsColor(ratio){
     } if (ratio <= 2.1){
         return '#3bff3b';
     } else return '#14ff14';
+}
+
+function getFormattedDate() {
+    var d = new Date();
+    return d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
+}
+
+function getDateFromURL(url){
+    url = url.split("date=")[1]
+    date = url.split("&")[0]
+    return date
+}
+
+function getGamesRemaining(team){
+    
+    var dateString;
+    url = window.location.href;
+    if (url.includes("date=")){
+        dateString = getDateFromURL(url);
+    } else {
+        dateString = getFormattedDate();
+    }
+    
+    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yTeamPage&teams='+team+'&format=json&date='+dateString;
+    console.log("url: ", url);
+    fetch(url)
+        .then(function(response){
+        if (response.status !== 200) {
+            console.log('Called to backend failed: ' + response.status);
+            return;
+        }
+
+        response.json().then(function(data) {
+            for (var t = 0; t < Teams.length; t++) {
+                team = Teams[t];
+                Schedule[team.toUpperCase()] = games[t];
+            }
+            getPlayers();
+        });
+    }).catch(function(err) {
+        console.log('Fetch Error :-S', err);
+    });
 }
 
 function initTable(){
@@ -147,7 +190,7 @@ function getFormattedQueryFromURL() {
     return "date="+str;
 }
 
-function getGames() {
+function getGamesToday() {
     var query = getFormattedQueryFromURL();
     var url = 'https://www.fantasywizard.site/gamestoday/?'+'&format=json&'+query;
     fetch(url)
@@ -287,62 +330,63 @@ function showProjections(data, side){
 function calculateStats(data, cat){
     
     //console.log("calculating... ", cat);
+    
     if (cat == "FG%"){
         var fgm = 0;
         var fga = 0;
         for (var i = 0; i < data.length; i++){
-            fgm += parseFloat(data[i]['fgmpg']);
-            fga += parseFloat(data[i]['fgapg']);
+            fgm += (parseFloat(data[i]['fgmpg']) * parseFloat(Schedule[data[i]['team']].split('/')[1]));
+            fga += (parseFloat(data[i]['fgapg']) * parseFloat(Schedule[data[i]['team']].split('/')[1]));
         }
         return parseFloat(fgm/fga).toFixed(3);
     } if (cat == "FT%") {
         var ftm = 0;
         var fta = 0;
         for (var i = 0; i < data.length; i++){
-            ftm += parseFloat(data[i]['ftmpg']);
-            fta += parseFloat(data[i]['ftapg']);
+            ftm += (parseFloat(data[i]['ftmpg']) * parseFloat(Schedule[data[i]['team']].split('/')[1]));
+            fta += (parseFloat(data[i]['ftapg']) * parseFloat(Schedule[data[i]['team']].split('/')[1]));
         }
         return parseFloat(ftm/fta).toFixed(3);
     } if (cat == "PTS") {
         var pts = 0;
         for (var i = 0; i < data.length; i++){
-            pts += parseFloat(data[i]['ppg']);
+            pts += (parseFloat(data[i]['ppg']) * parseFloat(Schedule[data[i]['team']].split('/')[1]));
         }
         return parseFloat(pts).toFixed(1);
     } if (cat == "REB") {
         var reb = 0;
         for (var i = 0; i < data.length; i++){
-            reb += parseFloat(data[i]['rpg']);
+            reb += (parseFloat(data[i]['rpg']) * parseFloat(Schedule[data[i]['team']].split('/')[1]));
         }
         return parseFloat(reb).toFixed(1);
     } if (cat == "AST") {
         var ast = 0;
         for (var i = 0; i < data.length; i++){
-            ast += parseFloat(data[i]['apg']);
+            ast += (parseFloat(data[i]['apg']) * parseFloat(Schedule[data[i]['team']].split('/')[1]));
         }
         return parseFloat(ast).toFixed(1);
     } if (cat == "ST") {
         var stl = 0;
         for (var i = 0; i < data.length; i++){
-            stl += parseFloat(data[i]['spg']);
+            stl += (parseFloat(data[i]['spg']) * parseFloat(Schedule[data[i]['team']].split('/')[1]));
         }
         return parseFloat(stl).toFixed(1);
     } if (cat == "BLK") {
         var blk = 0;
         for (var i = 0; i < data.length; i++){
-            blk += parseFloat(data[i]['bpg']);
+            blk += (parseFloat(data[i]['bpg']) * parseFloat(Schedule[data[i]['team']].split('/')[1]));
         }
         return parseFloat(blk).toFixed(1);
     } if (cat == "TO") {
         var to = 0;
         for (var i = 0; i < data.length; i++){
-            to += parseFloat(data[i]['topg']);
+            to += (parseFloat(data[i]['topg']) * parseFloat(Schedule[data[i]['team']].split('/')[1]));
         }
         return parseFloat(to).toFixed(1);
     } if (cat == "3PTM") {
         var threes = 0;
         for (var i = 0; i < data.length; i++){
-            threes += parseFloat(data[i]['threepg']);
+            threes += (parseFloat(data[i]['threepg']) * parseFloat(Schedule[data[i]['team']].split('/')[1]));
         }
         return parseFloat(threes).toFixed(1);
     }
@@ -363,8 +407,10 @@ function displayGamesToday(data) {
 
 if (categories.toString() == "FG%,FT%,3PTM,PTS,REB,AST,ST,BLK,TO"){
     initTable();
-    getPlayers();
+    getGamesRemaining(teams);
+    
 }
-getGames();
+
+getGamesToday();
 
 

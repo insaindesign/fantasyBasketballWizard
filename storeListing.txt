@@ -25,8 +25,9 @@ Enjoy!
 
 
 Release notes:
-Version 3.0 (October 11, 2018):
+Version 3.0 (October 14, 2018):
 - New and improved Fantasy Basketball Wizard!
+- See Description for new features.
 
 Version 2.3 (March 8, 2018):
 - Fixed bug where games played broke when top position had a "gray" player note

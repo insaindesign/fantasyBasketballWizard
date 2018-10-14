@@ -16,7 +16,9 @@ var getColor = function(games) {
         return "#56d2ff"
     }
     games = parseInt(games.split('/')[0]);
-    if (games > 3) {
+    if (games == 5){
+        return "#7ee57e"
+    } else if (games == 4) {
         return "#adebad"
     } else if (games == 3) {
         return "#d8ffcc"
@@ -24,6 +26,8 @@ var getColor = function(games) {
         return "#ffffcc"
     } else if (games == 1) {
         return "#ffd6cc"
+    } else if (games == 0) {
+        return "#f97a7a"
     } else {
         return "white"
     }
@@ -34,9 +38,23 @@ function getFormattedDate() {
     return d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
 }
 
+function getDateFromURL(url){
+    url = url.split("date=")[1]
+    date = url.split("&")[0]
+    return date
+}
+
 function getGames(team){
-    var dateString = getFormattedDate();
+    var dateString;
+    url = window.location.href;
+    if (url.includes("date=")){
+        dateString = getDateFromURL(url);
+    } else {
+        dateString = getFormattedDate();
+    }
+    
     var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yTeamsPage&teams='+team+'&format=json&date='+dateString;
+    console.log("url: ", dateString);
     var req = new XMLHttpRequest();
     req.open("GET", url, false);
     req.send(null);
@@ -104,29 +122,26 @@ var get_label_col = function() {
     } else {
         return 2;
     }
-
 }
 
+function initGlobals(){
+    games_id = "games";
+    avg_stats_id = "avg";
 
-var games_id = "games";
-var avg_stats_id = "avg";
+    week = (new Date()).getWeek();
+    elements = document.getElementsByClassName("Block Mbot-xs Fz-xxs F-shade Uppercase");
+    versusString = elements[0].innerText;
+    arr = versusString.split(" ");
+    fantasyWeek = arr[1] - 1;
 
-var currentUrl = window.location.href;
-var myTeamRegex = /https?:\/\/basketball[.]fantasysports[.]yahoo[.]com\/nba\/\d{3,7}\/\d{1,2}/;
-var teamURLMatch = currentUrl.match(myTeamRegex);
-var week = (new Date()).getWeek();
-elements = document.getElementsByClassName("Block Mbot-xs Fz-xxs F-shade Uppercase");
-versusString = elements[0].innerText;
-arr = versusString.split(" ");
-var fantasyWeek = arr[1] - 1;
+    week_row_name = "Projected Week Totals";
 
-week_row_name = "Projected Week Totals";
+    S_VIEW = 0;
+    P_VIEW = 1;
+    AS_VIEW = 2;
 
-S_VIEW = 0;
-P_VIEW = 1;
-AS_VIEW = 2;
-
-this_view = S_VIEW;
+    this_view = S_VIEW;
+}
 
 //Default Stats Tab
 //-----------------------------------------------------------------------------
@@ -138,10 +153,12 @@ renderGames = function(from_view) {
     }
 
     console.log("rendering games...")
-
-
+    
     //init stats table
     table = document.getElementById("statTable0");
+    
+    //init stats columns
+    header_cols = table.rows[1].innerText.split("\n");
 
     //init table dimensions
     num_rows = table.rows.length;
@@ -157,7 +174,7 @@ renderGames = function(from_view) {
         }
     }
 
-    fantasy_col = -1
+    fantasy_col = -1;
     //find % Started column
     th = table.rows[first_player_row];
     for (var i = 5; i < th.cells.length; i++) {
@@ -168,6 +185,7 @@ renderGames = function(from_view) {
         }
     }
 
+    //if % not in any cells
     if (fantasy_col == -1) {
         for (var i = 5; i < th.cells.length; i++) {
             if (th.cells[i].innerText.includes("-") && th.cells[i].innerText.length < 3) {
@@ -176,7 +194,8 @@ renderGames = function(from_view) {
             }
         }
     }
-
+    
+    
 
     //replace Fantasy headers
     //find Fantasy header column
@@ -210,10 +229,13 @@ renderGames = function(from_view) {
         }
     }
 
-    if (fantasy_col == -1) {
+    //if opponent team
+    if (fantasy_col == -1 && header_cols.includes("Action")) {
+        fantasy_col = i+1;
+    }
+    else if (fantasy_col == -1) {
         fantasy_col = i;
     }
-
 
     //read team names, write games
     row = 2;
@@ -323,7 +345,6 @@ countStats = function() {
 
     stats_all.id = avg_stats_id;
 
-
     label_col = get_label_col();
 
     //add new row labels
@@ -366,9 +387,6 @@ countStats = function() {
         }
     }
 
-    console.log("counting col: ", col);
-
-
     //col = gp_col + 1;
     offset = false;
     write = 0;
@@ -390,7 +408,6 @@ countStats = function() {
         console.log("col: ", table.rows[1].cells[col].innerText);
         //column is (x/y)
         if (header_cell.includes("/")) {
-            console.log("col: ", col);
             while (!cellText.includes(week_row_name)) {
                 if (!cellText.includes("Injured")) {
                     values = table.rows[row].cells[col + offset].innerText.split("/");
@@ -398,7 +415,6 @@ countStats = function() {
                     if (!isNaN(values[0]) && values[0].length > 0) {
                         num += parseFloat(values[0]);
                         den += parseFloat(values[1]);
-                        console.log("num: ", values[0]);
                         if (!isNaN(games_row) && games_row.length > 0) {
                             weekly_num += parseFloat(values[0]) * games_row;
                             weekly_den += parseFloat(values[1]) * games_row;
@@ -480,7 +496,6 @@ countStats = function() {
                     games_row = table.rows[row].cells[games_col].innerText.split('/')[1];
                     if (!isNaN(value) && value.length > 0) {
                         num += parseFloat(value);
-                        console.log("else val: ", value);
                         if (!isNaN(games_row) && games_row.length > 0) {
                             weekly_stats += (parseFloat(value) * parseFloat(games_row));
                         }
@@ -518,10 +533,9 @@ countStats = function() {
         header_cell = table.rows[1].cells[col].innerText;
 
     }
-
 }
 
-var init_AS_subnav = function() {
+function init_AS_subnav() {
     try {
         var subNav = document.getElementById("subnav_AS");
         var today = document.getElementById("subnav_AS").childNodes[1];
@@ -567,58 +581,66 @@ var init_AS_subnav = function() {
 
 //Initalize Tab Functionality
 //-----------------------------------------------------------------------------
-var refreshSleepTime = 800;
-try {
-    document.getElementById("S").addEventListener("click", function() {
-        setTimeout(() => {
-            renderGames(0);
-        }, refreshSleepTime);
-    })
-} catch (err) {
-    console.log(err)
-}
-try {
-    document.getElementById("P").addEventListener("click", function() {
-        setTimeout(() => {
-            renderGames(1);
-        }, refreshSleepTime);
-    })
-} catch (err) {
-    console.log(err)
-}
-try {
-    document.getElementById("SPS").addEventListener("click", function() {
-        setTimeout(() => {
-            renderGames();
-        }, refreshSleepTime);
-    })
-} catch (err) {
-    console.log(err)
-}
-try {
-    document.getElementById("AS").addEventListener("click", function() {
-        setTimeout(() => {
-            renderGames(2);
-        }, refreshSleepTime);
-    });
-    document.getElementById("AS").addEventListener("click", function() {
-        setTimeout(() => {
-            countStats();
-        }, refreshSleepTime);
-    })
+function addListeners(){
+    
+    var refreshSleepTime = 800;
+    try {
+        document.getElementById("S").addEventListener("click", function() {
+            setTimeout(() => {
+                renderGames(0);
+            }, refreshSleepTime);
+        })
+    } catch (err) {
+        console.log(err)
+    }
+    try {
+        document.getElementById("P").addEventListener("click", function() {
+            setTimeout(() => {
+                renderGames(1);
+            }, refreshSleepTime);
+        })
+    } catch (err) {
+        console.log(err)
+    }
+    try {
+        document.getElementById("SPS").addEventListener("click", function() {
+            setTimeout(() => {
+                renderGames();
+            }, refreshSleepTime);
+        })
+    } catch (err) {
+        console.log(err)
+    }
+    try {
+        document.getElementById("AS").addEventListener("click", function() {
+            setTimeout(() => {
+                renderGames(2);
+            }, refreshSleepTime);
+        });
+        document.getElementById("AS").addEventListener("click", function() {
+            setTimeout(() => {
+                countStats();
+            }, refreshSleepTime);
+        })
 
-} catch (err) {
-    console.log(err)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 render = function() {
+    initGlobals();
+    addListeners();
     renderGames();
     countStats();
 }
 
 //-----------------------------------------------------------------
+currentUrl = window.location.href;
+myTeamRegex = /https?:\/\/basketball[.]fantasysports[.]yahoo[.]com\/nba\/\d{3,7}\/\d{1,2}/;
+teamURLMatch = currentUrl.match(myTeamRegex);
 
-if (currentUrl.indexOf(teamURLMatch) !== -1) {
+if (document.getElementById('team-card-info') != null && currentUrl.indexOf(teamURLMatch) !== -1) {
     render();
     //renderGames();
     //countStats();

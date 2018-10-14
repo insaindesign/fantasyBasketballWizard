@@ -2,29 +2,27 @@
 //look through this array to find the team in the player info div
 Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"]
 
-//--------Colors-----------
-var noneColor = "#56d2ff";
-var lowColor = "#ffffcc";
-var medColor = "#d8ffcc";
-var highColor = "#adebad";
-var whiteColor = "white";
-var borderColor = "#e7e7e7";
 
 //determine color based on number of games
 function getColor(games) {
-    var numGames = parseInt(games.split("/")[0], 10);
-    if (numGames > 3) {
-        return highColor;
-    } else if (numGames == 3) {
-        return medColor;
-    } else if (numGames == 2) {
-        return lowColor;
-    } else if (numGames == 1) {
-        return lowColor;
-    } else if (numGames == 0) {
-        return noneColor;
+    if (games == '0/0') {
+        return "#56d2ff"
+    }
+    games = parseInt(games.split('/')[0]);
+    if (games == 5) {
+        return "#7ee57e"
+    } else if (games == 4) {
+        return "#adebad"
+    } else if (games == 3) {
+        return "#d8ffcc"
+    } else if (games == 2) {
+        return "#ffffcc"
+    } else if (games == 1) {
+        return "#ffd6cc"
+    } else if (games == 0) {
+        return "#f97a7a"
     } else {
-        return whiteColor;
+        return "white"
     }
 }
 
@@ -33,9 +31,14 @@ function getFormattedDate() {
     return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
 }
 
+function getLeagueID() {
+    return document.getElementById("league-info").
+    firstElementChild.firstElementChild.
+    innerText.split("# ")[1].replace(')', '');
+}
+
 
 function renderGames() {
-
     var table = document.getElementById("buzzindextable");
     var players = [];
     var rows = table.rows;
@@ -58,8 +61,9 @@ function renderGames() {
 
     //"2019-1-7" must be in this format. we need to pull from the matchups screen to display number of games
     var dateString = getFormattedDate();
-    console.log("dateString = " + dateString);
-    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=research&' + teamsString + '&format=json&date=' + dateString;
+    var leagueIDString = 'leagueID=' + getLeagueID();
+    console.log('dateString = ' + dateString);
+    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=research&' + teamsString + '&format=json&date=' + dateString + '&' + leagueIDString;
     console.log("before request");
     fetch(url)
         .then(function (response) {
@@ -105,7 +109,7 @@ function addGames(data) {
         var numGames = data[i - 1];
         newCell = rows[i].insertCell(6);
         rows[i].cells[5].setAttribute("class", "Bdrend");
-        newCell.style.border.color = borderColor;
+        newCell.style.border.color = "#e7e7e7";
         newCell.style.textAlign = "center";
         newCell.style.backgroundColor = getColor(numGames);
         newCell.innerText = data[i - 1];

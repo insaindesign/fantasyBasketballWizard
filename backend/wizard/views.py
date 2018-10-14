@@ -14,11 +14,14 @@ from .serializers import *
 from decimal import *
 
 # ---------------------- API VIEWS -----------------------------
+
+
 class GamesRemaining(APIView):
     """
         Returns all gamesRemaining/GamesThisWeek for the given team and date. 
         /?pageName=javascriptPage&teams=LAL,OKC,GSW,BOS,&date=2019-1-1&format=json
     """
+
     def get(self, request):
         dayBeforeSeasonStartDate = datetime.date(2018, 10, 15)
         gameCountList = []
@@ -27,20 +30,26 @@ class GamesRemaining(APIView):
         requestTeams = self.getCleanedTeamsString(requestTeamsString)
         requestWeek = request.GET.get("weekNum")
         date = request.GET.get("date")
+        queryString = request.META.get("QUERY_STRING")
+        leagueID = request.GET.get("leagueID")
+        
         print("Request: Games Remaining as of " + date)
         print(requestTeams)
-        requestDate = DataLoader.stringDateToDateObject(date) # yyyy-m-d
-        
-        #preseaosn dates should always return 0/0 because there is no week associated with preseason
-        if dayBeforeSeasonStartDate > requestDate and pageName != "weekSelect":	       
-            print("pre season - no games")	  
+        requestDate = DataLoader.stringDateToDateObject(date)  # yyyy-m-d
+
+        # preseaosn dates should always return 0/0 because there is no week associated with preseason
+        if dayBeforeSeasonStartDate > requestDate and pageName != "weekSelect":
+            print("pre season - no games")
             for teamAcronym in requestTeams:
                 gameCountList.append("0/0")
             print("Response for Games Remaining")
             print(gameCountList)
-            Use(useType = UseType.objects.get(pageName = pageName)).save()
+            Use(useType=UseType.objects.get(pageName=pageName),
+                    queryString=queryString,
+                    leagueID=leagueID
+            ).save()
             return Response(gameCountList)
-        
+
         # if no week in the request, get the corresponding week
         if requestWeek == None:
             requestWeek = DataLoader.getWeekFromDate(date)
@@ -48,25 +57,29 @@ class GamesRemaining(APIView):
         # get each teams games remaining as of the request date
         for teamAcronym in requestTeams:
             requestTeam = DataLoader.getTeamFromAcronym(teamAcronym)
-            gamesRemaining = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek,date__gte=requestDate)
+            gamesRemaining = Game.objects.filter(Q(homeTeam=requestTeam) | Q(
+                roadTeam=requestTeam), week=requestWeek, date__gte=requestDate)
             numGamesRemaining = gamesRemaining.count()
-            
+
             if(self.isTodaysGameOver(gamesRemaining, requestDate) == True):
                 print("Today's game for " + teamAcronym + " is over")
                 numGamesRemaining = numGamesRemaining - 1
-            
-            numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek).count()
-            fraction = str(numGamesRemaining) + "/" + str(numGames)            
-            gameCountList.append(fraction)
 
+            numGames = Game.objects.filter(Q(homeTeam=requestTeam) | Q(
+                roadTeam=requestTeam), week=requestWeek).count()
+            fraction = str(numGamesRemaining) + "/" + str(numGames)
+            gameCountList.append(fraction)
 
         print("Response for Games Remaining")
         print(gameCountList)
-        Use(useType = UseType.objects.get(pageName = pageName)).save()
+        Use(useType=UseType.objects.get(pageName=pageName),
+                queryString=queryString,
+                leagueID=leagueID
+        ).save()
         #numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count()
 
         return Response(gameCountList)
-        
+
     def isTodaysGameOver(self, gamesRemaining, requestDate):
         """
             Determines whether todays game is over
@@ -76,9 +89,9 @@ class GamesRemaining(APIView):
                     -is it currently 3 hours after this game start time?
             requestDate - date that the request came in on
         """
-        #get nowtime
+        # get nowtime
         now = datetime.datetime.now().astimezone(pytz.timezone('US/Eastern'))
-        #get todays game
+        # get todays game
         todaysGameQuery = gamesRemaining.filter(date=requestDate)
 
         if todaysGameQuery.count() < 1:
@@ -87,14 +100,14 @@ class GamesRemaining(APIView):
         todaysGame = todaysGameQuery[0]
         gameTime = todaysGame.time
         gameDate = todaysGame.date
-        gameDateTime = datetime.datetime(gameDate.year, gameDate.month, 
-                gameDate.day, gameTime.hour, gameTime.minute, 
-                tzinfo=pytz.timezone('US/Eastern')
-        )
-        
-        #for testing. change this to which time you want to test as of
+        gameDateTime = datetime.datetime(gameDate.year, gameDate.month,
+                                         gameDate.day, gameTime.hour, gameTime.minute,
+                                         tzinfo=pytz.timezone('US/Eastern')
+                                         )
+
+        # for testing. change this to which time you want to test as of
         #now = datetime.datetime(gameDate.year, gameDate.month, gameDate.day, 23, 1, tzinfo=pytz.timezone('US/Eastern'))
-        
+
         threeHours = datetime.timedelta(hours=3)
         gameEndTime = gameDateTime + threeHours
         if now > gameEndTime:
@@ -103,51 +116,57 @@ class GamesRemaining(APIView):
             return False
 
     def getCleanedTeamsString(self, teamsString):
-        teamsString = teamsString[:-1].upper() # remove last character (comma in this case)
+        # remove last character (comma in this case)
+        teamsString = teamsString[:-1].upper()
 
         # espn has a few dumbass acronyms
-        teamsString = teamsString.replace("WSH","WAS")
-        teamsString = teamsString.replace("NOR","NO")
-        teamsString = teamsString.replace("UTAH","UTA")
-        teamsString = teamsString.replace("PHX","PHO")
+        teamsString = teamsString.replace("WSH", "WAS")
+        teamsString = teamsString.replace("NOR", "NO")
+        teamsString = teamsString.replace("UTAH", "UTA")
+        teamsString = teamsString.replace("PHX", "PHO")
         return teamsString.split(",")
 
     def getNumberOfGames(self, requestTeam, requestWeek, requestDate):
-        return Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek).count()
-    
+        return Game.objects.filter(Q(homeTeam=requestTeam) | Q(roadTeam=requestTeam), week=requestWeek).count()
+
     def getNumberOfRemainingGames(self, teamAcronym, requestWeek, requestDate):
-        return Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam),week=requestWeek,date__gte=requestDate).count()
+        return Game.objects.filter(Q(homeTeam=requestTeam) | Q(roadTeam=requestTeam), week=requestWeek, date__gte=requestDate).count()
+
 
 class AllTeams(APIView):
     def get(self, request):
         return Response(TeamSerializer(Team.objects.all(), many=True).data)
 
+
 class TotalGamesToday(APIView):
     def get(self, request):
         requestDate = request.GET.get("date")
         requestWeek = request.GET.get("weekNum")
-        
+
         if requestDate == None:
-            requestDate= str(Week.objects.get(weekNum=requestWeek).startDate)
-        
+            requestDate = str(Week.objects.get(weekNum=requestWeek).startDate)
+
         gameDate = DataLoader.stringDateToDateObject(requestDate)
         games = Game.objects.filter(date=gameDate).count()
         return Response(games)
 
+
 class GetPlayerStats(APIView):
 
     def get(self, request):
-        playerID = request.GET.get("id")
-        print("Request: Player stats for: " + playerID)
+        playersString = request.GET.get("players")
+        players = playersString[:-1].split(",")
+        playerList = []
+        print("Request: Player stats for: " + playersString)
 
-        try:
-            player = Player.objects.get(playerID=playerID)
-        except:
-            return Response(playerID + " not found")
+        for playerID in players:
+            try:
+                playerList.append(Player.objects.get(playerID=playerID))
+            except:
+                print(playerID + " not found")
 
-        serializer = PlayerSerializer(player)
-        print("Response: " + str(serializer.data))
-        
+        serializer = PlayerSerializer(playerList, many=True)
+        print("Response: " + str(playerList))
         return Response(serializer.data)
 
 class AddPlayer(APIView):
@@ -157,32 +176,35 @@ class AddPlayer(APIView):
         &topg=2.2&ftmpg=7.4&ftapg=8.7&ftpct=85&fgapg=17.8&fgmpg=11.2
         &fgpct=54.2&threepg=2.3&format=json
     """
+
     def get(self, request):
         team = DataLoader.getTeamFromAcronym(request.GET.get("team"))
         id = request.GET.get("id")
-        Player(playerID = id,
-            team = team,
-            ppg = Decimal(request.GET.get("ppg")),
-            rpg = Decimal(request.GET.get("rpg")),
-            apg = Decimal(request.GET.get("apg")),
-            spg = Decimal(request.GET.get("spg")),
-            bpg = Decimal(request.GET.get("bpg")),
-            topg = Decimal(request.GET.get("topg")),
-            ftmpg = Decimal(request.GET.get("ftmpg")),
-            ftapg = Decimal(request.GET.get("ftapg")),
-            fgapg = Decimal(request.GET.get("fgapg")),
-            ftpct = Decimal(request.GET.get("ftpct")),
-            fgmpg = Decimal(request.GET.get("fgmpg")),
-            fgpct = Decimal(request.GET.get("fgpct")),
-            threepg = Decimal(request.GET.get("threepg"))
-        ).save()
+        Player(playerID=id,
+               team=team,
+               ppg=Decimal(request.GET.get("ppg")),
+               rpg=Decimal(request.GET.get("rpg")),
+               apg=Decimal(request.GET.get("apg")),
+               spg=Decimal(request.GET.get("spg")),
+               bpg=Decimal(request.GET.get("bpg")),
+               topg=Decimal(request.GET.get("topg")),
+               ftmpg=Decimal(request.GET.get("ftmpg")),
+               ftapg=Decimal(request.GET.get("ftapg")),
+               fgapg=Decimal(request.GET.get("fgapg")),
+               ftpct=Decimal(request.GET.get("ftpct")),
+               fgmpg=Decimal(request.GET.get("fgmpg")),
+               fgpct=Decimal(request.GET.get("fgpct")),
+               threepg=Decimal(request.GET.get("threepg"))
+               ).save()
         return Response("successfully added player: " + id)
+
 
 class GamesThisWeek(APIView):
     """
         Returns all games for the given week and team - 
         /?teams=LAL,OKC,GSW,BOS,&weekNum=3
     """
+
     def get(self, request):
         gameCountList = []
         # get the requested team and week objects from the database
@@ -200,70 +222,91 @@ class GamesThisWeek(APIView):
             # the count of the games that have the requested team as
             # either the home team OR road team and is in the requested week
 
-            numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count() 
+            numGames = Game.objects.filter(Q(homeTeam=requestTeam) | Q(
+                roadTeam=requestTeam), week=requestWeek).count()
             gameCountList.append(numGames)
 
-        
-        
-        #numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count() 
+        #numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count()
         return Response(gameCountList)
+
 
 class GetWeekFromDate(APIView):
     """ 
         Returns the week object for the requested date -
         /getweek/?date=2019-1-1
     """
+
     def get(self, request):
         requestDate = request.GET.get("date")
         serializer = WeekSerializer(DataLoader.getWeekFromDate(requestDate))
         return Response(serializer.data)
+
 # -------------- Template Views --------------------------------
+
+
 class PrivacyPolicy(TemplateView):
     def get(self, request):
         return render(request, template_name='wizard/privacyPolicy.html')
-        
+
+
 class Contact(TemplateView):
     def get(self, request):
-        return redirect('https://chrome.google.com/webstore/detail/fantasy-basketball-wizard/bmojbnihkmbdandkddobjnilkegcooll?hl=en')
+        url = 'https://chrome.google.com/webstore/detail/fantasy-basketball-wizard/bmojbnihkmbdandkddobjnilkegcooll?hl=en'
+        return redirect(url)
+
+class Home(TemplateView):
+    def get(self, request):
+        return render(request, template_name='wizard/index.html')
 
 
 # -------------- Data loading methods --------------------------
+
+
 class LoadTeams(APIView):
     """loads all hard coded teams into database - /loadteams"""
+
     def get(self, request):
         DataLoader.loadTeams()
         return Response()
 
+
 class LoadWeeks(APIView):
     """ loads all hard coded weeks into database - /loadweeks"""
+
     def get(self, request):
         DataLoader.loadWeeks()
         return Response()
 
+
 class LoadGames(APIView):
     """ loads all games from schedule.csv to the database - /loadgames"""
+
     def get(self, request):
         DataLoader.loadGames()
         return Response()
 
+
 class DeleteGames(APIView):
     """ deletes all games in the database -  /deletegames"""
+
     def get(self, request):
         DataLoader.deleteAllGames()
         return Response()
 
+
 class DeleteAllPlayers(APIView):
     """ deleted all players in the database - /deletepayers """
+
     def get(self, request):
         DataLoader.deleteAllPlayers()
         return Response()
+
+
 class LoadAllData(APIView):
     """ loads all teams, weeks, then games all in one request"""
+
     def get(self, request):
         DataLoader.loadTeams()
         DataLoader.loadWeeks()
         DataLoader.loadGames()
         return Response("data successfully loaded")
-
-        
-

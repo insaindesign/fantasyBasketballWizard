@@ -4,37 +4,182 @@
     teamPage.js 
 */
 
-var acronymEspnToYahoo = {};
-acronymEspnToYahoo["Atl"]  =  "Atl";
-acronymEspnToYahoo["Bos"]  =  "Bos";
-acronymEspnToYahoo["Bkn"]  =  "Bkn";
-acronymEspnToYahoo["Cha"]  =  "Cha";
-acronymEspnToYahoo["Chi"]  =  "Chi";
-acronymEspnToYahoo["Cle"]  =  "Cle";
-acronymEspnToYahoo["Dal"]  =  "Dal";
-acronymEspnToYahoo["Den"]  =  "Den";
-acronymEspnToYahoo["Det"]  =  "Det";
-acronymEspnToYahoo["GS"]   =  "GS";
-acronymEspnToYahoo["Hou"]  =  "Hou";
-acronymEspnToYahoo["Ind"]  =  "Ind";
-acronymEspnToYahoo["LAC"]  =  "LAC";
-acronymEspnToYahoo["LAL"]  =  "LAL";
-acronymEspnToYahoo["Mem"]  =  "Mem";
-acronymEspnToYahoo["Mia"]  =  "Mia";
-acronymEspnToYahoo["Mil"]  =  "Mil";
-acronymEspnToYahoo["Min"]  =  "Min";
-acronymEspnToYahoo["Nor"]  =  "NO";
-acronymEspnToYahoo["NY"]   =  "NY";
-acronymEspnToYahoo["OKC"]  =  "OKC";
-acronymEspnToYahoo["Orl"]  =  "Orl";
-acronymEspnToYahoo["Phi"]  =  "Phi";
-acronymEspnToYahoo["Phx"]  =  "Pho";
-acronymEspnToYahoo["Por"]  =  "Por";
-acronymEspnToYahoo["Sac"]  =  "Sac";
-acronymEspnToYahoo["SA"]   =  "SA";
-acronymEspnToYahoo["Tor"]  =  "Tor";
-acronymEspnToYahoo["Utah"] =  "Uta";
-acronymEspnToYahoo["Wsh"]  =  "Was";
+/* ---------------------------------------------------------------------
+                            Global Variables  
+--------------------------------------------------------------------- */
+
+var dailyOrWeekly = "";
+var addGamesElements = true;           // Flag to tell if it is a complete render - ** change to updateGames
+// var addGamesElements = true;
+var localGamesDataDict = {};        // Holds the game remaining data
+var updateHeaders = false;          // Flag to update headers
+
+/* ---------------------------------------------------------------------
+                            Helper Functions 
+--------------------------------------------------------------------- */
+
+/*
+    buildTeamsRequestString - creates part of the url for the teams to 
+    request game data for.
+*/
+function buildTeamsRequestString()
+{
+    // console.log( "buildTeamsRequestString()" );
+
+    var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );
+    var teamsRequestString = "teams=";
+    for( var i = 0; i < listOfElements.length; i++ )
+    {
+        teamsRequestString += listOfElements[i].innerHTML + ",";
+    }
+    // console.log( teamsRequestString );
+    return teamsRequestString;
+}
+
+/*
+    formatDateString - formats a date string in YYYY-MM-DD
+*/
+function formatDateString( month, date )
+{
+    var dateString = "";
+
+    if( month == "Oct" )
+    {
+        dateString = ( "2018-10-" + date );
+    }
+    else if( month == "Nov" )
+    {
+        dateString = ( "2018-11-" + date );
+    }
+    else if( month == "Dec" )
+    {
+        dateString = ( "2018-12-" + date );
+    }
+    else if( month == "Jan" )
+    {
+        dateString = ( "2019-01-" + date );
+    }
+    else if( month == "Feb" )
+    {
+        dateString = ( "2019-02-" + date );
+    }
+    else if( month == "Mar" )
+    {
+        dateString = ( "2019-03-" + date );
+    }
+    else if( month == "Apr" )
+    {
+        dateString = ( "2019-04-" + date );
+    }
+
+    return dateString;
+}
+
+/*
+    buildDateRequestString - creates a date request string for the
+    the parameter for the server request for either daily or weekly leagues
+*/
+function buildDateRequestString()
+{
+    console.log( "buildDateRequestString()" );
+    var currentElements = document.getElementsByClassName( "is-current" );
+
+    if( dailyOrWeekly == "Daily" )
+    {
+        var currentDateDiv = currentElements[0];
+        var currentDateChildren = currentDateDiv.children[0];
+        var currentMonthDate = currentDateChildren.innerHTML;
+        var currentMonthDateSplit = currentMonthDate.split( " " );
+        var selectedMonth = currentMonthDateSplit[0];
+        var selectedDate = currentMonthDateSplit[1];
+
+        return formatDateString( selectedMonth, selectedDate );
+    }
+    else if( dailyOrWeekly == "Weekly" )
+    {
+        var currentDateDiv = currentElements[0];
+        var currentDateChildren = currentDateDiv.children[1];
+        var currentMonthDate = currentDateChildren.innerHTML;
+        var currentMonthDateSplit = currentMonthDate.split( " " );
+        var selectedMonth = currentMonthDateSplit[0];
+        var selectedDateLowerRange = currentMonthDateSplit[1];
+        var selectedDateEndRange = currentMonthDateSplit[3];
+        var formattedDateLowerRange = formatDateString( selectedMonth, selectedDateLowerRange );
+        var formattedDateEndRange = formatDateString( selectedMonth, selectedDateEndRange );
+        var todaysDate = new Date();
+        // Compare today's date with the lower range, if its less than then use the
+        // lower range date to get the full amount of games
+        if( ( todaysDate.getTime() <= new Date( formattedDateLowerRange ).getTime() ) ) 
+        {
+            return formattedDateLowerRange;
+        }
+        // Today's date in between the week ranges then use today's date to get the accurate date
+        else if( ( todaysDate.getTime() > new Date( formattedDateLowerRange ).getTime() ) && 
+                 ( todaysDate.getTime() < new Date( formattedDateEndRange ).getTime() ) )
+        {
+            return formatDateString( todaysDate.getMonth()+1, todaysDate.getDate() )
+        }
+        else if( ( todaysDate.getTime() > new Date( formattedDateEndRange ).getTime() ) )
+        {
+            return formattedDateEndRange;
+        }
+    }
+}
+
+/*
+    buildLeagueIdRequestString - creates part of the url for the teams to 
+    request game data for.
+*/
+function buildLeagueIdRequestString()
+{
+    // console.log( "buildLeagueIdRequestString()" );
+    var entireUrl = window.location.href;
+    // console.log( url );
+    var url = new URL( entireUrl );
+    var leagueId = url.searchParams.get( "leagueId" );
+    var leagueIdRequestString = "leagueID="+leagueId;
+
+    return leagueIdRequestString;
+}
+
+/*
+    buildTeamsRequestString - creates part of the url for the teams to 
+    request game data for.
+*/
+function buildTeamsRequestString()
+{
+    // console.log( "buildTeamsRequestString()" );
+
+    var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );
+    var teamsRequestString = "teams=";
+    for( var i = 0; i < listOfElements.length; i++ )
+    {
+        teamsRequestString += listOfElements[i].innerHTML + ",";
+    }
+
+    return teamsRequestString;
+}
+
+/*
+    sleep - to create a delay in some functions to help the dynamic ESPN
+    page load and change different settings
+*/
+function sleep( ms )
+{
+  return new Promise( resolve => setTimeout( resolve, ms ) );
+}
+
+/* 
+    getActiveMenu - returns the active menu
+*/
+function getActiveMenu()
+{
+    // console.log( "getActiveMenu" );
+    var activeMenuElements = document.getElementsByClassName( "tabs__list__item--active" );
+    var activeMenuElement = activeMenuElements[0].getElementsByClassName( "tabs__link w-100" );
+    var activeMenu = activeMenuElement[0].innerHTML;
+    return activeMenu;
+}
 
 /* 
     getBackgroundColor - returns the background color
@@ -42,11 +187,11 @@ acronymEspnToYahoo["Wsh"]  =  "Was";
 
     games - The number of games
 */
-getBackgroundColor = function( games )
+function getBackgroundColor( games )
 {
-    if( games > 3 )
+    if( games >= 4 )
     {
-        return "#adebad";
+        return "#a5d394";
     }
     else if( games == 3 )
     {
@@ -58,128 +203,89 @@ getBackgroundColor = function( games )
     }
     else if( games == 1 )
     {
-        return "#ffe1ba";
+        return "#ffd6cc";
     }
     else if( games == 0 )
     {
-        return "#ffd6cc";
+        return "#ff5c54";
     }
-}
-
-/* 
-    getTodaysDate - returns today's date by returning a new Date object.
-*/
-getTodaysDate = function()
-{
-    var todaysDate = new Date();
-    return todaysDate;
 }
 
 /*
-    setYourLineUpDateFormat - returns a Date object with the month and date as inputs.
-
-    pMonth - Month as a string
-    pDate - Date as a string
+    isLeagueDailyOrWeekly - returns whether the league is daily or weekly
 */
-setYourLineUpDateFormat = function( pMonth, pDate )
+function isLeagueDailyOrWeekly()
 {
-    if( pMonth == "Oct" ){ return new Date( 2017, 9, pDate ); }
-    else if( pMonth == "Nov" ){ return new Date( 2017, 10, pDate ); }
-    else if( pMonth == "Dec" ){ return new Date( 2017, 11, pDate ); }
-    else if( pMonth == "Jan" ){ return new Date( 2018, 0, pDate ); }
-    else if( pMonth == "Feb" ){ return new Date( 2018, 1, pDate ); }
-    else if( pMonth == "Mar" ){ return new Date( 2018, 2, pDate ); }
-    else if( pMonth == "Apr" ){ return new Date( 2018, 3, pDate ); }
-}
-
-
-
-var initialRender = true;
-var updateHeaders = false;
-var localGamesDataDict = {};
-
-function buildTeamsRequestString()
-{
-    // console.log( "buildTeamsRequestString()" );
-
-    var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );
-    var teamsRequestString = "teams=";
-    for( var i = 0; i < listOfElements.length; i++ )
+    console.log( "isLeagueDailyOrWeekly()" );
+    var dateElements = document.getElementsByClassName( "is-current" );
+    if( dateElements[0].innerHTML.indexOf( "day" ) != -1 )
     {
-        teamsRequestString += acronymEspnToYahoo[listOfElements[i].innerHTML] + ",";
+        dailyOrWeekly = "Daily";
     }
-    // console.log( teamsRequestString );
-    return teamsRequestString;
-}
-
-function sleep(ms)
-{
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function buildDateRequestString()
-{
-    // console.log( "buildDateRequestString()" );
-    var currentElements = document.getElementsByClassName( "is-current" );
-    var currentDateDiv = currentElements[0];
-    var currentDateChildren = currentDateDiv.children[0];
-    var currentMonthDate = currentDateChildren.innerHTML;
-    var currentMonthDateSplit = currentMonthDate.split( " " );
-    var month = currentMonthDateSplit[0];
-    var date = currentMonthDateSplit[1];
-
-    if( month == "Oct" )
+    else if( dateElements[0].innerHTML.indexOf( "week" ) != -1 )
     {
-        return ( "2018-10-" + date );
-    }
-    else if( month == "Nov" )
-    {
-        return ( "2018-11-" + date );
-    }
-    else if( month == "Dec" )
-    {
-        return ( "2018-12-" + date );
-    }
-    else if( month == "Jan" )
-    {
-        return ( "2019-01-" + date );
-    }
-    else if( month == "Feb" )
-    {
-        return ( "2019-02-" + date );
-    }
-    else if( month == "Mar" )
-    {
-        return ( "2019-03-" + date );
-    }
-    else if( month == "Apr" )
-    {
-        return ( "2019-04-" + date );
+        dailyOrWeekly = "Weekly";
     }
 }
 
+/* ---------------------------------------------------------------------
+                            Main Functions 
+--------------------------------------------------------------------- */
 
-async function requestWeekNumberFromServer()
+/*
+    addGamesDataToLocalDictionary - 
+*/
+function addGamesDataToLocalDictionary( data, teamsRequestString )
 {
-    console.log( "requestWeekNumberFromServer()" );
+    // console.log( "addDataToLocalDictionary()" );
+    localGamesDataDict = {};
+    var teamsRequestStringConcise = teamsRequestString.substring( 6, teamsRequestString.length-1 );
+    var teamsList = teamsRequestStringConcise.split( "," );
+    for( var i = 0; i < data.length; i++ )
+    {
+        if( !( teamsList[i] in localGamesDataDict ) )
+        {
+            localGamesDataDict[teamsList[i]] = data[i];
+        }
+    }
+    // console.log( localGamesDataDict );
+}
+
+/*
+    requestHeaderFromServer - 
+*/
+async function requestHeaderFromServer( addOrUpdate )
+{
+    console.log( "requestHeaderFromServer()" );
     // Sleep before getting the date string to allow the selected date some time to be changed
     await sleep( 200 );
     var dateRequestString = buildDateRequestString();
-    var url = "http://www.fantasywizard.site/getweek/?pageName=eTeamsPage&format=json&date=" + dateRequestString;
+    // console.log( "dateRequestString=" + dateRequestString );
+    var leagueIdRequestString = buildLeagueIdRequestString();
+    var url = "http://www.fantasywizard.site/getweek/?pageName=eTeamsPage&format=json&date=" + dateRequestString + "&" + leagueIdRequestString;
 
-    fetch(url)
-        .then(function(response){
-        if (response.status !== 200) {
-            console.log('Called to backend failed: ' + response.status);
+    fetch( url )
+        .then( function( response ){
+        if ( response.status !== 200 )
+        {
+            console.log( 'Called to backend failed: ' + response.status );
             return;
         }
-        response.json().then(function(data) {
-            console.log( typeof data.weekNum );
+        response.json().then( function( data )
+        {
             var weekNum = data.weekNum;
-            addWeekGamesHeaders( data );
+            if( addOrUpdate == "Add" )
+            {
+                addWeekGamesHeaders( data );
+            }
+            else if( addOrUpdate == "Update" )
+            {
+                updateWeekNumberHeader( data );
+            }
+
         });
-    }).catch(function(err) {
-        console.log('Fetch Error :-S', err);
+    }).catch( function( err ) {
+        console.log( 'Fetch Error :-S', err );
     });
 }
 
@@ -189,238 +295,345 @@ async function requestWeekNumberFromServer()
 function addWeekGamesHeaders( data )
 {
     console.log( "addWeekGamesHeaders()" );
-    var weekNum = data.weekNum;
 
-    if( updateHeaders == false )
+    var activeMenu = getActiveMenu();
+    var listOfElements = document.getElementsByClassName( "Table2__header-row" );
+    var weekNum = data.weekNum; 
+
+    if( activeMenu == "News" )
     {
-        // Maybe loop through these elements and if innerHTML contains STATUS then append
-        var listOfElements = document.getElementsByClassName( "Table2__header-row" );
-
+        
         for( var i = 0; i < listOfElements.length; i++ )
         {
+            if( i % 2 == 0 )
+            {
+                var newCell = listOfElements[i].insertCell( 2 );
+                newCell.outerHTML = "<th title=\"Week number " + weekNum.toString() + " of fantasy basketball " + "\" class=\"tc bg-clr-white Table2__th fbw-header fbw-new-element\">WEEK " + weekNum.toString() + "</th>";
+            }
+            else
+            {
+                var newCell = listOfElements[i].insertCell( 5 );
+                newCell.outerHTML = "<th title=\"Games Remaining / Games This Week\" class=\"tc bg-clr-white Table2__th fbw-header fbw-new-element\">GR/G</th>";;
+            }
+        }
+
+    }
+    else
+    {
+        for( var i = 0; i < listOfElements.length; i++ )
+        {
+            // console.log(listOfElements[i]);
             if( listOfElements[i].innerHTML.indexOf( "STARTERS" ) != -1 )
             {
                 var newGamesHeader = document.createElement( "th" );
                 newGamesHeader.title = "Week number " + weekNum.toString() + " of fantasy basketball";
                 newGamesHeader.colSpan = "1";
-                newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header";
+                newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header fbw-new-element";
                 newGamesHeader.innerHTML = "WEEK" + weekNum.toString();
                 listOfElements[i].appendChild( newGamesHeader );
+                // listOfElements[i].insertAdjacentElement( 'beforeend', newGamesHeader );
             }
             else if( listOfElements[i].innerHTML.indexOf( "STATUS" ) != -1 )
             {
                 var newGamesHeader = document.createElement( "th" );
                 newGamesHeader.title = "Games Remaining / Games This Week";
                 newGamesHeader.colSpan = "1";
-                newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header";
+                newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header fbw-new-element";
                 newGamesHeader.innerHTML = "GR/G";
                 listOfElements[i].appendChild( newGamesHeader );
-            }
-        }
-    }
-    else
-    {
-        var listOfHeaders = document.getElementsByClassName( "fbw-header" );
-        for( var i = 0; i < listOfHeaders.length; i++ )
-        {
-            if( i % 2 == 0 )
-            {
-                listOfHeaders[i].title = "Week number " + weekNum.toString() + " of fantasy basketball";
-                listOfHeaders[i].innerHTML = "WEEK" + weekNum.toString();
+                // listOfElements[i].insertAdjacentElement( 'beforeend', newGamesHeader );
             }
         }
     }
 }
 
-
-async function requestDataFromServer()
+/*
+    updateWeekNumberHeader - updates the 'GAMES' and 'WEEK' headers
+*/
+function updateWeekNumberHeader( data )
 {
-    // console.log( "requestDataFromServer()" );
+    var weekNum = data.weekNum;
+    var listOfHeaders = document.getElementsByClassName( "fbw-header" );
+    for( var i = 0; i < listOfHeaders.length; i++ )
+    {
+        if( i % 2 == 0 )
+        {
+            listOfHeaders[i].title = "Week number " + weekNum.toString() + " of fantasy basketball";
+            listOfHeaders[i].innerHTML = "WEEK" + weekNum.toString();
+        }
+    }
+}
+
+/*
+    requestGameDataFromServer
+*/
+async function requestGameDataFromServer( addOrUpdate )
+{
+    console.log( "requestGameDataFromServer()" );
 
     var teamsRequestString = buildTeamsRequestString();
     // Sleep before getting the date string to allow the selected date some time to be changed
     await sleep( 200 );     
     var dateRequestString = buildDateRequestString();
-    // var url = 'https://bilalsattar24.pythonanywhere.com/gamesremaining/?'+teamsRequestString+'&format=json&date='+dateString;
-    var url = "https://www.fantasywizard.site/gamesremaining/?pageName=eTeamsPage&" + teamsRequestString + "&format=json&date=" + dateRequestString;
+    console.log( "dateRequestString=" + dateRequestString );
+    var leagueIdRequestString = buildLeagueIdRequestString();
+    var url = "https://www.fantasywizard.site/gamesremaining/?pageName=eTeamsPage&" + teamsRequestString + "&format=json&date=" + dateRequestString + "&" + leagueIdRequestString;
     console.log( url );
 
-    fetch(url)
-        .then(function(response){
-        if (response.status !== 200) {
-            console.log('Called to backend failed: ' + response.status);
+    fetch( url )
+        .then( function( response ){
+        if ( response.status !== 200 )
+        {
+            console.log( 'Called to backend failed: ' + response.status );
             return;
         }
-        response.json().then(function(data) {
-            addGamesDataToLocalDictionary( data, teamsRequestString );
-            // addGamesForPlayers( data );
-            addGamesForPlayers();
+        response.json().then( function( data )
+        {
+            if( addOrUpdate == "Add" )
+            {
+                addGamesDataToLocalDictionary( data, teamsRequestString );
+                addGamesForPlayers();
+            }
+            else if( addOrUpdate == "Update" )
+            {
+                updateGameData();
+            }
+
         });
-    }).catch(function(err) {
-        console.log('Fetch Error :-S', err);
+    }).catch( function( err ) {
+        console.log( 'Fetch Error :-S', err );
     });
 }
 
-function addGamesDataToLocalDictionary( data, teamsRequestString )
-{
-    localGamesDataDict = {};
-    console.log( "addDataToLocalDictionary()" );
-    var teamsRequestStringConcise = teamsRequestString.substring( 6, teamsRequestString.length-1 );
-    var teamsList = teamsRequestStringConcise.split( "," );
-    for( var i = 0; i < data.length; i++ )
-    {
-        if( !( teamsList[i] in localGamesDataDict ) )
-        {
-            // console.log( "OG team - " + teamsList[i]);
-            localGamesDataDict[teamsList[i]] = data[i];
-        }
-        // else
-        // {
-        //     console.log( "Duplicate team - " + teamsList[i]);
-        // }
-    }
-    console.log( localGamesDataDict );
-}
-
-
-function addGamesForPlayers( )
+/*
+    addGamesForPlayers - add the games remaining data to the HTML
+    of the page
+*/
+function addGamesForPlayers()
 {
     console.log( "addGamesForPlayers()" );
 
     var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
+    var listOfTeamNameElements = document.getElementsByClassName( "playerinfo__playerteam" );
+    var listOfTeamNameElementsIndex = 0;
     var totalGamesRemaining = 0;
     var totalGamesForWeek = 0;
 
-    var listOfTeamNameElements = document.getElementsByClassName( "playerinfo__playerteam" );
-    var listOfTeamNameElementsIndex = 0;
-
-    if( initialRender == true )
+    for( var i = 0; i < listOfElements.length; i++ )
     {
-        // var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
-        var index = 0;
+        var listOfElementsTr = listOfElements[i];
+        // console.log( "listOfElementsTr.children.length=" + listOfElementsTr.children.length );
 
-
-        for( var i = 0; i < listOfElements.length; i++ )
+        // Initial render for Stats menu
+        if( listOfElementsTr.children.length == 5 )
         {
-            var listOfElementsTr = listOfElements[i];
-            // console.log( "listOfElementsTr.children.length=" + listOfElementsTr.children.length );
+            var newGamesTd = document.createElement( "td" );
+            var newGamesDiv = document.createElement( "div" );
+            newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
+            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div fbw-new-element";
+            newGamesDiv.style.textAlign = "center";
 
-            if( listOfElementsTr.children.length == 5 )
+            var isInjured = false;
+            // 'O'ut, injured player
+            if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
             {
-                var newGamesTd = document.createElement( "td" );
-                var newGamesDiv = document.createElement( "div" );
-                newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td";
-                newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div";
-                newGamesDiv.style.textAlign = "center";
-
-                var isInjured = false;
-                // 'O'ut, injured player
-                if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
+                isInjured = true;
+            }
+            // TOTALS row
+            if( listOfElementsTr.innerHTML.indexOf( ">TOTALS</div>" ) != -1 )
+            {
+                var totalGamesString = totalGamesRemaining.toString() + "/" + totalGamesForWeek.toString();
+                newGamesDiv.innerHTML = totalGamesString;
+                newGamesTd.className += " bg-clr-gray-08";
+                newGamesDiv.className += " bg-clr-gray-08";
+            }
+            // Normal player
+            else if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
+            {
+                if( !isInjured )
                 {
-                    isInjured = true;
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
+                    newGamesDiv.innerHTML = localGamesDataDict[teamName];
+                    var splitDataIndex = localGamesDataDict[teamName].split( "/" );
+                    totalGamesRemaining += parseInt( splitDataIndex[0] );
+                    totalGamesForWeek += parseInt( splitDataIndex[1] );
+                    newGamesTd.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
                 }
-                // TOTALS row
-                if( listOfElementsTr.innerHTML.indexOf( ">TOTALS</div>" ) != -1 )
-                {
-                    var totalGamesString = totalGamesRemaining.toString() + "/" + totalGamesForWeek.toString();
-                    newGamesDiv.innerHTML = totalGamesString;
-                    newGamesTd.className += " bg-clr-gray-08";
-                    newGamesDiv.className += " bg-clr-gray-08";
-                }
-                // Normal player
-                else if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
-                {
-                    if( !isInjured )
-                    {
-                        var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
-                        newGamesDiv.innerHTML = localGamesDataDict[teamName];
-                        var splitDataIndex = localGamesDataDict[teamName].split( "/" );
-                        totalGamesRemaining += parseInt( splitDataIndex[0] );
-                        totalGamesForWeek += parseInt( splitDataIndex[1] );
-                        newGamesTd.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
-                    }
-                    else
-                    {
-                        newGamesDiv.innerHTML = "-/-";
-                        newGamesTd.style.backgroundColor = getBackgroundColor( 0 );
-                    }
-                    listOfTeamNameElementsIndex++;
-                }
-                // Empty player
                 else
                 {
-                    newGamesDiv.innerHTML = "-/-";    
+                    newGamesDiv.innerHTML = "-/-";
                 }
-                newGamesTd.appendChild( newGamesDiv );
-                listOfElementsTr.appendChild( newGamesTd );
+                listOfTeamNameElementsIndex++;
             }
+            // Empty player
+            else
+            {
+                newGamesDiv.innerHTML = "-/-";    
+            }
+            newGamesTd.appendChild( newGamesDiv );
+            listOfElementsTr.appendChild( newGamesTd );
         }
-        initialRender = false;
-    }
-    // Not initial render, do not create new elements, update them, 
-    // For moving players around
-    else
-    {
-        var listOfGamesTd = document.getElementsByClassName( "fbw-games-remaining-td" );
-        var listOfGamesDiv = document.getElementsByClassName( "fbw-games-remaining-div" );
-        var listOfGamesIndex = 0;
-        var backendIndex = 0;
-
-        for( var i = 0; i < listOfElements.length; i++ )
+        // Research & Schedule Menu
+        else if( listOfElementsTr.children.length == 13 || listOfElementsTr.children.length == 12 )
         {
-            var listOfElementsTr = listOfElements[i];
+            var newGamesTd = document.createElement( "td" );
+            var newGamesDiv = document.createElement( "div" );
+            newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
+            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div fbw-new-element";
+            newGamesDiv.style.textAlign = "center";
 
-            if( listOfElementsTr.children.length == 6 )
+            var isInjured = false;
+            // 'O'ut, injured player
+            if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
             {
-                var isInjured = false;
-                // 'O'ut, injured player
-                if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
+                isInjured = true;
+            }
+            // Normal player
+            if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
+            {
+                if( !isInjured )
                 {
-                    isInjured = true;
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
+                    newGamesDiv.innerHTML = localGamesDataDict[teamName];
+                    var splitDataIndex = localGamesDataDict[teamName].split( "/" );
+                    totalGamesRemaining += parseInt( splitDataIndex[0] );
+                    totalGamesForWeek += parseInt( splitDataIndex[1] );
+                    newGamesTd.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
                 }
-                // TOTALS row
-                if( listOfElementsTr.innerHTML.indexOf( ">TOTALS</div>" ) != -1 )
-                {
-                    var totalGamesString = totalGamesRemaining.toString() + "/" + totalGamesForWeek.toString();
-                    listOfGamesDiv[listOfGamesIndex].innerHTML = totalGamesString;
-                }
-                // // Normal player
-                else if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
-                {
-                    // Healthy player 
-                    if( !isInjured )
-                    {
-                        var teamName = acronymEspnToYahoo[ listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML ];
-                        listOfGamesDiv[listOfGamesIndex].innerHTML = localGamesDataDict[teamName];
-                        // listOfGamesDiv[listOfGamesIndex].innerHTML = data[backendIndex];
-                        var splitDataIndex = localGamesDataDict[teamName].split( "/" );
-                        totalGamesRemaining += parseInt( splitDataIndex[0] );
-                        totalGamesForWeek += parseInt( splitDataIndex[1] );
-                        listOfGamesTd[listOfGamesIndex].style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
-                    }
-                    // Injured player
-                    else
-                    {
-                        listOfGamesDiv[listOfGamesIndex].innerHTML = "-/-";
-                        listOfGamesTd[listOfGamesIndex].style.backgroundColor = getBackgroundColor( 0 );
-                    }
-                    backendIndex++;
-                    listOfTeamNameElementsIndex++;
-                }
-                // Empty player
                 else
                 {
-                    listOfGamesDiv[listOfGamesIndex].innerHTML = "-/-";
-                    listOfGamesTd[listOfGamesIndex].style.backgroundColor = getBackgroundColor( 0 );
+                    newGamesDiv.innerHTML = "-/-";
                 }
-                listOfGamesIndex++;
+                listOfTeamNameElementsIndex++;
             }
+            // Empty player
+            else
+            {
+                newGamesDiv.innerHTML = "-/-";    
+            }
+            newGamesTd.appendChild( newGamesDiv );
+            listOfElementsTr.appendChild( newGamesTd );
+        }
+        // News Menu
+        else if( listOfElementsTr.children.length == 6 )
+        {
+            console.log( listOfElementsTr );
+
+            var newCell = listOfElementsTr.insertCell( 5 );
+            // var newGamesTd = document.createElement( "td" );
+            var newGamesDiv = document.createElement( "div" );
+            newCell.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
+            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div fbw-new-element";
+            newGamesDiv.style.textAlign = "center";
+            // newGamesTd.appendChild( newGamesDiv );
+            var isInjured = false;
+            // 'O'ut, injured player
+            if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
+            {
+                isInjured = true;
+            }
+            // Normal player
+            if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
+            {
+                if( !isInjured )
+                {
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
+                    newGamesDiv.innerHTML = localGamesDataDict[teamName];
+                    var splitDataIndex = localGamesDataDict[teamName].split( "/" );
+                    totalGamesRemaining += parseInt( splitDataIndex[0] );
+                    totalGamesForWeek += parseInt( splitDataIndex[1] );
+                    // newCell.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
+                    newGamesDiv.style.color = getBackgroundColor( splitDataIndex[0] );
+                }
+                else
+                {
+                    newGamesDiv.innerHTML = "-/-";
+                    newCell.style.backgroundColor = getBackgroundColor( 0 );
+                }
+                listOfTeamNameElementsIndex++;
+            }
+            // Empty player
+            else
+            {
+                newGamesDiv.innerHTML = "-/-";    
+            }
+
+            newCell.appendChild( newGamesDiv );
         }
     }
 }
 
-// Add an empty '-/-' cell for the EMPTY row created when a starter's 'MOVE'
-// button is pressed.
+/*
+    updateGameData - update the game data when the dates have been switched
+*/
+function updateGameData()
+{
+    var backendIndex = 0;   
+    var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
+    var listOfGamesDiv = document.getElementsByClassName( "fbw-games-remaining-div" );
+    var listOfGamesTd = document.getElementsByClassName( "fbw-games-remaining-td" );
+    var listOfTeamNameElements = document.getElementsByClassName( "playerinfo__playerteam" );
+    var listOfTeamNameElementsIndex = 0;
+    var listOfGamesIndex = 0;
+    var totalGamesForWeek = 0;
+    var totalGamesRemaining = 0;
+
+    for( var i = 0; i < listOfElements.length; i++ )
+    {
+        var listOfElementsTr = listOfElements[i];
+
+        console.log( "listOfElementsTr.children.length= " + listOfElementsTr.children.length );
+        if( listOfElementsTr.children.length == 6 || listOfElementsTr.children.length == 7 || listOfElementsTr.children.length == 13 || listOfElementsTr.children.length == 14 )
+        {
+            var isInjured = false;
+            // 'O'ut, injured player
+            if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
+            {
+                isInjured = true;
+            }
+            // TOTALS row
+            if( listOfElementsTr.innerHTML.indexOf( ">TOTALS</div>" ) != -1 )
+            {
+                var totalGamesString = totalGamesRemaining.toString() + "/" + totalGamesForWeek.toString();
+                listOfGamesDiv[listOfGamesIndex].innerHTML = totalGamesString;
+            }
+            // // Normal player
+            else if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
+            {
+                // Healthy player 
+                if( !isInjured )
+                {
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
+                    listOfGamesDiv[listOfGamesIndex].innerHTML = localGamesDataDict[teamName];
+                    var splitDataIndex = localGamesDataDict[teamName].split( "/" );
+                    totalGamesRemaining += parseInt( splitDataIndex[0] );
+                    totalGamesForWeek += parseInt( splitDataIndex[1] );
+                    listOfGamesTd[listOfGamesIndex].style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
+                }
+                // Injured player
+                else
+                {
+                    listOfGamesDiv[listOfGamesIndex].innerHTML = "-/-";
+                    listOfGamesTd[listOfGamesIndex].style.backgroundColor = "";
+                }
+                backendIndex++;
+                listOfTeamNameElementsIndex++;
+            }
+            // Empty player
+            else
+            {
+                listOfGamesDiv[listOfGamesIndex].innerHTML = "-/-";
+                listOfGamesTd[listOfGamesIndex].style.backgroundColor = "";
+            }
+            listOfGamesIndex++;
+        }
+    }
+}
+
+/*
+    moveButtonStarterPressed - Add an empty '-/-' cell for the
+    EMPTY row created when a starter's 'MOVE' button is pressed.
+*/
 function moveButtonStarterPressed()
 {
     console.log( "moveButtonStarterPressed()" );
@@ -429,33 +642,82 @@ function moveButtonStarterPressed()
     for( var i = listOfElements.length-1; i > 0; i-- )
     {
         var listOfElementsTr = listOfElements[i];
-        if( listOfElementsTr.children.length == 5 )
+        if( listOfElementsTr.children.length == 5 || listOfElementsTr.children.length == 12
+        ||( listOfElementsTr.children.length == 13 && getActiveMenu() != "Schedule" ) )
         {
             var newGamesTd = document.createElement( "td" );
             var newGamesDiv = document.createElement( "div" );
-            newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td";
-            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div";
+            newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
+            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div fbw-new-element";
             newGamesDiv.innerHTML = "-/-";
+            newGamesDiv.style.textAlign = "center";
             newGamesTd.appendChild( newGamesDiv );
             listOfElementsTr.appendChild( newGamesTd );
+            break;
+        }
+        else if( listOfElementsTr.children.length == 6 && getActiveMenu() != "Stats" )
+        {
+            var newCell = listOfElementsTr.insertCell( 5 );
+            var newGamesDiv = document.createElement( "div" );
+            newCell.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
+            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div fbw-new-element";
+            newGamesDiv.style.textAlign = "center";
+            newGamesDiv.innerHTML = "-/-";
+            newCell.appendChild( newGamesDiv );
             break;
         }
     }
 }
 
-// Adjusting the roster by moving players around
-// Requires a call to render to load the correct games
+
+
+/*
+    removeGamesColumn - removes the games data column to allow new data to be filled
+*/
+function removeGamesColumn()
+{
+    console.log( "removeGamesColumn" );
+    var elements = document.getElementsByClassName( "fbw-games-remaining-td" );
+
+    while( elements.length > 0 )
+    {
+        elements[0].parentNode.removeChild( elements[0] );
+    }
+}
+
+/*
+    removeEntireColumn - removes the games data column to allow new data to be filled
+*/
+function removeEntireColumn()
+{
+    console.log( "removeEntireColumn" );
+    var elements = document.getElementsByClassName( "fbw-new-element" );
+
+    while( elements.length > 0 )
+    {
+        elements[0].parentNode.removeChild( elements[0] );
+        console.log( "deleted an element" );
+    }
+}
+
+/* ---------------------------------------------------------------------
+                            HTML Object Clicks 
+--------------------------------------------------------------------- */
+/*
+    Adjusting the roster by moving players around
+*/
 $( 'body' ).on( 'click', 'a.move-action-btn', function() 
 {
+    var className = this.className;
     var closestTd = $( this ).closest( "td" )[0];
     var slotTd = $( closestTd ).siblings( "td" )[0];
     var slotTdInnerDiv = slotTd.getElementsByClassName( "table--cell" )[0];
     var benchOrStarter = slotTdInnerDiv.innerHTML;
-
+    
     if( $( this ).text() == "MOVE" )
     {
         // A Starter Player's 'MOVE' button has been pressed
-        if( benchOrStarter != "BE" )
+        if( benchOrStarter != "BE" && className.indexOf( "isActive" ) == -1 )
         {
             // Need a small delay for the new EMPTY bench spot to be created dynamically
             setTimeout( moveButtonStarterPressed, 200 );
@@ -468,105 +730,150 @@ $( 'body' ).on( 'click', 'a.move-action-btn', function()
 
     if( $( this ).text() == "HERE" )
     {
-        requestDataFromServer();
+        requestGameDataFromServer( "Update" );
     }
 });
 
-function removeColumn()
-{
-    var elements = document.getElementsByClassName( "fbw-games-remaining-td" );
-
-    while( elements.length > 0 )
-    {
-        elements[0].parentNode.removeChild( elements[0] );
-    }
-}
-
-
+/*
+    For showing the features after switching dates for daily leagues
+*/
 $( 'body' ).on( 'click', 'div.custom--day', function() 
 {
     var className = this.className;
-    // Render games for new dates
-    // Date other than the current one selected
     if( className.indexOf( "is-current" ) == -1 )
     {
-        initialRender = true;
-        updateHeaders = true;
-        removeColumn();
-        requestWeekNumberFromServer();  
-        requestDataFromServer();    
+        renderGames( "Switch Dates" );
     }
 });
 
-
 /*
-    renderGames - the main function containing the logic to add:
-    1) 'GAMES' header
-    2) 'TOTAL' subheader
-    3) The number of games per week for a player
-        i) '--' for empty player row or free agents
-    4) Total number of games for the entire team for the week
+    For showing the features after switching dates for weekly leagues
 */
-renderGames = function()
+$( 'body' ).on( 'click', 'div.custom--week', function() 
 {
-    console.log("Fantasy Wizard rendering...");
-
-    // if( pageType == "Roster" )
-    // {
-    //     myTeamRoster();
-    // }
-    requestWeekNumberFromServer();
-    requestDataFromServer();
-}
-
-var refreshSleepTime = 700;
-
-/*
-    Event listener for when a date in the top navigation bar with the 
-    black background is clicked - Today, Weekday, Month Date
-*/
-//if( pageType == "Roster" )
-//{
-//    document.getElementsByClassName( "games-dates-mod" )[0].addEventListener( "click" , function() {
-//        setTimeout( () => {
-//            renderGames();
-//        }, refreshSleepTime );
-//    });
-//}
-
-/*
-    Event listener for navigating between 'Month Date', 'Last 7',
-    'Last 15', 'Last 30', '2018 Season', '2017', '2018 Projections'
-*/
-$('div' ).on( 'click', ' .playertablefiltersmenucontainer', function( event ) {
-    event.stopPropagation();
-    var thisText = $( this ).text();
-    if( pageType == "Roster" &&
-        thisText != "Last 7" &&
-        thisText != "Last 15" &&
-        thisText != "Last 30" &&
-        thisText != "2018 Season" &&
-        thisText != "2017" &&
-        thisText != "2018 Projections"
-      )
+    var className = this.className;
+    if( className.indexOf( "is-current" ) == -1 )
     {
-        dateRanges = true;
-        setTimeout( () => {
-            renderGames();
-        }, refreshSleepTime );
+        renderGames( "Switch Dates" );
+    }
+});
+
+/*
+    For showing the features after switching tab menus
+*/
+$( 'body' ).on( 'click', 'li.tabs__list__item', function() 
+{
+    var className = this.className;
+    var menuSelected = $( this ).text();
+    if( className.indexOf( "tabs__list__item--active" ) == -1 )
+    {
+        if( menuSelected == "Stats" )
+        {
+            renderGames( menuSelected );
+        }
+        else if( menuSelected == "Research" )
+        {
+            renderGames( menuSelected );
+        }
+        else if( menuSelected == "Schedule" )
+        {
+            renderGames( menuSelected );
+        }
+        else if( menuSelected == "News" )
+        {
+            renderGames( menuSelected );
+        }
+    }
+    else // Do nothing, same menu
+    {}
+});
+
+/*
+    Current button that returns to the current date
+*/
+$( 'body' ).on( 'click', 'a.scoring--period-today', function() 
+{
+    var className = this.className;
+    if( className.indexOf( "is-current" ) == -1 )
+    {
+        renderGames( "Switch Dates" );
+    }
+});
+
+/*
+    Changing dates with the calendar
+*/
+$( 'body' ).on( 'click', 'li.monthContainer__day--noEvent', function() 
+{
+    var className = this.className;
+    if( ( className.indexOf( "monthContainer__day--disabled" ) == -1 ) && ( ( className.indexOf( "monthContainer__day--selected" ) == -1 ) ) )
+    {
+        renderGames( "Switch Dates" );
     }
 });
 
 
+/* ---------------------------------------------------------------------
+                            Render Games by Type 
+--------------------------------------------------------------------- */
+
+/*
+    renderGames - 
+*/
+function renderGames( type )
+{
+    console.log( "renderGames - type=" + type );
+
+    if( type == "Document Ready" )
+    {
+        isLeagueDailyOrWeekly();
+        requestHeaderFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
+    }
+    else if( type == "News" )
+    {
+        removeEntireColumn();
+        requestHeaderFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
+    }
+    else if( type == "Research" )
+    {
+        removeEntireColumn();
+        requestHeaderFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
+    }
+    else if( type == "Schedule" )
+    {
+        removeEntireColumn();
+        requestHeaderFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
+    }
+    else if( type == "Stats" )
+    {
+        removeEntireColumn();
+        requestHeaderFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
+    }
+    else if( type = "Switched Dates" )
+    {
+        removeGamesColumn();
+        requestHeaderFromServer( "Update" );  
+        requestGameDataFromServer( "Add" );
+    }
+    else if( type == "Weekly" )
+    {
+        requestHeaderFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
+    }
+}
 /*
     Main load of calling render games when the document is ready.
     Note: Have to wait a few seconds to load this dynamic page, otherwise it will not find any elements. 
 */
-$( document ).ready( function(){
-    console.log('before');
-    setTimeout(function(){
-        console.log('after');
-        renderGames();
-    },3000);
-    
+$( document ).ready( function()
+{
+    setTimeout( function()
+    {
+        renderGames( "Document Ready" );
+    }, 5000 );
 });

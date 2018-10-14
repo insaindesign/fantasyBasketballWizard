@@ -53,7 +53,7 @@ function getGames(team){
         dateString = getFormattedDate();
     }
     
-    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yTeamsPage&teams='+team+'&format=json&date='+dateString;
+    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yTeamPage&teams='+team+'&format=json&date='+dateString;
     console.log("url: ", dateString);
     var req = new XMLHttpRequest();
     req.open("GET", url, false);
@@ -104,9 +104,12 @@ var get_first_row = function() {
 
     //init table dimensions
     num_rows = table.rows.length;
-
+    
     for (var i = 2; i < num_rows; i++) {
-        if (!table.rows[i].cells[1].innerText.includes("(Empty)") && !table.rows[i].cells[2].innerText.includes("(Empty)")) {
+        rowText = table.rows[i].innerText.split('\n').toString();
+        //console.log("rowText: ", rowText);
+        if (!rowText.includes("(Empty)") && !rowText.includes("-,-,-")) {
+            //console.log('i: ', i);
             return i;
         }
     }

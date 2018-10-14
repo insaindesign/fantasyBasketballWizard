@@ -143,7 +143,6 @@ function initGlobals(){
     this_view = S_VIEW;
 }
 
-
 //Default Stats Tab
 //-----------------------------------------------------------------------------
 renderGames = function(from_view) {
@@ -157,6 +156,9 @@ renderGames = function(from_view) {
     
     //init stats table
     table = document.getElementById("statTable0");
+    
+    //init stats columns
+    header_cols = table.rows[1].innerText.split("\n");
 
     //init table dimensions
     num_rows = table.rows.length;
@@ -172,7 +174,7 @@ renderGames = function(from_view) {
         }
     }
 
-    fantasy_col = -1
+    fantasy_col = -1;
     //find % Started column
     th = table.rows[first_player_row];
     for (var i = 5; i < th.cells.length; i++) {
@@ -183,6 +185,7 @@ renderGames = function(from_view) {
         }
     }
 
+    //if % not in any cells
     if (fantasy_col == -1) {
         for (var i = 5; i < th.cells.length; i++) {
             if (th.cells[i].innerText.includes("-") && th.cells[i].innerText.length < 3) {
@@ -191,6 +194,8 @@ renderGames = function(from_view) {
             }
         }
     }
+    
+    
 
     //replace Fantasy headers
     //find Fantasy header column
@@ -224,7 +229,11 @@ renderGames = function(from_view) {
         }
     }
 
-    if (fantasy_col == -1) {
+    //if opponent team
+    if (fantasy_col == -1 && header_cols.includes("Action")) {
+        fantasy_col = i+1;
+    }
+    else if (fantasy_col == -1) {
         fantasy_col = i;
     }
 
@@ -336,7 +345,6 @@ countStats = function() {
 
     stats_all.id = avg_stats_id;
 
-
     label_col = get_label_col();
 
     //add new row labels
@@ -400,7 +408,6 @@ countStats = function() {
         console.log("col: ", table.rows[1].cells[col].innerText);
         //column is (x/y)
         if (header_cell.includes("/")) {
-            console.log("col: ", col);
             while (!cellText.includes(week_row_name)) {
                 if (!cellText.includes("Injured")) {
                     values = table.rows[row].cells[col + offset].innerText.split("/");
@@ -408,7 +415,6 @@ countStats = function() {
                     if (!isNaN(values[0]) && values[0].length > 0) {
                         num += parseFloat(values[0]);
                         den += parseFloat(values[1]);
-                        console.log("num: ", values[0]);
                         if (!isNaN(games_row) && games_row.length > 0) {
                             weekly_num += parseFloat(values[0]) * games_row;
                             weekly_den += parseFloat(values[1]) * games_row;
@@ -490,7 +496,6 @@ countStats = function() {
                     games_row = table.rows[row].cells[games_col].innerText.split('/')[1];
                     if (!isNaN(value) && value.length > 0) {
                         num += parseFloat(value);
-                        console.log("else val: ", value);
                         if (!isNaN(games_row) && games_row.length > 0) {
                             weekly_stats += (parseFloat(value) * parseFloat(games_row));
                         }

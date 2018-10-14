@@ -192,23 +192,23 @@ function getPlayers(){
     for (var i = 1; i < num_rows; i++){
         row = table.rows[i].innerText.split('\n')
         
-        console.log("row: ", row);
+        //console.log("row: ", row);
 
         noteIndex = getNoteIndex(row.slice(0, row.length/2 - 1));
-        playerLeft = row[noteIndex+1].split(" - ")[0]
-        
+        playerIndex = noteIndex+1;
+        playerLeft = row[playerIndex].split(" - ")[0]
         playerLeft = serializePlayer(playerLeft)
-        if ((!playerLeft.includes("Empty")) && (playerLeft != "O") && (playerLeft.length > 0)){
+        if ((!playerLeft.includes("Empty")) && (playerLeft != "O") && (playerLeft.length > 0) && row[playerIndex+1] != "INJ"){
             playersLeft.push(playerLeft);
         }
         
         row = row.slice(noteIndex+2, row.length)
-        console.log("right row: ", row);
         
         noteIndex = getNoteIndex(row)
-        playerRight = row[noteIndex+1].split(" - ")[0]
+        playerIndex = noteIndex+1;
+        playerRight = row[playerIndex].split(" - ")[0]
         playerRight = serializePlayer(playerRight)
-        if ((!playerRight.includes("Empty")) && (playerRight != "O")  && (playerRight.length > 0)){
+        if ((!playerRight.includes("Empty")) && (playerRight != "O")  && (playerRight.length > 0) && row[playerIndex+1] != "INJ"){
             playersRight.push(playerRight);
         }
 
@@ -237,7 +237,7 @@ function getProjections(playersString, side){
 
             response.json().then(function (data) {
                 showProjections(data, side);
-                console.log(data);
+                //console.log(data);
             });
         }).catch(function (err) {
             console.log('Fetch Error :-S', err);
@@ -278,15 +278,15 @@ function showProjections(data, side){
     }
     
     if (side == "left"){
-        console.log("left: ", statsLeft);
+        //console.log("left: ", statsLeft);
     } if (side == "right"){
-        console.log("right: ", statsRight);
+        //console.log("right: ", statsRight);
     }
 }
 
 function calculateStats(data, cat){
     
-    console.log("calculating... ", cat);
+    //console.log("calculating... ", cat);
     if (cat == "FG%"){
         var fgm = 0;
         var fga = 0;
@@ -320,7 +320,6 @@ function calculateStats(data, cat){
         for (var i = 0; i < data.length; i++){
             ast += parseFloat(data[i]['apg']);
         }
-        console.log("ast: ", ast);
         return parseFloat(ast).toFixed(1);
     } if (cat == "ST") {
         var stl = 0;

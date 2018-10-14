@@ -11,8 +11,14 @@ var rightName;
 var statsLeft = [];
 var statsRight = [];
 
-var table;
 var pTable;
+
+//init stats table
+table = document.getElementById("statTable3");
+
+//find stats headers
+header = table.rows[0].innerText.split("\n");
+categories = header.slice(1, (header.length/2)-1);
 
 function getProjectionsColor(ratio){
     if (ratio <= .1){
@@ -60,13 +66,7 @@ function getProjectionsColor(ratio){
     } else return '#14ff14';
 }
 
-function initGlobals(){
-    //init stats table
-    table = document.getElementById("statTable3");
-
-    //find stats headers
-    header = table.rows[0].innerText.split("\n");
-    categories = header.slice(1, (header.length/2)-1);
+function initTable(){
 
     teamNames = document.getElementById("matchup-header").innerText.split('\n')
     console.log("teams: ", );
@@ -369,8 +369,10 @@ function displayGamesToday(data) {
     parentDiv.appendChild(div);
 }
 
-
-initGlobals();
+if (categories.toString() == "FG%,FT%,3PTM,PTS,REB,AST,ST,BLK,TO"){
+    initTable();
+    getPlayers();
+}
 getGames();
-getPlayers();
+
 

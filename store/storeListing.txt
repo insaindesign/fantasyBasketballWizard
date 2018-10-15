@@ -11,12 +11,13 @@ Fantasy Basketball Wizard Chrome Extension is FOR Fantasy Basketball lovers, cre
 - Games remaining for the week! (NEW)
 - Total games this week!
 - Updated colors! (NEW)
-- Weekly and daily projections on matchups page!* (NEW)
+- Weekly projections on matchups page! (NEW)
+- Daily projections on team page!
 - Total team averages!
 - Future games per week! (NEW)
 - Number of games on tonights NBA Schedule on matchups page! (NEW)
 
-*Standard 9 category and points leagues
+*Standard 9 category
 **Contact us for custom league configurations
 
 Please leave us feedback, suggestions, frustrations, etc. We read and act on everything that comes in.

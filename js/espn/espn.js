@@ -41,14 +41,14 @@ function buildTeamsRequestString()
     console.log( "currentPageType=" + currentPageType );
     for( var i = 0; i < listOfElements.length; i++ )
     {
-        if( currentPageType == "Players" )
+        if( currentPageType == PAGE_TYPE_PLAYERS )
         {
             if( !( listOfElements[ i ].innerHTML in localGamesDataDict ) && ( listOfElements[ i ].innerHTML != "FA" ) )
             {
                 teamsRequestString += listOfElements[i].innerHTML + ",";
             }
         }
-        else if( currentPageType == "Team" )
+        else if( currentPageType == PAGE_TYPE_TEAM )
         {
             if( listOfElements[ i ].innerHTML != "FA" )
             {
@@ -197,11 +197,11 @@ function buildPageNameRequestString()
     console.log( "buildPageNameRequestString()" );
     var pageNameResult = "pageName=";
 
-    if( currentPageType == "Team" )
+    if( currentPageType == PAGE_TYPE_TEAM )
     {
         pageNameResult += "espnTeam";
     }
-    else if( currentPageType == "Players" )
+    else if( currentPageType == PAGE_TYPE_PLAYERS )
     {
         pageNameResult += "espnPlayers";
     }
@@ -274,17 +274,17 @@ function getPageTypeFromUrl( url )
 {
     if( url.indexOf( "basketball/team" ) != -1 )
     {
-        currentPageType = "Team";
+        currentPageType = PAGE_TYPE_TEAM;
         return PAGE_TYPE_TEAM;
     }
     else if( url.indexOf( "basketball/players/add" ) != -1 )
     {
-        currentPageType = "Players";
+        currentPageType = PAGE_TYPE_PLAYERS;
         return PAGE_TYPE_PLAYERS;
     }
     else if( url.indexOf( "basketball/addeddropped" ) != -1 )
     {
-        currentPageType = "Added Dropped";
+        currentPageType = PAGE_TYPE_ADDED_DROPPED;
         return PAGE_TYPE_ADDED_DROPPED;
     }
     else
@@ -438,11 +438,11 @@ async function requestHeaderFromServer( addOrUpdate )
     // Sleep before getting the date string to allow the selected date some time to be changed
     await sleep( 200 );
     var dateRequestString = "";
-    if( currentPageType == "Team" )
+    if( currentPageType == PAGE_TYPE_TEAM )
     {
         dateRequestString = buildDateRequestString();
     }
-    else if( currentPageType == "Players" )
+    else if( currentPageType == PAGE_TYPE_PLAYERS )
     {
         dateRequestString = buildDateRequestStringPlayers();
     }
@@ -469,11 +469,11 @@ async function requestHeaderFromServer( addOrUpdate )
                 var weekNum = data.weekNum;
                 if( addOrUpdate == "Add" )
                 {
-                    if( currentPageType == "Team" )
+                    if( currentPageType == PAGE_TYPE_TEAM )
                     {
                         addWeekGamesHeaders( data );
                     }
-                    else if( currentPageType == "Players" )
+                    else if( currentPageType == PAGE_TYPE_PLAYERS )
                     {
                         addWeekGamesHeadersPlayers( data );
                     }
@@ -504,7 +504,7 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
     // console.log( "addDataToLocalDictionary()" );
     if( teamsRequestString != "teams=" )
     {
-        if( currentPageType == "Team" )
+        if( currentPageType == PAGE_TYPE_TEAM )
         {
             localGamesDataDict = {};
         }
@@ -530,18 +530,18 @@ async function requestGameDataFromServer( addOrUpdate )
     await sleep( 2000 );    
 
     var teamsRequestString = buildTeamsRequestString();
-    if( currentPageType == "Players" && teamsRequestString == "teams=" )
+    if( currentPageType == PAGE_TYPE_PLAYERS && teamsRequestString == "teams=" )
     {
         addGamesForPlayersPage();
     }
     else
     {
         var dateRequestString = "";
-        if( currentPageType == "Team" )
+        if( currentPageType == PAGE_TYPE_TEAM )
         {
             dateRequestString = buildDateRequestString();
         }
-        else if( currentPageType == "Players" )
+        else if( currentPageType == PAGE_TYPE_PLAYERS )
         {
             dateRequestString = buildDateRequestStringPlayers();
         }
@@ -568,11 +568,11 @@ async function requestGameDataFromServer( addOrUpdate )
                     {
                         addGamesDataToLocalDictionary( data, teamsRequestString );
                         console.log( "currentPageType=" + currentPageType );
-                        if( currentPageType == "Team" )
+                        if( currentPageType == PAGE_TYPE_TEAM )
                         {
                             addGamesForPlayers(); 
                         }
-                        else if( currentPageType == "Players" )
+                        else if( currentPageType == PAGE_TYPE_PLAYERS )
                         {
                             addGamesForPlayersPage();
                         }
@@ -1085,7 +1085,7 @@ $( 'body' ).on( 'click', 'li.PaginationNav__list__item', function()
 */
 $( 'body' ).on( 'click', 'label.picker-option', function() 
 {
-    if( currentPageType == "Players" )
+    if( currentPageType == PAGE_TYPE_PLAYERS )
     {
         console.log( $( this ).text() );
         var className = this.className;

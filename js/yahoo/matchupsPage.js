@@ -64,7 +64,7 @@ function getProjectionsColor(ratio){
         return '#3bff3b';
     } if (ratio <= 2.1){
         return '#3bff3b';
-    } else return '#14ff14';
+    } else return '#cbd8ed';
 }
 
 function getFormattedDate() {

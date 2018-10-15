@@ -18,7 +18,7 @@ const PAGE_TYPE_TEAM_STATS = "Stats";
 const PAGE_TYPE_TEAM_SWITCH_DATES = "Switch Dates";
 const PAGE_TYPE_TEAM_WEEKLY = "Weekly";
 
-
+var currentPageType = ""; 
 var dailyOrWeekly = "";             // Value of daily or weekly league
 var localGamesDataDict = {};        // Holds the game remaining data
 var updateHeaders = false;          // Flag to update headers
@@ -39,7 +39,10 @@ function buildTeamsRequestString()
     var teamsRequestString = "teams=";
     for( var i = 0; i < listOfElements.length; i++ )
     {
-        teamsRequestString += listOfElements[i].innerHTML + ",";
+        if( !( listOfElements[ i ].innerHTML in localGamesDataDict ) && ( listOfElements[ i ].innerHTML != "FA" ) )
+        {
+            teamsRequestString += listOfElements[i].innerHTML + ",";
+        }
     }
     // console.log( teamsRequestString );
     return teamsRequestString;
@@ -82,6 +85,27 @@ function formatDateString( month, date )
     }
 
     return dateString;
+}
+
+/*
+    buildDateRequestStringPlayers - 
+*/
+function buildDateRequestStringPlayers()
+{
+    var resultDateRequestString = "date="
+    var todaysDate = new Date();
+    // Getting today's date before regular season starts
+    if( ( todaysDate.getTime() <= new Date("2018-10-16").getTime() ) ) 
+    {
+        
+        resultDateRequestString += "2018-10-16";
+        return resultDateRequestString;
+    }
+    else
+    {
+        resultDateRequestString += ( todaysDate.getFullYear() + "-" + ( todaysDate.getMonth() + 1 ) + "-" + todaysDate.getDate() );
+        return resultDateRequestString;
+    }
 }
 
 /*
@@ -156,23 +180,23 @@ function buildLeagueIdRequestString()
     return leagueIdRequestString;
 }
 
-/*
-    buildTeamsRequestString - creates part of the url for the teams to 
-    request game data for.
-*/
-function buildTeamsRequestString()
-{
-    // console.log( "buildTeamsRequestString()" );
+// /*
+//     buildTeamsRequestString - creates part of the url for the teams to 
+//     request game data for.
+// */
+// function buildTeamsRequestString()
+// {
+//     // console.log( "buildTeamsRequestString()" );
 
-    var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );
-    var teamsRequestString = "teams=";
-    for( var i = 0; i < listOfElements.length; i++ )
-    {
-        teamsRequestString += listOfElements[i].innerHTML + ",";
-    }
+//     var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );
+//     var teamsRequestString = "teams=";
+//     for( var i = 0; i < listOfElements.length; i++ )
+//     {
+//         teamsRequestString += listOfElements[i].innerHTML + ",";
+//     }
 
-    return teamsRequestString;
-}
+//     return teamsRequestString;
+// }
 
 /*
     sleep - to create a delay in some functions to help the dynamic ESPN
@@ -238,14 +262,17 @@ function getPageTypeFromUrl( url )
 {
     if( url.indexOf( "basketball/team" ) != -1 )
     {
+        currentPageType = "Team";
         return PAGE_TYPE_TEAM;
     }
     else if( url.indexOf( "basketball/players/add" ) != -1 )
     {
+        currentPageType = "Players";
         return PAGE_TYPE_PLAYERS;
     }
     else if( url.indexOf( "basketball/addeddropped" ) != -1 )
     {
+        currentPageType = "Added Dropped";
         return PAGE_TYPE_ADDED_DROPPED;
     }
 }
@@ -335,6 +362,40 @@ function addWeekGamesHeaders( data )
 }
 
 /*
+    addGamesWeekHeaders - adds the 'WEEK #' and 'GR/G' headers
+    to the HTML of the page.
+*/
+function addWeekGamesHeadersPlayers( data )
+{
+    console.log( "addWeekGamesHeaders()" );
+    var weekNum = data.weekNum;
+    var listOfElements = document.getElementsByClassName( "Table2__header-row" );
+
+    for( var i = 0; i < listOfElements.length; i++ )
+    {
+        if( listOfElements[i].innerHTML.indexOf( "All Players" ) != -1 )
+        {
+            var newGamesHeader = document.createElement( "th" );
+            newGamesHeader.title = "Week number " + weekNum.toString() + " of fantasy basketball";
+            newGamesHeader.colSpan = "1";
+            newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header";
+            newGamesHeader.innerHTML = "WEEK" + weekNum.toString();
+            listOfElements[i].appendChild( newGamesHeader );
+        }
+        else if( listOfElements[i].innerHTML.indexOf( "STATUS" ) != -1 )
+        {
+            var newGamesHeader = document.createElement( "th" );
+            newGamesHeader.title = "Games Remaining / Games This Week";
+            newGamesHeader.colSpan = "1";
+            newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header";
+            newGamesHeader.innerHTML = "GR/G";
+            listOfElements[i].appendChild( newGamesHeader );
+        }
+    }
+}
+
+
+/*
     updateWeekNumberHeader - updates the 'GAMES' and 'WEEK' headers
 */
 function updateWeekNumberHeader( data )
@@ -359,7 +420,16 @@ async function requestHeaderFromServer( addOrUpdate )
     console.log( "requestHeaderFromServer()" );
     // Sleep before getting the date string to allow the selected date some time to be changed
     await sleep( 200 );
-    var dateRequestString = buildDateRequestString();
+    var dateRequestString = "";
+    if( currentPageType == "Team" )
+    {
+        dateRequestString = buildDateRequestString();
+    }
+    else if( currentPageType == "Players" )
+    {
+        dateRequestString = buildDateRequestStringPlayers();
+    }
+
     console.log( "dateRequestString - " + dateRequestString );
     console.log( typeof dateRequestString );
     var leagueIdRequestString = buildLeagueIdRequestString();
@@ -379,7 +449,15 @@ async function requestHeaderFromServer( addOrUpdate )
                 var weekNum = data.weekNum;
                 if( addOrUpdate == "Add" )
                 {
-                    addWeekGamesHeaders( data );
+                    if( currentPageType == "Teams" )
+                    {
+                        addWeekGamesHeaders( data );
+                    }
+                    else if( currentPageType == "Players" )
+                    {
+                        addWeekGamesHeadersPlayers( data );
+                    }
+
                 }
                 else if( addOrUpdate == "Update" )
                 {
@@ -404,7 +482,10 @@ async function requestHeaderFromServer( addOrUpdate )
 function addGamesDataToLocalDictionary( data, teamsRequestString )
 {
     // console.log( "addDataToLocalDictionary()" );
-    localGamesDataDict = {};
+    if( currentPageType == "Team" )
+    {
+        localGamesDataDict = {};
+    }
     var teamsRequestStringConcise = teamsRequestString.substring( 6, teamsRequestString.length-1 );
     var teamsList = teamsRequestStringConcise.split( "," );
     for( var i = 0; i < data.length; i++ )
@@ -414,7 +495,7 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
             localGamesDataDict[teamsList[i]] = data[i];
         }
     }
-    // console.log( localGamesDataDict );
+    console.log( localGamesDataDict );
 }
 
 /*
@@ -423,42 +504,64 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
 async function requestGameDataFromServer( addOrUpdate )
 {
     console.log( "requestGameDataFromServer()" );
+    await sleep( 2000 );    
 
     var teamsRequestString = buildTeamsRequestString();
-    // Sleep before getting the date string to allow the selected date some time to be changed
-    await sleep( 200 );     
-    var dateRequestString = buildDateRequestString();
-    console.log( "dateRequestString - " + dateRequestString );
-    var leagueIdRequestString = buildLeagueIdRequestString();
-
-    if( ( dateRequestString != "date=" ) && ( teamsRequestString != "teams=" ) && ( typeof dateRequestString !== 'undefined' ) )
+    if( currentPageType == "Players" && teamsRequestString == "teams=" )
     {
-        var url = "https://www.fantasywizard.site/gamesremaining/?pageName=eTeamsPage&" + teamsRequestString + "&format=json&" + dateRequestString + "&" + leagueIdRequestString;
-        console.log( url );
+        addGamesForPlayers();
+    }
+    else
+    {
+        var dateRequestString = "";
+        if( currentPageType == "Team" )
+        {
+            dateRequestString = buildDateRequestString();
+        }
+        else if( currentPageType == "Players" )
+        {
+            dateRequestString = buildDateRequestStringPlayers();
+        }
+        var leagueIdRequestString = buildLeagueIdRequestString();
 
-        fetch( url )
-            .then( function( response ){
-            if ( response.status !== 200 )
-            {
-                console.log( 'Called to backend failed: ' + response.status );
-                return;
-            }
-            response.json().then( function( data )
-            {
-                if( addOrUpdate == "Add" )
-                {
-                    addGamesDataToLocalDictionary( data, teamsRequestString );
-                    addGamesForPlayers();
-                }
-                else if( addOrUpdate == "Update" )
-                {
-                    updateGameData();
-                }
+        if( ( dateRequestString != "date=" ) && ( teamsRequestString != "teams=" ) && ( typeof dateRequestString !== 'undefined' ) )
+        {
+            var url = "https://www.fantasywizard.site/gamesremaining/?pageName=eTeamsPage&" + teamsRequestString + "&format=json&" + dateRequestString + "&" + leagueIdRequestString;
+            console.log( url );
 
-            });
-        }).catch( function( err ) {
-            console.log( 'Fetch Error :-S', err );
-        }); 
+            fetch( url )
+                .then( function( response ){
+                if ( response.status !== 200 )
+                {
+                    console.log( 'Called to backend failed: ' + response.status );
+                    return;
+                }
+                response.json().then( function( data )
+                {
+                    if( addOrUpdate == "Add" )
+                    {
+                        addGamesDataToLocalDictionary( data, teamsRequestString );
+                        console.log( "currentPageType=" + currentPageType );
+                        if( currentPageType == "Team" )
+                        {
+                            addGamesForPlayers(); 
+                        }
+                        else if( currentPageType == "Players" )
+                        {
+                            addGamesForPlayersPage();
+                        }
+                    }
+                    else if( addOrUpdate == "Update" )
+                    {
+                        updateGameData();
+                    }
+
+                });
+            }).catch( function( err ) {
+                console.log( 'Fetch Error :-S', err );
+            }); 
+        }
+
     }
 
 }
@@ -613,6 +716,67 @@ function addGamesForPlayers()
             }
 
             newCell.appendChild( newGamesDiv );
+        }
+    }
+}
+
+/*
+    addGamesForPlayers - creates the games remaining cells and
+    adds the data to the HTML of the page
+*/
+function addGamesForPlayersPage()
+{
+    console.log( "addGamesForPlayersPage()" );
+
+    var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
+    var totalGamesRemaining = 0;
+    var totalGamesForWeek = 0;
+
+    var listOfTeamNameElements = document.getElementsByClassName( "playerinfo__playerteam" );
+    var listOfTeamNameElementsIndex = 0;
+
+    for( var i = 0; i < listOfElements.length; i++ )
+    {
+        var listOfElementsTr = listOfElements[i];
+        // console.log( "listOfElementsTr.children.length=" + listOfElementsTr.children.length );
+
+        if( listOfElementsTr.children.length == 5 )
+        {
+            var newGamesTd = document.createElement( "td" );
+            var newGamesDiv = document.createElement( "div" );
+            newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td";
+            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div";
+            newGamesDiv.style.textAlign = "center";
+
+            var isInjured = false;
+            // 'O'ut, injured player
+            if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
+            {
+                isInjured = true;
+            }
+            // Normal player
+            if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
+            {
+                if( !isInjured )
+                {
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
+                    console.log( "teamName=" + teamName );
+                    newGamesDiv.innerHTML = localGamesDataDict[teamName];
+                    console.log( localGamesDataDict[teamName] );
+                    var splitDataIndex = localGamesDataDict[teamName].split( "/" );
+                    totalGamesRemaining += parseInt( splitDataIndex[0] );
+                    totalGamesForWeek += parseInt( splitDataIndex[1] );
+                    newGamesTd.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
+                }
+                else
+                {
+                    newGamesDiv.innerHTML = "-/-";
+                }
+            }
+            // Don't have empty players in Free Agents, only for Team page    
+            listOfTeamNameElementsIndex++;
+            newGamesTd.appendChild( newGamesDiv );
+            listOfElementsTr.appendChild( newGamesTd );
         }
     }
 }
@@ -872,6 +1036,54 @@ $( 'body' ).on( 'click', 'li.monthContainer__day--noEvent', function()
 
 
 /* ---------------------------------------------------------------------
+                            Players - Object Changes 
+--------------------------------------------------------------------- */
+
+/*
+    Changing pages
+*/
+$( 'body' ).on( 'click', 'li.PaginationNav__list__item', function() 
+{
+    console.log( $( this ).text() );
+    var className = this.className;
+
+    if( className.indexOf( "PaginationNav__list__item--active" ) == -1 )
+    {
+        removeGamesColumn();
+        requestGameDataFromServer( "Add" )
+    }
+});
+
+/*
+    Changing positions of available free agents
+*/
+$( 'body' ).on( 'click', 'label.picker-option', function() 
+{
+    if( currentPageType == "Players" )
+    {
+        console.log( $( this ).text() );
+        var className = this.className;
+
+        if( className.indexOf( "checked" ) == -1 )
+        {
+            removeGamesColumn();
+            setTimeout( requestGameDataFromServer( "Add" ), 2000 );
+        }
+    }
+});
+
+/*
+    Filters
+*/
+$( 'body' ).on( 'change', 'select.dropdown__select', function() 
+{
+    removeGamesColumn();
+    setTimeout( requestGameDataFromServer( "Add" ), 2000 );
+});
+
+
+
+/* ---------------------------------------------------------------------
                     Render Games by Page Type 
 --------------------------------------------------------------------- */
  
@@ -892,7 +1104,9 @@ async function renderGames( type )
     }
     else if( type == PAGE_TYPE_PLAYERS )
     {
-
+        await sleep( 6000 );
+        requestHeaderFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
     }
     else if( type == PAGE_TYPE_ADDED_DROPPED )
     {

@@ -224,11 +224,12 @@ function sleep( ms )
 */
 function getActiveMenu()
 {
-    // console.log( "getActiveMenu" );
-    var activeMenuElements = document.getElementsByClassName( "tabs__list__item--active" );
-    var activeMenuElement = activeMenuElements[0].getElementsByClassName( "tabs__link w-100" );
-    var activeMenu = activeMenuElement[0].innerHTML;
-    return activeMenu;
+    console.log( "getActiveMenu" );
+    var entireUrl = window.location.href;
+    var url = new URL( entireUrl );
+    var view = url.searchParams.get( "view" );
+
+    return view.charAt( 0 ).toUpperCase() + view.slice( 1 );
 }
 
 /* 

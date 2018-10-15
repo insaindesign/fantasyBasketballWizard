@@ -17,6 +17,7 @@ const PAGE_TYPE_TEAM_SCHEDULE = "Schedule";
 const PAGE_TYPE_TEAM_STATS = "Stats";
 const PAGE_TYPE_TEAM_SWITCH_DATES = "Switch Dates";
 const PAGE_TYPE_TEAM_WEEKLY = "Weekly";
+const PAGE_TYPE_UNDEFINED = "Undefined";
 
 var currentPageType = "";
 var dailyOrWeekly = "";             // Value of daily or weekly league
@@ -267,6 +268,10 @@ function getPageTypeFromUrl( url )
     {
         currentPageType = "Added Dropped";
         return PAGE_TYPE_ADDED_DROPPED;
+    }
+    else
+    {
+        return PAGE_TYPE_UNDEFINED;
     }
 }
 
@@ -1092,6 +1097,11 @@ $( 'body' ).on( 'change', 'select.dropdown__select', function()
 async function renderGames( type )
 {
     console.log( "renderGames - type=" + type );
+    console.log( "renderGames - typeof type=" + typeof type );
+    if( type == PAGE_TYPE_UNDEFINED || typeof type == 'undefined' )
+    {
+        return;
+    }
     if( type == PAGE_TYPE_TEAM )
     {
         console.log( "before  sleep" );

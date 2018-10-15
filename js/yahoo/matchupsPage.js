@@ -64,7 +64,7 @@ function getProjectionsColor(ratio){
         return '#3bff3b';
     } if (ratio <= 2.1){
         return '#3bff3b';
-    } else return '#cbd8ed';
+    } else return '#dee8f7';
 }
 
 function getFormattedDate() {
@@ -309,13 +309,21 @@ function showProjections(data, side){
     for (cat = 1; cat < categories.length+1; cat++){
         num = parseFloat(pTable.rows[1].cells[cat].innerHTML);
         den = parseFloat(pTable.rows[2].cells[cat].innerHTML);
-        ratio = num / den;
+        if (categories[cat-1] == "TO"){
+            ratio = den / num;
+        } else {
+            ratio = num / den;
+        }
         color = getProjectionsColor(ratio);
         pTable.rows[1].cells[cat].style.backgroundColor = color;
         
         num = parseFloat(pTable.rows[2].cells[cat].innerHTML);
         den = parseFloat(pTable.rows[1].cells[cat].innerHTML);
-        ratio = num / den;
+        if (categories[cat-1] == "TO"){
+            ratio = den / num;
+        } else {
+            ratio = num / den;
+        }
         color = getProjectionsColor(ratio);
         pTable.rows[2].cells[cat].style.backgroundColor = color;
     }

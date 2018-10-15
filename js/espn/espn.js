@@ -48,7 +48,7 @@ function buildTeamsRequestString()
                 teamsRequestString += listOfElements[i].innerHTML + ",";
             }
         }
-        else if( currentPageType == PAGE_TYPE_TEAM )
+        else
         {
             if( listOfElements[ i ].innerHTML != "FA" )
             {
@@ -109,15 +109,13 @@ function buildDateRequestStringPlayers()
     // Getting today's date before regular season starts
     if( ( todaysDate.getTime() <= new Date("2018-10-16").getTime() ) ) 
     {
-        
         resultDateRequestString += "2018-10-16";
-        return resultDateRequestString;
     }
     else
     {
         resultDateRequestString += ( todaysDate.getFullYear() + "-" + ( todaysDate.getMonth() + 1 ) + "-" + todaysDate.getDate() );
-        return resultDateRequestString;
     }
+    return resultDateRequestString;
 }
 
 /*
@@ -126,9 +124,10 @@ function buildDateRequestStringPlayers()
 */
 function buildDateRequestString()
 {
-    // console.log( "buildDateRequestString()" );
+    console.log( "buildDateRequestString()" );
     var currentElements = document.getElementsByClassName( "is-current" );
     var resultDateRequestString = "date="
+    console.log( dailyOrWeekly );
     if( dailyOrWeekly == "Daily" )
     {
         var currentDateDiv = currentElements[0];
@@ -199,12 +198,25 @@ function buildPageNameRequestString()
 
     if( currentPageType == PAGE_TYPE_TEAM )
     {
-        pageNameResult += "espnTeam";
+        pageNameResult += "espnTeamStats";
     }
     else if( currentPageType == PAGE_TYPE_PLAYERS )
     {
         pageNameResult += "espnPlayers";
     }
+    else if( currentPageType == PAGE_TYPE_TEAM_RESEARCH )
+    {
+        pageNameResult += "espnTeamResearch";
+    }
+    else if( currentPageType == PAGE_TYPE_TEAM_SCHEDULE )
+    {
+        pageNameResult += "espnTeamSchedule";
+    }
+    else if( currentPageType == PAGE_TYPE_TEAM_NEWS )
+    {
+        pageNameResult += "espnTeamNews";
+    }
+
     console.log( pageNameResult );
     return pageNameResult;
 }
@@ -273,25 +285,42 @@ function getCurrentUrl()
 
 function getPageTypeFromUrl( url )
 {
+    console.log( "getPageTypeFromUrl" );
     if( url.indexOf( "basketball/team" ) != -1 )
     {
-        currentPageType = PAGE_TYPE_TEAM;
-        return PAGE_TYPE_TEAM;
+        var activeMenu = getActiveMenu();
+        console.log( "activeMenu=" + activeMenu );
+        if( activeMenu == PAGE_TYPE_TEAM_SCHEDULE )
+        {
+            currentPageType = PAGE_TYPE_TEAM_SCHEDULE;
+        }
+        else if( activeMenu == PAGE_TYPE_TEAM_NEWS )
+        {
+            currentPageType = PAGE_TYPE_TEAM_NEWS;
+        }
+        else if( activeMenu == PAGE_TYPE_TEAM_RESEARCH )
+        {
+            currentPageType = PAGE_TYPE_TEAM_NEWS;
+        }
+        else if( activeMenu == PAGE_TYPE_TEAM_STATS )
+        {
+            currentPageType = PAGE_TYPE_TEAM;
+        }
     }
     else if( url.indexOf( "basketball/players/add" ) != -1 )
     {
         currentPageType = PAGE_TYPE_PLAYERS;
-        return PAGE_TYPE_PLAYERS;
     }
     else if( url.indexOf( "basketball/addeddropped" ) != -1 )
     {
         currentPageType = PAGE_TYPE_ADDED_DROPPED;
-        return PAGE_TYPE_ADDED_DROPPED;
     }
     else
     {
         return PAGE_TYPE_UNDEFINED;
     }
+    console.log( "currentPageType=" + currentPageType );
+    return currentPageType;
 }
 
 
@@ -332,9 +361,8 @@ function addWeekGamesHeaders( data )
     var listOfElements = document.getElementsByClassName( "Table2__header-row" );
     var weekNum = data.weekNum; 
 
-    if( activeMenu == "News" )
+    if( activeMenu == PAGE_TYPE_TEAM_NEWS )
     {
-        
         for( var i = 0; i < listOfElements.length; i++ )
         {
             if( i % 2 == 0 )
@@ -348,7 +376,6 @@ function addWeekGamesHeaders( data )
                 newCell.outerHTML = "<th title=\"Games Remaining / Games This Week\" class=\"tc bg-clr-white Table2__th fbw-header fbw-new-element\">GR/G</th>";;
             }
         }
-
     }
     else
     {
@@ -437,15 +464,15 @@ async function requestHeaderFromServer( addOrUpdate )
 {
     console.log( "requestHeaderFromServer()" );
     // Sleep before getting the date string to allow the selected date some time to be changed
-    await sleep( 200 );
+    await sleep( 4000 );
     var dateRequestString = "";
-    if( currentPageType == PAGE_TYPE_TEAM )
-    {
-        dateRequestString = buildDateRequestString();
-    }
-    else if( currentPageType == PAGE_TYPE_PLAYERS )
+    if( currentPageType == PAGE_TYPE_PLAYERS )
     {
         dateRequestString = buildDateRequestStringPlayers();
+    }
+    else
+    {
+        dateRequestString = buildDateRequestString();
     }
 
     console.log( "dateRequestString - " + dateRequestString );
@@ -470,15 +497,14 @@ async function requestHeaderFromServer( addOrUpdate )
                 var weekNum = data.weekNum;
                 if( addOrUpdate == "Add" )
                 {
-                    if( currentPageType == PAGE_TYPE_TEAM )
-                    {
-                        addWeekGamesHeaders( data );
-                    }
-                    else if( currentPageType == PAGE_TYPE_PLAYERS )
+                    if( currentPageType == PAGE_TYPE_PLAYERS )
                     {
                         addWeekGamesHeadersPlayers( data );
                     }
-
+                    else
+                    {
+                        addWeekGamesHeaders( data );
+                    }
                 }
                 else if( addOrUpdate == "Update" )
                 {
@@ -528,7 +554,7 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
 async function requestGameDataFromServer( addOrUpdate )
 {
     console.log( "requestGameDataFromServer()" );
-    await sleep( 2000 );    
+    await sleep( 4000 );    
 
     var teamsRequestString = buildTeamsRequestString();
     if( currentPageType == PAGE_TYPE_PLAYERS && teamsRequestString == "teams=" )
@@ -538,14 +564,15 @@ async function requestGameDataFromServer( addOrUpdate )
     else
     {
         var dateRequestString = "";
-        if( currentPageType == PAGE_TYPE_TEAM )
-        {
-            dateRequestString = buildDateRequestString();
-        }
-        else if( currentPageType == PAGE_TYPE_PLAYERS )
+        if( currentPageType == PAGE_TYPE_PLAYERS )
         {
             dateRequestString = buildDateRequestStringPlayers();
         }
+        else
+        {
+            dateRequestString = buildDateRequestString();
+        }
+
         var leagueIdRequestString = buildLeagueIdRequestString();
         console.log( dateRequestString );
         console.log( leagueIdRequestString );
@@ -569,13 +596,13 @@ async function requestGameDataFromServer( addOrUpdate )
                     {
                         addGamesDataToLocalDictionary( data, teamsRequestString );
                         console.log( "currentPageType=" + currentPageType );
-                        if( currentPageType == PAGE_TYPE_TEAM )
-                        {
-                            addGamesForPlayers(); 
-                        }
-                        else if( currentPageType == PAGE_TYPE_PLAYERS )
+                        if( currentPageType == PAGE_TYPE_PLAYERS )
                         {
                             addGamesForPlayersPage();
+                        }
+                        else
+                        {
+                            addGamesForPlayers(); 
                         }
                     }
                     else if( addOrUpdate == "Update" )
@@ -991,7 +1018,7 @@ $( 'body' ).on( 'click', 'div.custom--day', function()
     var className = this.className;
     if( className.indexOf( "is-current" ) == -1 )
     {
-        renderGames( PAGE_TYPE_TEAM_SWITCH_DATES );
+        renderGamesNoSleep( PAGE_TYPE_TEAM_SWITCH_DATES );
     }
 });
 
@@ -1003,7 +1030,7 @@ $( 'body' ).on( 'click', 'div.custom--week', function()
     var className = this.className;
     if( className.indexOf( "is-current" ) == -1 )
     {
-        renderGames( PAGE_TYPE_TEAM_SWITCH_DATES );
+        renderGamesNoSleep( PAGE_TYPE_TEAM_SWITCH_DATES );
     }
 });
 
@@ -1018,19 +1045,23 @@ $( 'body' ).on( 'click', 'li.tabs__list__item', function()
     {
         if( menuSelected == PAGE_TYPE_TEAM_STATS )
         {
-            renderGames( menuSelected );
+            currentPageType = PAGE_TYPE_TEAM;
+            renderGamesNoSleep( menuSelected );
         }
         else if( menuSelected == PAGE_TYPE_TEAM_RESEARCH )
         {
-            renderGames( menuSelected );
+            currentPageType = PAGE_TYPE_TEAM_RESEARCH;
+            renderGamesNoSleep( menuSelected );
         }
         else if( menuSelected == PAGE_TYPE_TEAM_SCHEDULE )
         {
-            renderGames( menuSelected );
+            currentPageType = PAGE_TYPE_TEAM_SCHEDULE;
+            renderGamesNoSleep( menuSelected );
         }
         else if( menuSelected == PAGE_TYPE_TEAM_NEWS )
         {
-            renderGames( menuSelected );
+            currentPageType = PAGE_TYPE_TEAM_NEWS;
+            renderGamesNoSleep( menuSelected );
         }
     }
     else // Do nothing, same menu
@@ -1045,7 +1076,7 @@ $( 'body' ).on( 'click', 'a.scoring--period-today', function()
     var className = this.className;
     if( className.indexOf( "is-current" ) == -1 )
     {
-        renderGames( PAGE_TYPE_TEAM_SWITCH_DATES );
+        renderGamesNoSleep( PAGE_TYPE_TEAM_SWITCH_DATES );
     }
 });
 
@@ -1057,7 +1088,7 @@ $( 'body' ).on( 'click', 'li.monthContainer__day--noEvent', function()
     var className = this.className;
     if( ( className.indexOf( "monthContainer__day--disabled" ) == -1 ) && ( ( className.indexOf( "monthContainer__day--selected" ) == -1 ) ) )
     {
-        renderGames( PAGE_TYPE_TEAM_SWITCH_DATES );
+        renderGamesNoSleep( PAGE_TYPE_TEAM_SWITCH_DATES );
     }
 });
 
@@ -1071,13 +1102,16 @@ $( 'body' ).on( 'click', 'li.monthContainer__day--noEvent', function()
 */
 $( 'body' ).on( 'click', 'li.PaginationNav__list__item', function() 
 {
-    console.log( $( this ).text() );
-    var className = this.className;
-
-    if( className.indexOf( "PaginationNav__list__item--active" ) == -1 )
+    if( currentPageType == PAGE_TYPE_PLAYERS )
     {
-        removeGamesColumn();
-        requestGameDataFromServer( "Add" )
+        console.log( $( this ).text() );
+        var className = this.className;
+
+        if( className.indexOf( "PaginationNav__list__item--active" ) == -1 )
+        {
+            removeGamesColumn();
+            requestGameDataFromServer( "Add" )
+        }
     }
 });
 
@@ -1104,8 +1138,11 @@ $( 'body' ).on( 'click', 'label.picker-option', function()
 */
 $( 'body' ).on( 'change', 'select.dropdown__select', function() 
 {
-    removeGamesColumn();
-    setTimeout( requestGameDataFromServer( "Add" ), 2000 );
+    if( currentPageType == PAGE_TYPE_PLAYERS )
+    {
+        removeGamesColumn();
+        setTimeout( requestGameDataFromServer( "Add" ), 2000 );
+    }
 });
 
 
@@ -1117,10 +1154,11 @@ $( 'body' ).on( 'change', 'select.dropdown__select', function()
 /*
     renderGames - 
 */
-async function renderGames( type )
+async function renderGamesSleep( type )
 {
     console.log( "renderGames - type=" + type );
     console.log( "renderGames - typeof type=" + typeof type );
+    await sleep( 6000 );
     if( type == PAGE_TYPE_UNDEFINED || typeof type == 'undefined' )
     {
         return;
@@ -1128,7 +1166,7 @@ async function renderGames( type )
     if( type == PAGE_TYPE_TEAM )
     {
         console.log( "before  sleep" );
-        await sleep( 6000 );
+
         console.log( "after sleep" );
         isLeagueDailyOrWeekly();
         requestHeaderFromServer( "Add" );
@@ -1136,7 +1174,6 @@ async function renderGames( type )
     }
     else if( type == PAGE_TYPE_PLAYERS )
     {
-        await sleep( 6000 );
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
     }
@@ -1146,24 +1183,92 @@ async function renderGames( type )
     }
     else if( type == PAGE_TYPE_TEAM_NEWS )
     {
+        isLeagueDailyOrWeekly();
         removeEntireColumn();
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
     }
     else if( type == PAGE_TYPE_TEAM_RESEARCH )
     {
+        isLeagueDailyOrWeekly();
         removeEntireColumn();
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
     }
     else if( type == PAGE_TYPE_TEAM_SCHEDULE )
     {
+        isLeagueDailyOrWeekly();
         removeEntireColumn();
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
     }
     else if( type == PAGE_TYPE_TEAM_STATS )
     {
+        isLeagueDailyOrWeekly();
+        removeEntireColumn();
+        requestHeaderFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
+    }
+    else if( type = PAGE_TYPE_TEAM_SWITCH_DATES )
+    {
+        removeGamesColumn();
+        requestHeaderFromServer( "Update" );  
+        requestGameDataFromServer( "Add" );
+    }
+    else if( type == PAGE_TYPE_TEAM_WEEKLY )
+    {
+        requestHeaderFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
+    }
+}
+
+function renderGamesNoSleep( type )
+{
+    console.log( "renderGames - type=" + type );
+    console.log( "renderGames - typeof type=" + typeof type );
+    if( type == PAGE_TYPE_UNDEFINED || typeof type == 'undefined' )
+    {
+        return;
+    }
+    if( type == PAGE_TYPE_TEAM )
+    {
+        isLeagueDailyOrWeekly();
+        requestHeaderFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
+    }
+    else if( type == PAGE_TYPE_PLAYERS )
+    {
+        requestHeaderFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
+    }
+    else if( type == PAGE_TYPE_ADDED_DROPPED )
+    {
+
+    }
+    else if( type == PAGE_TYPE_TEAM_NEWS )
+    {
+        isLeagueDailyOrWeekly();
+        removeEntireColumn();
+        requestHeaderFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
+    }
+    else if( type == PAGE_TYPE_TEAM_RESEARCH )
+    {
+        isLeagueDailyOrWeekly();
+        removeEntireColumn();
+        requestHeaderFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
+    }
+    else if( type == PAGE_TYPE_TEAM_SCHEDULE )
+    {
+        isLeagueDailyOrWeekly();
+        removeEntireColumn();
+        requestHeaderFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
+    }
+    else if( type == PAGE_TYPE_TEAM_STATS )
+    {
+        isLeagueDailyOrWeekly();
         removeEntireColumn();
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
@@ -1189,7 +1294,7 @@ var observer = new MutationObserver(function(mutations)
     console.log( currentUrl );
     console.log( getPageTypeFromUrl( currentUrl ) );
     var pageType = getPageTypeFromUrl( currentUrl );
-    renderGames( pageType );
+    renderGamesNoSleep( pageType );
 });
 
 
@@ -1211,7 +1316,7 @@ function waitForAddedNode( params )
             console.log( currentUrl );
             console.log( getPageTypeFromUrl( currentUrl ) );
             var pageType = getPageTypeFromUrl( currentUrl );
-            renderGames( pageType );
+            renderGamesSleep( pageType );
             this.disconnect();
             params.done( element );
         }

@@ -192,6 +192,24 @@ function buildLeagueIdRequestString()
     return leagueIdRequestString;
 }
 
+function buildPageNameRequestString()
+{
+    console.log( "buildPageNameRequestString()" );
+    var pageNameResult = "pageName=";
+
+    if( currentPageType == "Team" )
+    {
+        pageNameResult += "espnTeam";
+    }
+    else if( currentPageType == "Players" )
+    {
+        pageNameResult += "espnPlayers";
+    }
+    console.log( pageNameResult );
+    return pageNameResult;
+}
+
+
 /*
     sleep - to create a delay in some functions to help the dynamic ESPN
     page load and change different settings
@@ -274,6 +292,7 @@ function getPageTypeFromUrl( url )
         return PAGE_TYPE_UNDEFINED;
     }
 }
+
 
 /*
     isLeagueDailyOrWeekly - returns whether the league is daily or weekly
@@ -432,9 +451,11 @@ async function requestHeaderFromServer( addOrUpdate )
     console.log( typeof dateRequestString );
     var leagueIdRequestString = buildLeagueIdRequestString();
 
+    var pageNameRequestString = buildPageNameRequestString();
+
     if( ( dateRequestString != "date=" ) && ( typeof dateRequestString !== 'undefined' ) )
     {
-        var url = "http://www.fantasywizard.site/getweek/?pageName=eTeamsPage&format=json&" + dateRequestString + "&" + leagueIdRequestString;
+        var url = "http://www.fantasywizard.site/getweek/?" + pageNameRequestString + "&format=json&" + dateRequestString + "&" + leagueIdRequestString;
         fetch( url )
             .then( function( response ){
             if ( response.status !== 200 )
@@ -528,9 +549,10 @@ async function requestGameDataFromServer( addOrUpdate )
         console.log( dateRequestString );
         console.log( leagueIdRequestString );
         console.log( teamsRequestString );
+        var pageNameRequestString = buildPageNameRequestString();
         if( ( dateRequestString != "date=" ) && (teamsRequestString != "teams=" ) && ( typeof dateRequestString !== 'undefined' ) )
         {
-            var url = "https://www.fantasywizard.site/gamesremaining/?pageName=eTeamsPage&" + teamsRequestString + "&format=json&" + dateRequestString + "&" + leagueIdRequestString;
+            var url = "https://www.fantasywizard.site/gamesremaining/?" + pageNameRequestString + "&" + teamsRequestString + "&format=json&" + dateRequestString + "&" + leagueIdRequestString;
             console.log( url );
 
             fetch( url )

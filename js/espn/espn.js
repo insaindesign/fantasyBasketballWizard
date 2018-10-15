@@ -300,7 +300,7 @@ function getPageTypeFromUrl( url )
         }
         else if( activeMenu == PAGE_TYPE_TEAM_RESEARCH )
         {
-            currentPageType = PAGE_TYPE_TEAM_NEWS;
+            currentPageType = PAGE_TYPE_TEAM_RESEARCH;
         }
         else if( activeMenu == PAGE_TYPE_TEAM_STATS )
         {
@@ -462,7 +462,7 @@ function updateWeekNumberHeader( data )
 */
 async function requestHeaderFromServer( addOrUpdate )
 {
-    console.log( "requestHeaderFromServer()" );
+    console.log( "requestHeaderFromServer" );
     // Sleep before getting the date string to allow the selected date some time to be changed
     await sleep( 4000 );
     var dateRequestString = "";
@@ -493,7 +493,7 @@ async function requestHeaderFromServer( addOrUpdate )
             }
             response.json().then( function( data )
             {
-                console.log( "addOrUpdate: " + addOrUpdate + ", currentPageType: " + currentPageType );
+                console.log( "requestHeaderFromServer - addOrUpdate: " + addOrUpdate + ", currentPageType: " + currentPageType );
                 var weekNum = data.weekNum;
                 if( addOrUpdate == "Add" )
                 {
@@ -531,7 +531,7 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
     // console.log( "addDataToLocalDictionary()" );
     if( teamsRequestString != "teams=" )
     {
-        if( currentPageType == PAGE_TYPE_TEAM )
+        if( currentPageType != PAGE_TYPE_PLAYERS )
         {
             localGamesDataDict = {};
         }
@@ -553,7 +553,7 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
 */
 async function requestGameDataFromServer( addOrUpdate )
 {
-    console.log( "requestGameDataFromServer()" );
+    console.log( "requestGameDataFromServer" );
     await sleep( 4000 );    
 
     var teamsRequestString = buildTeamsRequestString();
@@ -592,9 +592,9 @@ async function requestGameDataFromServer( addOrUpdate )
                 }
                 response.json().then( function( data )
                 {
+                    addGamesDataToLocalDictionary( data, teamsRequestString );
                     if( addOrUpdate == "Add" )
                     {
-                        addGamesDataToLocalDictionary( data, teamsRequestString );
                         console.log( "currentPageType=" + currentPageType );
                         if( currentPageType == PAGE_TYPE_PLAYERS )
                         {
@@ -609,7 +609,6 @@ async function requestGameDataFromServer( addOrUpdate )
                     {
                         updateGameData();
                     }
-
                 });
             }).catch( function( err ) {
                 console.log( 'Fetch Error :-S', err );
@@ -626,7 +625,7 @@ async function requestGameDataFromServer( addOrUpdate )
 */
 function addGamesForPlayers()
 {
-    console.log( "addGamesForPlayers()" );
+    console.log( "addGamesForPlayers" );
 
     var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
     var listOfTeamNameElements = document.getElementsByClassName( "playerinfo__playerteam" );
@@ -1156,8 +1155,8 @@ $( 'body' ).on( 'change', 'select.dropdown__select', function()
 */
 async function renderGamesSleep( type )
 {
-    console.log( "renderGames - type=" + type );
-    console.log( "renderGames - typeof type=" + typeof type );
+    console.log( "renderGamesSleep - type=" + type );
+    console.log( "renderGamesSleep - typeof type=" + typeof type );
     await sleep( 6000 );
     if( type == PAGE_TYPE_UNDEFINED || typeof type == 'undefined' )
     {
@@ -1224,8 +1223,8 @@ async function renderGamesSleep( type )
 
 function renderGamesNoSleep( type )
 {
-    console.log( "renderGames - type=" + type );
-    console.log( "renderGames - typeof type=" + typeof type );
+    console.log( "renderGamesNoSleep - type=" + type );
+    console.log( "renderGamesNoSleep - typeof type=" + typeof type );
     if( type == PAGE_TYPE_UNDEFINED || typeof type == 'undefined' )
     {
         return;
@@ -1276,7 +1275,7 @@ function renderGamesNoSleep( type )
     else if( type = PAGE_TYPE_TEAM_SWITCH_DATES )
     {
         removeGamesColumn();
-        requestHeaderFromServer( "Update" );  
+        requestHeaderFromServer( "Update" );
         requestGameDataFromServer( "Add" );
     }
     else if( type == PAGE_TYPE_TEAM_WEEKLY )

@@ -1,12 +1,16 @@
 /* 
     Fantasy Basketball Wizard #1 Chrome Extension (ever) for Fantasy Sports
     
-    teamPage.js 
+    espn.js
+
+    Written by: JL
 */
 
-/* ---------------------------------------------------------------------
-                            Global Variables  
---------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------------------------------------------------------------------------
+
+                                                        Global Variables
+                                                        
+------------------------------------------------------------------------------------------------------------------------------------------ */
 
 const PAGE_TYPE_ADDED_DROPPED = "Added Dropped";
 const PAGE_TYPE_PLAYERS = "Players";
@@ -24,99 +28,12 @@ var dailyOrWeekly = "";             // Value of daily or weekly league
 var localGamesDataDict = {};        // Holds the game remaining data
 var updateHeaders = false;          // Flag to update headers
 
-/* ---------------------------------------------------------------------
-                            Helper Functions 
---------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------------------------------------------------------------------------
 
-/*
-    buildTeamsRequestString - creates part of the url for the teams to 
-    request game data for.
-*/
-function buildTeamsRequestString()
-{
-    console.log( "buildTeamsRequestString()" );
+                                                        Helper Functions
+                                                        
+------------------------------------------------------------------------------------------------------------------------------------------ */
 
-    var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );
-    var teamsRequestString = "teams=";
-    console.log( "currentPageType=" + currentPageType );
-    for( var i = 0; i < listOfElements.length; i++ )
-    {
-        if( currentPageType == PAGE_TYPE_PLAYERS )
-        {
-            if( !( listOfElements[ i ].innerHTML in localGamesDataDict ) && ( listOfElements[ i ].innerHTML != "FA" ) )
-            {
-                teamsRequestString += listOfElements[i].innerHTML + ",";
-            }
-        }
-        else
-        {
-            if( listOfElements[ i ].innerHTML != "FA" )
-            {
-                teamsRequestString += listOfElements[i].innerHTML + ",";
-            }
-        }
-    }
-    console.log( teamsRequestString );
-    return teamsRequestString;
-}
-
-/*
-    formatDateString - formats a date string in YYYY-MM-DD
-*/
-function formatDateString( month, date )
-{
-    var dateString = "";
-
-    if( month == "Oct" )
-    {
-        dateString = ( "2018-10-" + date );
-    }
-    else if( month == "Nov" )
-    {
-        dateString = ( "2018-11-" + date );
-    }
-    else if( month == "Dec" )
-    {
-        dateString = ( "2018-12-" + date );
-    }
-    else if( month == "Jan" )
-    {
-        dateString = ( "2019-01-" + date );
-    }
-    else if( month == "Feb" )
-    {
-        dateString = ( "2019-02-" + date );
-    }
-    else if( month == "Mar" )
-    {
-        dateString = ( "2019-03-" + date );
-    }
-    else if( month == "Apr" )
-    {
-        dateString = ( "2019-04-" + date );
-    }
-
-    return dateString;
-}
-
-/*
-    buildDateRequestStringPlayers - 
-*/
-function buildDateRequestStringPlayers()
-{
-    var resultDateRequestString = "date="
-    var todaysDate = new Date();
-    // Getting today's date before regular season starts
-    if( ( todaysDate.getTime() <= new Date("2018-10-16").getTime() ) ) 
-    {
-        resultDateRequestString += "2018-10-16";
-    }
-    else
-    {
-        resultDateRequestString += ( todaysDate.getFullYear() + "-" + ( todaysDate.getMonth() + 1 ) + "-" + todaysDate.getDate() );
-    }
-    return resultDateRequestString;
-}
 
 /*
     buildDateRequestString - creates a date request string for the
@@ -176,6 +93,25 @@ function buildDateRequestString()
 }
 
 /*
+    buildDateRequestStringPlayers - 
+*/
+function buildDateRequestStringPlayers()
+{
+    var resultDateRequestString = "date="
+    var todaysDate = new Date();
+    // Getting today's date before regular season starts
+    if( ( todaysDate.getTime() <= new Date("2018-10-16").getTime() ) ) 
+    {
+        resultDateRequestString += "2018-10-16";
+    }
+    else
+    {
+        resultDateRequestString += ( todaysDate.getFullYear() + "-" + ( todaysDate.getMonth() + 1 ) + "-" + todaysDate.getDate() );
+    }
+    return resultDateRequestString;
+}
+
+/*
     buildLeagueIdRequestString - creates part of the url for the teams to 
     request game data for.
 */
@@ -191,9 +127,44 @@ function buildLeagueIdRequestString()
     return leagueIdRequestString;
 }
 
+/*
+    buildTeamsRequestString - creates part of the url for the teams to 
+    request game data for.
+*/
+function buildTeamsRequestString()
+{
+    console.log( "buildTeamsRequestString()" );
+
+    var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );
+    var teamsRequestString = "teams=";
+    console.log( "currentPageType=" + currentPageType );
+    for( var i = 0; i < listOfElements.length; i++ )
+    {
+        if( currentPageType == PAGE_TYPE_PLAYERS )
+        {
+            if( !( listOfElements[ i ].innerHTML in localGamesDataDict ) && ( listOfElements[ i ].innerHTML != "FA" ) )
+            {
+                teamsRequestString += listOfElements[i].innerHTML + ",";
+            }
+        }
+        else
+        {
+            if( listOfElements[ i ].innerHTML != "FA" )
+            {
+                teamsRequestString += listOfElements[i].innerHTML + ",";
+            }
+        }
+    }
+    console.log( teamsRequestString );
+    return teamsRequestString;
+}
+
+/*
+    buildPageNameRequestString -
+*/
 function buildPageNameRequestString()
 {
-    console.log( "buildPageNameRequestString()" );
+    console.log( "buildPageNameRequestString" );
     var pageNameResult = "pageName=";
 
     if( currentPageType == PAGE_TYPE_TEAM )
@@ -221,15 +192,45 @@ function buildPageNameRequestString()
     return pageNameResult;
 }
 
-
 /*
-    sleep - to create a delay in some functions to help the dynamic ESPN
-    page load and change different settings
+    formatDateString - formats a date string in YYYY-MM-DD
 */
-function sleep( ms )
+function formatDateString( month, date )
 {
-  return new Promise( resolve => setTimeout( resolve, ms ) );
+    var dateString = "";
+
+    if( month == "Oct" )
+    {
+        dateString = ( "2018-10-" + date );
+    }
+    else if( month == "Nov" )
+    {
+        dateString = ( "2018-11-" + date );
+    }
+    else if( month == "Dec" )
+    {
+        dateString = ( "2018-12-" + date );
+    }
+    else if( month == "Jan" )
+    {
+        dateString = ( "2019-01-" + date );
+    }
+    else if( month == "Feb" )
+    {
+        dateString = ( "2019-02-" + date );
+    }
+    else if( month == "Mar" )
+    {
+        dateString = ( "2019-03-" + date );
+    }
+    else if( month == "Apr" )
+    {
+        dateString = ( "2019-04-" + date );
+    }
+
+    return dateString;
 }
+
 
 /* 
     getActiveMenu - returns the active menu
@@ -241,7 +242,17 @@ function getActiveMenu()
     var url = new URL( entireUrl );
     var view = url.searchParams.get( "view" );
 
-    return view.charAt( 0 ).toUpperCase() + view.slice( 1 );
+    // if nothing, then it is at Stats
+    if( view != null )
+    {
+        return view.charAt( 0 ).toUpperCase() + view.slice( 1 );
+    }
+    else
+    {
+        console.log( "view is null" );
+        return PAGE_TYPE_TEAM_STATS;
+    }
+
 }
 
 /* 
@@ -345,17 +356,28 @@ function isLeagueDailyOrWeekly()
     }
 }
 
+/*
+    sleep - to create a delay in some functions to help the dynamic ESPN
+    page load and change different settings
+*/
+function sleep( ms )
+{
+  return new Promise( resolve => setTimeout( resolve, ms ) );
+}
 
-/* ---------------------------------------------------------------------
-                            Adding header to HTML  
---------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------------------------------------------------------------------------
+
+                                                        WEEK - GAMES HEADERS
+                                                        
+------------------------------------------------------------------------------------------------------------------------------------------ */
+
 
 /*
-    addGamesWeekHeaders - adds the 'GAMES' and 'WEEK' headers to the HTML of the page.
+    addWeekGamesHeaders - adds the 'WEEK #' and 'GR/G' headers to the HTML of the page
 */
 function addWeekGamesHeaders( data )
 {
-    console.log( "addWeekGamesHeaders()" );
+    console.log( "addWeekGamesHeaders" );
 
     var activeMenu = getActiveMenu();
     var listOfElements = document.getElementsByClassName( "Table2__header-row" );
@@ -407,12 +429,12 @@ function addWeekGamesHeaders( data )
 }
 
 /*
-    addGamesWeekHeaders - adds the 'WEEK #' and 'GR/G' headers
-    to the HTML of the page.
+    addWeekGamesHeadersPlayers - adds the 'WEEK #' and 'GR/G' headers
+    to the HTML of the page for Players page
 */
 function addWeekGamesHeadersPlayers( data )
 {
-    console.log( "addWeekGamesHeaders()" );
+    console.log( "addWeekGamesHeaders" );
     var weekNum = data.weekNum;
     var listOfElements = document.getElementsByClassName( "Table2__header-row" );
 
@@ -518,17 +540,18 @@ async function requestHeaderFromServer( addOrUpdate )
     }
 }
 
+/* ------------------------------------------------------------------------------------------------------------------------------------------
 
-/* ---------------------------------------------------------------------
-                        Adding games data to HTML  
---------------------------------------------------------------------- */
+                                                        GAMES DATA
+                                                        
+------------------------------------------------------------------------------------------------------------------------------------------ */
 
 /*
     addGamesDataToLocalDictionary - 
 */
 function addGamesDataToLocalDictionary( data, teamsRequestString )
 {
-    // console.log( "addDataToLocalDictionary()" );
+    // console.log( "addDataToLocalDictionary" );
     if( teamsRequestString != "teams=" )
     {
         if( currentPageType != PAGE_TYPE_PLAYERS )
@@ -559,7 +582,7 @@ async function requestGameDataFromServer( addOrUpdate )
     var teamsRequestString = buildTeamsRequestString();
     if( currentPageType == PAGE_TYPE_PLAYERS && teamsRequestString == "teams=" )
     {
-        addGamesForPlayersPage();
+        addGamesPlayersPage();
     }
     else
     {
@@ -598,11 +621,11 @@ async function requestGameDataFromServer( addOrUpdate )
                         console.log( "currentPageType=" + currentPageType );
                         if( currentPageType == PAGE_TYPE_PLAYERS )
                         {
-                            addGamesForPlayersPage();
+                            addGamesPlayersPage();
                         }
                         else
                         {
-                            addGamesForPlayers(); 
+                            addGamesTeamPage(); 
                         }
                     }
                     else if( addOrUpdate == "Update" )
@@ -620,12 +643,12 @@ async function requestGameDataFromServer( addOrUpdate )
 }
 
 /*
-    addGamesForPlayers - add the games remaining data to the HTML
+    addGamesTeamPage - add the games remaining data to the HTML
     of the page
 */
-function addGamesForPlayers()
+function addGamesTeamPage()
 {
-    console.log( "addGamesForPlayers" );
+    console.log( "addGamesTeamPage" );
 
     var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
     var listOfTeamNameElements = document.getElementsByClassName( "playerinfo__playerteam" );
@@ -774,12 +797,12 @@ function addGamesForPlayers()
 }
 
 /*
-    addGamesForPlayers - creates the games remaining cells and
+    addGamesTeamPage - creates the games remaining cells and
     adds the data to the HTML of the page
 */
-function addGamesForPlayersPage()
+function addGamesPlayersPage()
 {
-    console.log( "addGamesForPlayersPage()" );
+    console.log( "addGamesPlayersPage" );
 
     var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
     var totalGamesRemaining = 0;
@@ -903,9 +926,11 @@ function updateGameData()
 }
 
 
-/* ---------------------------------------------------------------------
-                        HTML modifying functions  
---------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------------------------------------------------------------------------
+
+                                                        HTML Modifying Helper Functions 
+                                                        
+------------------------------------------------------------------------------------------------------------------------------------------ */
 
 /*
     moveButtonStarterPressed - Add an empty '-/-' cell for the
@@ -974,38 +999,43 @@ function removeEntireColumn()
     }
 }
 
-/* ---------------------------------------------------------------------
-                            HTML Object Clicks 
---------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------------------------------------------------------------------------
+
+                                                        Team - HTML Object Changes 
+
+------------------------------------------------------------------------------------------------------------------------------------------ */
 /*
     Adjusting the roster by moving players around
 */
 $( 'body' ).on( 'click', 'a.move-action-btn', function() 
 {
-    var className = this.className;
-    var closestTd = $( this ).closest( "td" )[0];
-    var slotTd = $( closestTd ).siblings( "td" )[0];
-    var slotTdInnerDiv = slotTd.getElementsByClassName( "table--cell" )[0];
-    var benchOrStarter = slotTdInnerDiv.innerHTML;
-
-    if( $( this ).text() == "MOVE" )
+    if( currentPageType == PAGE_TYPE_TEAM || currentPageType == PAGE_TYPE_TEAM_RESEARCH || currentPageType == PAGE_TYPE_TEAM_NEWS || currentPageType == PAGE_TYPE_TEAM_SCHEDULE || currentPageType == PAGE_TYPE_TEAM_STATS )
     {
-        // A Starter Player's 'MOVE' button has been pressed
-        if( benchOrStarter != "BE" && className.indexOf( "isActive" ) == -1 )
-        {
-            // Need a small delay for the new EMPTY bench spot to be created dynamically
-            setTimeout( moveButtonStarterPressed, 200 );
-        }
-        // A Bench Player's 'MOVE' button has been pressed
-        else
-        {
-        }
-    }
+        var className = this.className;
+        var closestTd = $( this ).closest( "td" )[0];
+        var slotTd = $( closestTd ).siblings( "td" )[0];
+        var slotTdInnerDiv = slotTd.getElementsByClassName( "table--cell" )[0];
+        var benchOrStarter = slotTdInnerDiv.innerHTML;
 
-    if( $( this ).text() == "HERE" )
-    {
-        // removeGamesColumn();
-        requestGameDataFromServer( "Update" );
+        if( $( this ).text() == "MOVE" )
+        {
+            // A Starter Player's 'MOVE' button has been pressed
+            if( benchOrStarter != "BE" && className.indexOf( "isActive" ) == -1 )
+            {
+                // Need a small delay for the new EMPTY bench spot to be created dynamically
+                setTimeout( moveButtonStarterPressed, 200 );
+            }
+            // A Bench Player's 'MOVE' button has been pressed
+            else
+            {
+            }
+        }
+
+        if( $( this ).text() == "HERE" )
+        {
+            // removeGamesColumn();
+            requestGameDataFromServer( "Update" );
+        }
     }
 });
 
@@ -1014,10 +1044,13 @@ $( 'body' ).on( 'click', 'a.move-action-btn', function()
 */
 $( 'body' ).on( 'click', 'div.custom--day', function() 
 {
-    var className = this.className;
-    if( className.indexOf( "is-current" ) == -1 )
+    if( currentPageType == PAGE_TYPE_TEAM || currentPageType == PAGE_TYPE_TEAM_RESEARCH || currentPageType == PAGE_TYPE_TEAM_NEWS || currentPageType == PAGE_TYPE_TEAM_SCHEDULE || currentPageType == PAGE_TYPE_TEAM_STATS )
     {
-        renderGamesNoSleep( PAGE_TYPE_TEAM_SWITCH_DATES );
+        var className = this.className;
+        if( className.indexOf( "is-current" ) == -1 )
+        {
+            renderGamesNoSleep( PAGE_TYPE_TEAM_SWITCH_DATES );
+        }
     }
 });
 
@@ -1026,10 +1059,13 @@ $( 'body' ).on( 'click', 'div.custom--day', function()
 */
 $( 'body' ).on( 'click', 'div.custom--week', function() 
 {
-    var className = this.className;
-    if( className.indexOf( "is-current" ) == -1 )
+    if( currentPageType == PAGE_TYPE_TEAM || currentPageType == PAGE_TYPE_TEAM_RESEARCH || currentPageType == PAGE_TYPE_TEAM_NEWS || currentPageType == PAGE_TYPE_TEAM_SCHEDULE || currentPageType == PAGE_TYPE_TEAM_STATS )
     {
-        renderGamesNoSleep( PAGE_TYPE_TEAM_SWITCH_DATES );
+        var className = this.className;
+        if( className.indexOf( "is-current" ) == -1 )
+        {
+            renderGamesNoSleep( PAGE_TYPE_TEAM_SWITCH_DATES );
+        }
     }
 });
 
@@ -1038,33 +1074,36 @@ $( 'body' ).on( 'click', 'div.custom--week', function()
 */
 $( 'body' ).on( 'click', 'li.tabs__list__item', function() 
 {
-    var className = this.className;
-    var menuSelected = $( this ).text();
-    if( className.indexOf( "tabs__list__item--active" ) == -1 )
+    if( currentPageType == PAGE_TYPE_TEAM || currentPageType == PAGE_TYPE_TEAM_RESEARCH || currentPageType == PAGE_TYPE_TEAM_NEWS || currentPageType == PAGE_TYPE_TEAM_SCHEDULE || currentPageType == PAGE_TYPE_TEAM_STATS )
     {
-        if( menuSelected == PAGE_TYPE_TEAM_STATS )
+        var className = this.className;
+        var menuSelected = $( this ).text();
+        if( className.indexOf( "tabs__list__item--active" ) == -1 )
         {
-            currentPageType = PAGE_TYPE_TEAM;
-            renderGamesNoSleep( menuSelected );
+            if( menuSelected == PAGE_TYPE_TEAM_STATS )
+            {
+                currentPageType = PAGE_TYPE_TEAM;
+                renderGamesNoSleep( menuSelected );
+            }
+            else if( menuSelected == PAGE_TYPE_TEAM_RESEARCH )
+            {
+                currentPageType = PAGE_TYPE_TEAM_RESEARCH;
+                renderGamesNoSleep( menuSelected );
+            }
+            else if( menuSelected == PAGE_TYPE_TEAM_SCHEDULE )
+            {
+                currentPageType = PAGE_TYPE_TEAM_SCHEDULE;
+                renderGamesNoSleep( menuSelected );
+            }
+            else if( menuSelected == PAGE_TYPE_TEAM_NEWS )
+            {
+                currentPageType = PAGE_TYPE_TEAM_NEWS;
+                renderGamesNoSleep( menuSelected );
+            }
         }
-        else if( menuSelected == PAGE_TYPE_TEAM_RESEARCH )
-        {
-            currentPageType = PAGE_TYPE_TEAM_RESEARCH;
-            renderGamesNoSleep( menuSelected );
-        }
-        else if( menuSelected == PAGE_TYPE_TEAM_SCHEDULE )
-        {
-            currentPageType = PAGE_TYPE_TEAM_SCHEDULE;
-            renderGamesNoSleep( menuSelected );
-        }
-        else if( menuSelected == PAGE_TYPE_TEAM_NEWS )
-        {
-            currentPageType = PAGE_TYPE_TEAM_NEWS;
-            renderGamesNoSleep( menuSelected );
-        }
+        else // Do nothing, same menu
+        {}
     }
-    else // Do nothing, same menu
-    {}
 });
 
 /*
@@ -1072,10 +1111,13 @@ $( 'body' ).on( 'click', 'li.tabs__list__item', function()
 */
 $( 'body' ).on( 'click', 'a.scoring--period-today', function() 
 {
-    var className = this.className;
-    if( className.indexOf( "is-current" ) == -1 )
+    if( currentPageType == PAGE_TYPE_TEAM || currentPageType == PAGE_TYPE_TEAM_RESEARCH || currentPageType == PAGE_TYPE_TEAM_NEWS || currentPageType == PAGE_TYPE_TEAM_SCHEDULE || currentPageType == PAGE_TYPE_TEAM_STATS )
     {
-        renderGamesNoSleep( PAGE_TYPE_TEAM_SWITCH_DATES );
+        var className = this.className;
+        if( className.indexOf( "is-current" ) == -1 )
+        {
+            renderGamesNoSleep( PAGE_TYPE_TEAM_SWITCH_DATES );
+        }
     }
 });
 
@@ -1084,17 +1126,22 @@ $( 'body' ).on( 'click', 'a.scoring--period-today', function()
 */
 $( 'body' ).on( 'click', 'li.monthContainer__day--noEvent', function() 
 {
-    var className = this.className;
-    if( ( className.indexOf( "monthContainer__day--disabled" ) == -1 ) && ( ( className.indexOf( "monthContainer__day--selected" ) == -1 ) ) )
+    if( currentPageType == PAGE_TYPE_TEAM || currentPageType == PAGE_TYPE_TEAM_RESEARCH || currentPageType == PAGE_TYPE_TEAM_NEWS || currentPageType == PAGE_TYPE_TEAM_SCHEDULE || currentPageType == PAGE_TYPE_TEAM_STATS )
     {
-        renderGamesNoSleep( PAGE_TYPE_TEAM_SWITCH_DATES );
+        var className = this.className;
+        if( ( className.indexOf( "monthContainer__day--disabled" ) == -1 ) && ( ( className.indexOf( "monthContainer__day--selected" ) == -1 ) ) )
+        {
+            renderGamesNoSleep( PAGE_TYPE_TEAM_SWITCH_DATES );
+        }
     }
 });
 
 
-/* ---------------------------------------------------------------------
-                            Players - Object Changes 
---------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------------------------------------------------------------------------
+
+                                                        Players - HTML Object Changes 
+
+------------------------------------------------------------------------------------------------------------------------------------------ */
 
 /*
     Changing pages
@@ -1146,12 +1193,14 @@ $( 'body' ).on( 'change', 'select.dropdown__select', function()
 
 
 
-/* ---------------------------------------------------------------------
-                    Render Games by Page Type 
---------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------------------------------------------------------------------------
+
+                                                        Page Handlers 
+                                                        
+------------------------------------------------------------------------------------------------------------------------------------------ */
  
 /*
-    renderGames - 
+    renderGamesSleep - 
 */
 async function renderGamesSleep( type )
 {
@@ -1221,6 +1270,9 @@ async function renderGamesSleep( type )
     }
 }
 
+/*
+    renderGamesNoSleep - 
+*/
 function renderGamesNoSleep( type )
 {
     console.log( "renderGamesNoSleep - type=" + type );
@@ -1287,7 +1339,7 @@ function renderGamesNoSleep( type )
 
 
 // var observer = new MutationObserver( callLater );
-var observer = new MutationObserver(function(mutations)
+var observer = new MutationObserver( function ( mutations )
 {
     var currentUrl = getCurrentUrl();
     console.log( currentUrl );
@@ -1297,7 +1349,8 @@ var observer = new MutationObserver(function(mutations)
 });
 
 
-var observerConfig = {
+var observerConfig =
+{
     attributes: true, 
     characterData: true,
     childList: true

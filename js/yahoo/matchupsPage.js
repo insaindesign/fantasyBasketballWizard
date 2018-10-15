@@ -114,7 +114,7 @@ function initTable(){
     teamNames = document.getElementById("matchup-header").innerText.split('\n')
     //console.log("teams: ", );
     nameLeft = teamNames[1];
-    nameRight = teamNames[teamNames.length-3];
+    nameRight = teamNames[teamNames.length-4];
 
     matchup = document.getElementById("matchup-wall-header");
     pTable = document.createElement("table");

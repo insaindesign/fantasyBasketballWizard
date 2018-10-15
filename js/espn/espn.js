@@ -36,12 +36,12 @@ var updateHeaders = false;          // Flag to update headers
 
 
 /*
-    buildDateRequestString - creates a date request string for the
+    buildSelectDateRequestString - creates a date request string for the
     the parameter for the server request for either daily or weekly leagues
 */
-function buildDateRequestString()
+function buildSelectDateRequestString()
 {
-    console.log( "buildDateRequestString()" );
+    console.log( "buildSelectDateRequestString" );
     var currentElements = document.getElementsByClassName( "is-current" );
     var resultDateRequestString = "date="
     console.log( dailyOrWeekly );
@@ -93,10 +93,11 @@ function buildDateRequestString()
 }
 
 /*
-    buildDateRequestStringPlayers - 
+    buildTodayDateRequestString - 
 */
-function buildDateRequestStringPlayers()
+function buildTodayDateRequestString()
 {
+    console.log( "buildTodayDateRequestString" );
     var resultDateRequestString = "date="
     var todaysDate = new Date();
     // Getting today's date before regular season starts
@@ -133,10 +134,11 @@ function buildLeagueIdRequestString()
 */
 function buildTeamsRequestString()
 {
-    console.log( "buildTeamsRequestString()" );
+    console.log( "buildTeamsRequestString" );
 
     var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );
     var teamsRequestString = "teams=";
+    console.log( localGamesDataDict );
     console.log( "currentPageType=" + currentPageType );
     for( var i = 0; i < listOfElements.length; i++ )
     {
@@ -145,6 +147,13 @@ function buildTeamsRequestString()
             if( !( listOfElements[ i ].innerHTML in localGamesDataDict ) && ( listOfElements[ i ].innerHTML != "FA" ) )
             {
                 teamsRequestString += listOfElements[i].innerHTML + ",";
+            }
+        }
+        else if( currentPageType == PAGE_TYPE_ADDED_DROPPED )
+        {
+            if( !( listOfElements[ i ].innerHTML in localGamesDataDict ) && listOfElements[ i ].innerHTML != "FA" )
+            {
+                teamsRequestString += listOfElements[ i ].innerHTML + ",";
             }
         }
         else
@@ -186,6 +195,10 @@ function buildPageNameRequestString()
     else if( currentPageType == PAGE_TYPE_TEAM_NEWS )
     {
         pageNameResult += "espnTeamNews";
+    }
+    else if( currentPageType == PAGE_TYPE_ADDED_DROPPED )
+    {
+        pageNameResult += "espnAddedDropped";
     }
 
     console.log( pageNameResult );
@@ -461,6 +474,27 @@ function addWeekGamesHeadersPlayers( data )
     }
 }
 
+/*
+    addWeekGamesHeadersAddedDroppedPage - adds the 'GR/G' header to the HTML of the page.
+*/
+function addWeekGamesHeadersAddedDroppedPage( data )
+{
+    console.log( "addWeekGamesHeaders()" );
+    var weekNum = data.weekNum;
+    var listOfElements = document.getElementsByClassName( "Table2__header-row" );
+
+    for( var i = 0; i < listOfElements.length; i++ )
+    {
+        var newHeaderTh = document.createElement( "th" );
+        var newHeaderSpan = document.createElement( "span" );
+        newHeaderTh.title = "Games Remaining / Games This Week";
+        newHeaderTh.colSpan = "1";
+        newHeaderTh.className = "jsx-2810852873 table--cell poc tar header";
+        newHeaderSpan.innerHTML = "GR/G";
+        newHeaderTh.appendChild( newHeaderSpan );
+        listOfElements[i].appendChild( newHeaderTh );
+    }
+}
 
 /*
     updateWeekNumberHeader - updates the 'GAMES' and 'WEEK' headers
@@ -488,13 +522,13 @@ async function requestHeaderFromServer( addOrUpdate )
     // Sleep before getting the date string to allow the selected date some time to be changed
     await sleep( 4000 );
     var dateRequestString = "";
-    if( currentPageType == PAGE_TYPE_PLAYERS )
+    if( currentPageType == PAGE_TYPE_PLAYERS || currentPageType == PAGE_TYPE_ADDED_DROPPED )
     {
-        dateRequestString = buildDateRequestStringPlayers();
+        dateRequestString = buildTodayDateRequestString();
     }
     else
     {
-        dateRequestString = buildDateRequestString();
+        dateRequestString = buildSelectDateRequestString();
     }
 
     console.log( "dateRequestString - " + dateRequestString );
@@ -522,6 +556,10 @@ async function requestHeaderFromServer( addOrUpdate )
                     if( currentPageType == PAGE_TYPE_PLAYERS )
                     {
                         addWeekGamesHeadersPlayers( data );
+                    }
+                    else if( currentPageType == PAGE_TYPE_ADDED_DROPPED )
+                    {
+                        addWeekGamesHeadersAddedDroppedPage( data );
                     }
                     else
                     {
@@ -551,10 +589,11 @@ async function requestHeaderFromServer( addOrUpdate )
 */
 function addGamesDataToLocalDictionary( data, teamsRequestString )
 {
-    // console.log( "addDataToLocalDictionary" );
+    console.log( "addDataToLocalDictionary" );
+    console.log( teamsRequestString );
     if( teamsRequestString != "teams=" )
     {
-        if( currentPageType != PAGE_TYPE_PLAYERS )
+        if( currentPageType != PAGE_TYPE_PLAYERS && currentPageType != PAGE_TYPE_ADDED_DROPPED )
         {
             localGamesDataDict = {};
         }
@@ -584,16 +623,20 @@ async function requestGameDataFromServer( addOrUpdate )
     {
         addGamesPlayersPage();
     }
+    else if( currentPageType == PAGE_TYPE_ADDED_DROPPED && teamsRequestString == "teams=" )
+    {
+        addGamesAddedDroppedPage();
+    }
     else
     {
         var dateRequestString = "";
-        if( currentPageType == PAGE_TYPE_PLAYERS )
+        if( currentPageType == PAGE_TYPE_PLAYERS || currentPageType == PAGE_TYPE_ADDED_DROPPED )
         {
-            dateRequestString = buildDateRequestStringPlayers();
+            dateRequestString = buildTodayDateRequestString();
         }
         else
         {
-            dateRequestString = buildDateRequestString();
+            dateRequestString = buildSelectDateRequestString();
         }
 
         var leagueIdRequestString = buildLeagueIdRequestString();
@@ -622,6 +665,10 @@ async function requestGameDataFromServer( addOrUpdate )
                         if( currentPageType == PAGE_TYPE_PLAYERS )
                         {
                             addGamesPlayersPage();
+                        }
+                        else if( currentPageType == PAGE_TYPE_ADDED_DROPPED )
+                        {
+                            addGamesAddedDroppedPage();
                         }
                         else
                         {
@@ -839,6 +886,65 @@ function addGamesPlayersPage()
                     console.log( "teamName=" + teamName );
                     newGamesDiv.innerHTML = localGamesDataDict[teamName];
                     console.log( localGamesDataDict[teamName] );
+                    var splitDataIndex = localGamesDataDict[teamName].split( "/" );
+                    totalGamesRemaining += parseInt( splitDataIndex[0] );
+                    totalGamesForWeek += parseInt( splitDataIndex[1] );
+                    newGamesTd.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
+                }
+                else
+                {
+                    newGamesDiv.innerHTML = "-/-";
+                }
+            }
+            // Don't have empty players in Free Agents, only for Team page    
+            listOfTeamNameElementsIndex++;
+            newGamesTd.appendChild( newGamesDiv );
+            listOfElementsTr.appendChild( newGamesTd );
+        }
+    }
+}
+
+/*
+    addGamesAddedDroppedPage - creates the games remaining cells and
+    adds the data to the HTML of the page
+*/
+function addGamesAddedDroppedPage()
+{
+    console.log( "addGamesAddedDroppedPage" );
+
+    var listOfElements = document.getElementsByClassName( "Table2__tr--sm" );
+    var totalGamesRemaining = 0;
+    var totalGamesForWeek = 0;
+
+    var listOfTeamNameElements = document.getElementsByClassName( "playerinfo__playerteam" );
+    var listOfTeamNameElementsIndex = 0;
+
+    for( var i = 0; i < listOfElements.length; i++ )
+    {
+        var listOfElementsTr = listOfElements[i];
+
+        if( listOfElementsTr.children.length == 5 )
+        {
+            var newGamesTd = document.createElement( "td" );
+            var newGamesDiv = document.createElement( "div" );
+            newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
+            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div fbw-new-element";
+            newGamesDiv.style.textAlign = "center";
+
+            var isInjured = false;
+            // 'O'ut, injured player
+            if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
+            {
+                isInjured = true;
+            }
+            // Normal player
+            if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
+            {
+                if( !isInjured )
+                {
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
+                    
+                    newGamesDiv.innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     totalGamesRemaining += parseInt( splitDataIndex[0] );
                     totalGamesForWeek += parseInt( splitDataIndex[1] );
@@ -1191,7 +1297,28 @@ $( 'body' ).on( 'change', 'select.dropdown__select', function()
     }
 });
 
+/* ------------------------------------------------------------------------------------------------------------------------------------------
 
+                                                        Added Dropped - HTML Object Changes 
+
+------------------------------------------------------------------------------------------------------------------------------------------ */
+
+/*
+    Changing pages
+*/
+$( 'body' ).on( 'click', 'label.control--radio', function() 
+{
+    if( currentPageType == PAGE_TYPE_ADDED_DROPPED )
+    {
+        var className = this.className;
+
+        if( className.indexOf( "checked" ) == -1 )
+        {
+            removeGamesColumn();
+            setTimeout( requestGameDataFromServer( "Add" ), 3000 );
+        }
+    }
+});
 
 /* ------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1227,7 +1354,8 @@ async function renderGamesSleep( type )
     }
     else if( type == PAGE_TYPE_ADDED_DROPPED )
     {
-
+        requestHeaderFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
     }
     else if( type == PAGE_TYPE_TEAM_NEWS )
     {
@@ -1294,7 +1422,8 @@ function renderGamesNoSleep( type )
     }
     else if( type == PAGE_TYPE_ADDED_DROPPED )
     {
-
+        requestHeaderFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
     }
     else if( type == PAGE_TYPE_TEAM_NEWS )
     {

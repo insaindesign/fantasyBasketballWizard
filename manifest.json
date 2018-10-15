@@ -12,6 +12,7 @@
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*"],
       "js": ["js/yahoo/teamPage.js"]
     },
+
     {
       "matches": ["http://fantasy.espn.com/basketball/addeddropped*"],
       "js": ["js/jquery-3.3.1.min.js", "js/espn/addedDroppedPage.js"]
@@ -22,7 +23,7 @@
     },
     {
       "matches": ["http://fantasy.espn.com/basketball/team*"],
-      "js": ["js/jquery-3.3.1.min.js", "js/espn/teamPage.js"]
+      "js": ["js/jquery-3.3.1.min.js", "js/espn/espn.js"]
     },
     {
       "matches": ["http://fantasy.espn.com/basketball/players/add*"],

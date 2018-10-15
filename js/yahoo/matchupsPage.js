@@ -89,7 +89,7 @@ function getGamesRemaining(team){
     }
     
     var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yTeamPage&teams='+team+'&format=json&date='+dateString;
-    console.log("url: ", url);
+    //console.log("url: ", url);
     fetch(url)
         .then(function(response){
         if (response.status !== 200) {
@@ -112,7 +112,7 @@ function getGamesRemaining(team){
 function initTable(){
 
     teamNames = document.getElementById("matchup-header").innerText.split('\n')
-    console.log("teams: ", );
+    //console.log("teams: ", );
     nameLeft = teamNames[1];
     nameRight = teamNames[teamNames.length-3];
 
@@ -184,7 +184,7 @@ function getFormattedQueryFromURL() {
     if(str == "totals" || start == -1) {
         var weekNum = "weekNum=";
         weekNum+=document.getElementsByClassName("flyout-title")[0].innerText.split(" ")[1];
-        console.log(weekNum);
+        //console.log(weekNum);
         return weekNum;
     }
     return "date="+str;

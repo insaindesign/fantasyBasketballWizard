@@ -13,6 +13,9 @@
 ------------------------------------------------------------------------------------------------------------------------------------------ */
 
 const PAGE_TYPE_ADDED_DROPPED = "Added Dropped";
+const PAGE_TYPE_FANTASY_CAST = "Fantasy Cast";
+const PAGE_TYPE_FANTASY_CAST_MOST_CATEGORIES = "Fantasy Cast Most Categories";
+const PAGE_TYPE_FANTASY_CAST_POINTS = "Fantasy Cast Points";
 const PAGE_TYPE_PLAYERS = "Players";
 const PAGE_TYPE_TEAM = "Team";
 const PAGE_TYPE_TEAM_NEWS = "News";
@@ -113,6 +116,53 @@ function buildTodayDateRequestString()
 }
 
 /*
+    buildDateRequestStringFantasyCast - creates part of the url 
+    for the teams to request game data for.
+*/
+function buildDateRequestStringFantasyCast()
+{
+    console.log( "buildDateRequestStringFantasyCast" );
+    var dateElements = document.getElementsByClassName( "dropdown__select" );
+    var dateElement = dateElements[0];
+    var selectedDate = dateElement[dateElement.selectedIndex].text;
+    var selectedDateSplit = selectedDate.split( " " );
+    var month = selectedDateSplit[0];
+    var date = selectedDateSplit[1];
+    var resultDateRequestString = "date=";
+    console.log( "selectedDate=" + selectedDate + ", month=" + month + ", date=" + date );
+
+    if( month == "Oct" )
+    {
+        resultDateRequestString += ( "2018-10-" + date );
+    }
+    else if( month == "Nov" )
+    {
+        resultDateRequestString += ( "2018-11-" + date );
+    }
+    else if( month == "Dec" )
+    {
+        resultDateRequestString += ( "2018-12-" + date );
+    }
+    else if( month == "Jan" )
+    {
+        resultDateRequestString += ( "2019-01-" + date );
+    }
+    else if( month == "Feb" )
+    {
+        resultDateRequestString += ( "2019-02-" + date );
+    }
+    else if( month == "Mar" )
+    {
+        resultDateRequestString += ( "2019-03-" + date );
+    }
+    else if( month == "Apr" )
+    {
+        resultDateRequestString += ( "2019-04-" + date );
+    }
+    return resultDateRequestString;
+}
+
+/*
     buildLeagueIdRequestString - creates part of the url for the teams to 
     request game data for.
 */
@@ -142,20 +192,23 @@ function buildTeamsRequestString()
     console.log( "currentPageType=" + currentPageType );
     for( var i = 0; i < listOfElements.length; i++ )
     {
-        if( currentPageType == PAGE_TYPE_PLAYERS )
+        if( currentPageType == PAGE_TYPE_PLAYERS
+        || currentPageType == PAGE_TYPE_ADDED_DROPPED 
+        || currentPageType == PAGE_TYPE_FANTASY_CAST_POINTS
+        || currentPageType == PAGE_TYPE_FANTASY_CAST_MOST_CATEGORIES )
         {
             if( !( listOfElements[ i ].innerHTML in localGamesDataDict ) && ( listOfElements[ i ].innerHTML != "FA" ) )
             {
                 teamsRequestString += listOfElements[i].innerHTML + ",";
             }
         }
-        else if( currentPageType == PAGE_TYPE_ADDED_DROPPED )
-        {
-            if( !( listOfElements[ i ].innerHTML in localGamesDataDict ) && listOfElements[ i ].innerHTML != "FA" )
-            {
-                teamsRequestString += listOfElements[ i ].innerHTML + ",";
-            }
-        }
+        // else if( currentPageType == PAGE_TYPE_ADDED_DROPPED )
+        // {
+        //     if( !( listOfElements[ i ].innerHTML in localGamesDataDict ) && listOfElements[ i ].innerHTML != "FA" )
+        //     {
+        //         teamsRequestString += listOfElements[ i ].innerHTML + ",";
+        //     }
+        // }
         else
         {
             if( listOfElements[ i ].innerHTML != "FA" )
@@ -199,6 +252,14 @@ function buildPageNameRequestString()
     else if( currentPageType == PAGE_TYPE_ADDED_DROPPED )
     {
         pageNameResult += "espnAddedDropped";
+    }
+    else if( currentPageType == PAGE_TYPE_FANTASY_CAST_POINTS )
+    {
+        pageNameResult += "espnFantasyCastPoints";
+    }
+    else if( currentPageType == PAGE_TYPE_FANTASY_CAST_MOST_CATEGORIES )
+    {
+        pageNameResult += "espnFantasyCastMostCats";
     }
 
     console.log( pageNameResult );
@@ -339,6 +400,10 @@ function getPageTypeFromUrl( url )
     {
         currentPageType = PAGE_TYPE_ADDED_DROPPED;
     }
+    else if( url.indexOf( "fantasycast" ) != -1 )
+    {
+        currentPageType = PAGE_TYPE_FANTASY_CAST;
+    }
     else
     {
         return PAGE_TYPE_UNDEFINED;
@@ -353,7 +418,7 @@ function getPageTypeFromUrl( url )
 */
 function isLeagueDailyOrWeekly()
 {
-    console.log( "isLeagueDailyOrWeekly()" );
+    console.log( "isLeagueDailyOrWeekly" );
     var dateElements = document.getElementsByClassName( "is-current" );
 
     if( dateElements.length > 0 )
@@ -370,6 +435,25 @@ function isLeagueDailyOrWeekly()
 }
 
 /*
+    isFantasyCastMostCatsOrPoints - returns whether the fantasy cast page
+    is most categories or points
+*/
+function isFantasyCastMostCatsOrPoints()
+{
+    console.log( "isFantasyCastMostCatsOrPoints" );
+    var teamScoreElements = document.getElementsByClassName( "team-score" );
+    console.log( "teamScoreElements.length=" +teamScoreElements.length );
+    if( teamScoreElements.length == 2 )
+    {
+        currentPageType = PAGE_TYPE_FANTASY_CAST_POINTS;
+    }
+    else if( teamScoreElements.length == 6 )
+    {
+        currentPageType = PAGE_TYPE_FANTASY_CAST_MOST_CATEGORIES;
+    }
+}
+
+/*
     sleep - to create a delay in some functions to help the dynamic ESPN
     page load and change different settings
 */
@@ -378,12 +462,12 @@ function sleep( ms )
   return new Promise( resolve => setTimeout( resolve, ms ) );
 }
 
+
 /* ------------------------------------------------------------------------------------------------------------------------------------------
 
                                                         WEEK - GAMES HEADERS
                                                         
 ------------------------------------------------------------------------------------------------------------------------------------------ */
-
 
 /*
     addWeekGamesHeaders - adds the 'WEEK #' and 'GR/G' headers to the HTML of the page
@@ -416,8 +500,8 @@ function addWeekGamesHeaders( data )
     {
         for( var i = 0; i < listOfElements.length; i++ )
         {
-            // console.log(listOfElements[i]);
-            if( listOfElements[i].innerHTML.indexOf( "STARTERS" ) != -1 )
+            // console.log(listOfElements[i].innerHTML);
+            if( listOfElements[i].innerHTML.indexOf( "STARTERS" ) != -1 || listOfElements[i].innerHTML.indexOf( "BENCH" ) != -1  )
             {
                 var newGamesHeader = document.createElement( "th" );
                 newGamesHeader.title = "Week number " + weekNum.toString() + " of fantasy basketball";
@@ -593,7 +677,13 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
     console.log( teamsRequestString );
     if( teamsRequestString != "teams=" )
     {
-        if( currentPageType != PAGE_TYPE_PLAYERS && currentPageType != PAGE_TYPE_ADDED_DROPPED )
+        // if( currentPageType != PAGE_TYPE_PLAYERS && currentPageType != PAGE_TYPE_ADDED_DROPPED )
+        if( currentPageType == PAGE_TYPE_TEAM_NEWS
+        || currentPageType == PAGE_TYPE_TEAM
+        || currentPageType == PAGE_TYPE_TEAM_STATS
+        || currentPageType == PAGE_TYPE_TEAM_RESEARCH
+        || currentPageType == PAGE_TYPE_TEAM_SCHEDULE
+        || currentPageType == PAGE_TYPE_TEAM_WEEKLY )
         {
             localGamesDataDict = {};
         }
@@ -634,6 +724,10 @@ async function requestGameDataFromServer( addOrUpdate )
         {
             dateRequestString = buildTodayDateRequestString();
         }
+        else if( currentPageType == PAGE_TYPE_FANTASY_CAST_POINTS || currentPageType == PAGE_TYPE_FANTASY_CAST_MOST_CATEGORIES )
+        {
+            dateRequestString = buildDateRequestStringFantasyCast();
+        }
         else
         {
             dateRequestString = buildSelectDateRequestString();
@@ -669,6 +763,10 @@ async function requestGameDataFromServer( addOrUpdate )
                         else if( currentPageType == PAGE_TYPE_ADDED_DROPPED )
                         {
                             addGamesAddedDroppedPage();
+                        }
+                        else if( currentPageType == PAGE_TYPE_FANTASY_CAST_POINTS )
+                        {
+                            addGamesFantasyCastPagePoints();
                         }
                         else
                         {
@@ -840,6 +938,146 @@ function addGamesTeamPage()
 
             newCell.appendChild( newGamesDiv );
         }
+    }
+}
+
+/*
+    addGamesFantasyCastPagePoints - 
+*/
+function addGamesFantasyCastPagePoints()
+{
+    console.log( "addGamesFantasyCastPagePoints" );
+
+    var listOfElements = document.getElementsByClassName( "Table2__tr" );
+    var leftTotalGamesRemaining = 0;
+    var leftTotalGamesForWeek = 0;
+    var rightTotalGamesRemaining = 0;
+    var rightTotalGamesForWeek = 0;
+
+    for( var i = 0; i < listOfElements.length; i++ )
+    {
+        var listOfElementsChildren = listOfElements[i].children;
+        var playerColumnLeft = listOfElementsChildren[0];
+        var playerColumnLeftScore = listOfElementsChildren[1];
+        var playerColumnRight = listOfElementsChildren[4];
+        var playerColumnRightScore = listOfElementsChildren[3];
+        var newLeftGamesDiv = document.createElement( "div" );
+        var newRightGamesDiv = document.createElement( "div" );
+        newLeftGamesDiv.className = "jsx-2810852873 table--cell points-column fbw-new-element";
+        newRightGamesDiv.className = "jsx-2810852873 table--cell points-column reverse fbw-new-element";
+
+        // Total Row
+        if( listOfElements[i].className.indexOf( "total-row" ) != -1 )
+        {
+            var leftTotalGamesString = leftTotalGamesRemaining.toString() + "/" + leftTotalGamesForWeek.toString();
+            var rightTotalGamesString = rightTotalGamesRemaining.toString() + "/" + rightTotalGamesForWeek.toString();
+            newLeftGamesDiv.className += " fbw-left-total";
+            newRightGamesDiv.className += " fbw-right-total";
+            newLeftGamesDiv.innerHTML = leftTotalGamesString;
+            newRightGamesDiv.innerHTML = rightTotalGamesString;
+        }
+        // Player Row
+        else
+        {
+            // Check if the player is injured
+            var isLeftInjured = false;
+            var isRightInjured = false;
+            var leftInjuredElements = playerColumnLeft.getElementsByClassName( "injury-status_medium" );
+            var rightInjuredElements = playerColumnRight.getElementsByClassName( "injury-status_medium" );
+
+            if( leftInjuredElements.length > 0 )
+            {
+                if( leftInjuredElements[0].innerHTML == "O" )
+                {
+                    isLeftInjured = true;
+                }
+            }
+
+            if( rightInjuredElements.length > 0 )
+            {
+                if( rightInjuredElements[0].innerHTML == "O" )
+                {
+                    isRightInjured = true;
+                }
+            }
+
+            // Empty Left Player
+            if( playerColumnLeft.innerHTML.indexOf( "</div>Empty</div>" ) != -1 )
+            {
+                newLeftGamesDiv.innerHTML = "-/-";
+            }
+            // Normal Left Player
+            else
+            {
+                if( !isLeftInjured )
+                {
+                    var teamNameElements = playerColumnLeft.getElementsByClassName( "playerinfo__playerteam" );
+                    var teamName = teamNameElements[0].innerHTML;
+                    newLeftGamesDiv.innerHTML = localGamesDataDict[teamName];
+                    var splitDataIndex = localGamesDataDict[teamName].split( "/" );
+                    leftTotalGamesRemaining += parseInt( splitDataIndex[0] );
+                    leftTotalGamesForWeek += parseInt( splitDataIndex[1] );
+                    newLeftGamesDiv.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
+                }
+                else
+                {
+                    newLeftGamesDiv.innerHTML = "-/-";
+                }
+            }
+            // Empty Right Player
+            if( playerColumnRight.innerHTML.indexOf( "</div>Empty</div>" ) != -1 )
+            {
+                newRightGamesDiv.innerHTML = "-/-";
+            }
+            // Normal Right Player
+            else
+            {
+                if( !isRightInjured )
+                {
+                    var teamNameElements = playerColumnRight.getElementsByClassName( "playerinfo__playerteam" );
+                    var teamName = teamNameElements[0].innerHTML;
+                    console.log( "team:" + teamName );
+                    console.log( localGamesDataDict[teamName] );
+                    newRightGamesDiv.innerHTML = localGamesDataDict[teamName];
+                    var splitDataIndex = localGamesDataDict[teamName].split( "/" );
+                    rightTotalGamesRemaining += parseInt( splitDataIndex[0] );
+                    rightTotalGamesForWeek += parseInt( splitDataIndex[1] );
+                    newRightGamesDiv.style.backgroundColor = getBackgroundColor( splitDataIndex[0] ); 
+                }
+                else
+                {
+                    newRightGamesDiv.innerHTML = "-/-";
+                }
+            }
+        }
+        playerColumnLeftScore.appendChild( newLeftGamesDiv );
+        playerColumnRightScore.appendChild( newRightGamesDiv );
+    }
+
+    // Update total games
+    var leftTotalElements = document.getElementsByClassName( "fbw-left-total" );
+    var rightTotalElements = document.getElementsByClassName( "fbw-right-total" );
+
+    if( leftTotalElements.length > 0 )
+    {
+        var leftTotalGamesString = leftTotalGamesRemaining.toString() + "/" + leftTotalGamesForWeek.toString();
+        var rightTotalGamesString = rightTotalGamesRemaining.toString() + "/" + rightTotalGamesForWeek.toString();
+        leftTotalElements[0].innerHTML = leftTotalGamesString;
+        rightTotalElements[0].innerHTML = rightTotalGamesString;
+    }
+    // Make the greater number of total games font color green
+    console.log( "leftTotalGamesRemaining=" + leftTotalGamesRemaining + ", rightTotalGamesRemaining=" + rightTotalGamesRemaining );
+    if( leftTotalGamesRemaining > rightTotalGamesRemaining )
+    {
+        leftTotalElements[0].style.color = "#acd888";
+    }
+    else if( rightTotalGamesRemaining > leftTotalGamesRemaining )
+    {
+        rightTotalElements[0].style.color = "#acd888";
+    }
+    else if( leftTotalGamesRemaining == rightTotalGamesRemaining )
+    { 
+        // Do nothing in a tie 
     }
 }
 
@@ -1320,6 +1558,39 @@ $( 'body' ).on( 'click', 'label.control--radio', function()
     }
 });
 
+
+/* ------------------------------------------------------------------------------------------------------------------------------------------
+
+                                                    Fantasy Cast Points - HTML Object Changes 
+
+------------------------------------------------------------------------------------------------------------------------------------------ */
+
+
+$( 'body' ).on( 'change', 'select.dropdown__select', function() 
+{
+    if( currentPageType == PAGE_TYPE_FANTASY_CAST_POINTS )
+    {
+        removeEntireColumn();
+        localGamesDataDict = {};
+        requestGameDataFromServer( "Add" );
+    }
+
+});
+
+$( 'body' ).on( 'click', 'li.carousel__slide', function() 
+{
+    if( currentPageType == PAGE_TYPE_FANTASY_CAST_POINTS )
+    {
+        console.log( "change menu" );
+        var className = this.className;
+        if( className.indexOf( "selected" ) == -1 )
+        {
+            removeEntireColumn();
+            setTimeout( requestGameDataFromServer( "Add" ), 1000 );
+        }
+    }
+});
+
 /* ------------------------------------------------------------------------------------------------------------------------------------------
 
                                                         Page Handlers 
@@ -1356,6 +1627,11 @@ async function renderGamesSleep( type )
     {
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
+    }
+    else if( type == PAGE_TYPE_FANTASY_CAST )
+    {
+        isFantasyCastMostCatsOrPoints();
+        requestGameDataFromServer( "Add" );    
     }
     else if( type == PAGE_TYPE_TEAM_NEWS )
     {
@@ -1401,10 +1677,11 @@ async function renderGamesSleep( type )
 /*
     renderGamesNoSleep - 
 */
-function renderGamesNoSleep( type )
+async function renderGamesNoSleep( type )
 {
     console.log( "renderGamesNoSleep - type=" + type );
     console.log( "renderGamesNoSleep - typeof type=" + typeof type );
+    await sleep( 4000 );
     if( type == PAGE_TYPE_UNDEFINED || typeof type == 'undefined' )
     {
         return;
@@ -1423,6 +1700,11 @@ function renderGamesNoSleep( type )
     else if( type == PAGE_TYPE_ADDED_DROPPED )
     {
         requestHeaderFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
+    }
+    else if( type == PAGE_TYPE_FANTASY_CAST )
+    {
+        isFantasyCastMostCatsOrPoints();
         requestGameDataFromServer( "Add" );
     }
     else if( type == PAGE_TYPE_TEAM_NEWS )

@@ -66,7 +66,7 @@ function getGames(team){
     
     var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yTeamPage&teams='+team+'&format=json&date='+dateString+'&'+leagueIDString;
     //console.log("url: ", url);
-    /console.log("url: ", dateString);
+    //console.log("url: ", dateString);
     var req = new XMLHttpRequest();
     req.open("GET", url, false);
     req.send(null);

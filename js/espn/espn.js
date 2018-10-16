@@ -45,10 +45,10 @@ var updateHeaders = false;          // Flag to update headers
 */
 function buildSelectDateRequestString()
 {
-    console.log( "buildSelectDateRequestString" );
+    // console.log( "buildSelectDateRequestString" );
     var currentElements = document.getElementsByClassName( "is-current" );
     var resultDateRequestString = "date=";
-    console.log( dailyOrWeekly );
+    // console.log( dailyOrWeekly );
     if( dailyOrWeekly == DAILY_LEAGUE )
     {
         var currentDateDiv = currentElements[0];
@@ -58,12 +58,10 @@ function buildSelectDateRequestString()
         var selectedMonth = currentMonthDateSplit[0];
         var selectedDate = currentMonthDateSplit[1];
 
-        // return formatDateString( selectedMonth, selectedDate );
         resultDateRequestString = resultDateRequestString.concat( formatDateString( selectedMonth, selectedDate ) );
     }
     else if( dailyOrWeekly == WEEKLY_LEAGUE )
     {
-        console.log( "WEEEEEEEEKLLYYY" );
         var currentDateDiv = currentElements[0];
         var currentDateChildren = currentDateDiv.children[1];
         var currentMonthDate = currentDateChildren.innerHTML;
@@ -79,7 +77,6 @@ function buildSelectDateRequestString()
         // lower range date to get the full amount of games
         if( ( todaysDate.getTime() <= new Date( formattedDateLowerRange ).getTime() ) ) 
         {
-            console.log( "1" );
             dateString = formattedDateLowerRange;
             resultDateRequestString = resultDateRequestString.concat( dateString );
         }
@@ -87,23 +84,19 @@ function buildSelectDateRequestString()
         else if( ( todaysDate.getTime() > new Date( formattedDateLowerRange ).getTime() ) && 
                  ( todaysDate.getTime() < new Date( formattedDateEndRange ).getTime() ) )
         {
-            console.log( "2" );
             dateString = formatDateString( todaysDate.getMonth()+1, todaysDate.getDate() );
-            console.log( "dateString=" + dateString );
             resultDateRequestString = resultDateRequestString.concat( dateString );
         }
         else if( ( todaysDate.getTime() > new Date( formattedDateEndRange ).getTime() ) )
         {
-            console.log( "3" );
             dateString = formattedDateEndRange;
             resultDateRequestString = resultDateRequestString.concat( dateString );
         }
         else
         {
-            console.log( "4" );
         }
     }
-    console.log( "resultDateRequestString=" + resultDateRequestString );
+    // console.log( "resultDateRequestString=" + resultDateRequestString );
     return resultDateRequestString;
 }
 
@@ -112,18 +105,20 @@ function buildSelectDateRequestString()
 */
 function buildTodayDateRequestString()
 {
-    console.log( "buildTodayDateRequestString" );
+    // console.log( "buildTodayDateRequestString" );
     var resultDateRequestString = "date="
     var todaysDate = new Date();
+    var firstDayOfSeason = new Date( "2018-10-16" );
     // Getting today's date before regular season starts
-    if( ( todaysDate.getTime() <= new Date("2018-10-16").getTime() ) ) 
+    if( todaysDate <= firstDayOfSeason ) 
     {
-        resultDateRequestString += "2018-10-16";
+        resultDateRequestString = resultDateRequestString.concat( "2018-10-16" );
     }
     else
     {
-        resultDateRequestString += ( todaysDate.getFullYear() + "-" + ( todaysDate.getMonth() + 1 ) + "-" + todaysDate.getDate() );
+        resultDateRequestString = resultDateRequestString.concat( todaysDate.getFullYear() + "-" + ( todaysDate.getMonth() + 1 ) + "-" + todaysDate.getDate() );
     }
+    // console.log( "resultDateRequestString=" + resultDateRequestString );
     return resultDateRequestString;
 }
 
@@ -133,7 +128,7 @@ function buildTodayDateRequestString()
 */
 function buildDateRequestStringFantasyCast()
 {
-    console.log( "buildDateRequestStringFantasyCast" );
+    // console.log( "buildDateRequestStringFantasyCast" );
     var dateElements = document.getElementsByClassName( "dropdown__select" );
     var dateElement = dateElements[0];
     var selectedDate = dateElement[dateElement.selectedIndex].text;
@@ -141,7 +136,7 @@ function buildDateRequestStringFantasyCast()
     var month = selectedDateSplit[0];
     var date = selectedDateSplit[1];
     var resultDateRequestString = "date=";
-    console.log( "selectedDate=" + selectedDate + ", month=" + month + ", date=" + date );
+    // console.log( "selectedDate=" + selectedDate + ", month=" + month + ", date=" + date );
 
     if( month == "Oct" )
     {
@@ -196,12 +191,12 @@ function buildLeagueIdRequestString()
 */
 function buildTeamsRequestString()
 {
-    console.log( "buildTeamsRequestString" );
+    // console.log( "buildTeamsRequestString" );
 
     var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );
     var teamsRequestString = "teams=";
-    console.log( localGamesDataDict );
-    console.log( "currentPageType=" + currentPageType );
+    // console.log( localGamesDataDict );
+    // console.log( "currentPageType=" + currentPageType );
     for( var i = 0; i < listOfElements.length; i++ )
     {
         if( currentPageType == PAGE_TYPE_PLAYERS
@@ -229,7 +224,7 @@ function buildTeamsRequestString()
             }
         }
     }
-    console.log( teamsRequestString );
+    // console.log( teamsRequestString );
     return teamsRequestString;
 }
 
@@ -238,7 +233,7 @@ function buildTeamsRequestString()
 */
 function buildPageNameRequestString()
 {
-    console.log( "buildPageNameRequestString" );
+    // console.log( "buildPageNameRequestString" );
     var pageNameResult = "pageName=";
 
     if( currentPageType == PAGE_TYPE_TEAM )
@@ -274,7 +269,7 @@ function buildPageNameRequestString()
         pageNameResult += "espnFantasyCastMostCats";
     }
 
-    console.log( pageNameResult );
+    // console.log( pageNameResult );
     return pageNameResult;
 }
 
@@ -283,38 +278,38 @@ function buildPageNameRequestString()
 */
 function formatDateString( month, date )
 {
-    console.log( "formatDateString - month=" + month + ", date=" + date );
+    // console.log( "formatDateString - month=" + month + ", date=" + date );
     var dateString = "";
 
     if( month == "Oct" || month == "10" )
     {
         dateString = ( "2018-10-" + date );
     }
-    else if( month == "Nov" )
+    else if( month == "Nov" || month == "11" )
     {
         dateString = ( "2018-11-" + date );
     }
-    else if( month == "Dec" )
+    else if( month == "Dec" || month == "12" )
     {
         dateString = ( "2018-12-" + date );
     }
-    else if( month == "Jan" )
+    else if( month == "Jan" || month == "1" || month == "01" )
     {
         dateString = ( "2019-01-" + date );
     }
-    else if( month == "Feb" )
+    else if( month == "Feb" || month == "2" )
     {
         dateString = ( "2019-02-" + date );
     }
-    else if( month == "Mar" )
+    else if( month == "Mar" || month == "3" )
     {
         dateString = ( "2019-03-" + date );
     }
-    else if( month == "Apr" )
+    else if( month == "Apr" || month == "4" )
     {
         dateString = ( "2019-04-" + date );
     }
-    console.log( "dateString=" + dateString );
+    // console.log( "dateString=" + dateString );
     return dateString;
 }
 
@@ -324,7 +319,7 @@ function formatDateString( month, date )
 */
 function getActiveMenu()
 {
-    console.log( "getActiveMenu" );
+    // console.log( "getActiveMenu" );
     var entireUrl = window.location.href;
     var url = new URL( entireUrl );
     var view = url.searchParams.get( "view" );
@@ -336,7 +331,7 @@ function getActiveMenu()
     }
     else
     {
-        console.log( "view is null" );
+        // console.log( "view is null" );
         return PAGE_TYPE_TEAM_STATS;
     }
 
@@ -377,17 +372,17 @@ function getBackgroundColor( games )
 */
 function getCurrentUrl()
 {
-    console.log( window.location.href );
+    // console.log( window.location.href );
     return window.location.href;
 }
 
 function getPageTypeFromUrl( url )
 {
-    console.log( "getPageTypeFromUrl" );
+    // console.log( "getPageTypeFromUrl" );
     if( url.indexOf( "basketball/team" ) != -1 )
     {
         var activeMenu = getActiveMenu();
-        console.log( "activeMenu=" + activeMenu );
+        // console.log( "activeMenu=" + activeMenu );
         isLeagueDailyOrWeekly();
         if( dailyOrWeekly == WEEKLY_LEAGUE )
         {
@@ -426,7 +421,7 @@ function getPageTypeFromUrl( url )
     {
         return PAGE_TYPE_UNDEFINED;
     }
-    console.log( "currentPageType=" + currentPageType );
+    // console.log( "currentPageType=" + currentPageType );
     return currentPageType;
 }
 
@@ -436,7 +431,7 @@ function getPageTypeFromUrl( url )
 */
 function isLeagueDailyOrWeekly()
 {
-    console.log( "isLeagueDailyOrWeekly" );
+    // console.log( "isLeagueDailyOrWeekly" );
     var dateElements = document.getElementsByClassName( "is-current" );
 
     if( dateElements.length > 0 )
@@ -460,9 +455,9 @@ function isLeagueDailyOrWeekly()
 */
 function isFantasyCastMostCatsOrPoints()
 {
-    console.log( "isFantasyCastMostCatsOrPoints" );
+    // console.log( "isFantasyCastMostCatsOrPoints" );
     var teamScoreElements = document.getElementsByClassName( "team-score" );
-    console.log( "teamScoreElements.length=" +teamScoreElements.length );
+    // console.log( "teamScoreElements.length=" +teamScoreElements.length );
     if( teamScoreElements.length == 2 )
     {
         currentPageType = PAGE_TYPE_FANTASY_CAST_POINTS;
@@ -494,7 +489,7 @@ function sleep( ms )
 */
 function addWeekGamesHeaders( data )
 {
-    console.log( "addWeekGamesHeaders" );
+    // console.log( "addWeekGamesHeaders" );
 
     var activeMenu = getActiveMenu();
     var listOfElements = document.getElementsByClassName( "Table2__header-row" );
@@ -551,7 +546,7 @@ function addWeekGamesHeaders( data )
 */
 function addWeekGamesHeadersPlayers( data )
 {
-    console.log( "addWeekGamesHeaders" );
+    // console.log( "addWeekGamesHeaders" );
     var weekNum = data.weekNum;
     var listOfElements = document.getElementsByClassName( "Table2__header-row" );
 
@@ -583,7 +578,7 @@ function addWeekGamesHeadersPlayers( data )
 */
 function addWeekGamesHeadersAddedDroppedPage( data )
 {
-    console.log( "addWeekGamesHeaders()" );
+    // console.log( "addWeekGamesHeadersAddedDroppedPage" );
     var weekNum = data.weekNum;
     var listOfElements = document.getElementsByClassName( "Table2__header-row" );
 
@@ -622,11 +617,11 @@ function updateWeekNumberHeader( data )
 */
 async function requestHeaderFromServer( addOrUpdate )
 {
-    console.log( "requestHeaderFromServer" );
+    // console.log( "requestHeaderFromServer" );
     // Sleep before getting the date string to allow the selected date some time to be changed
     await sleep( 4000 );
     var dateRequestString = "";
-    console.log( "currentPageType=" + currentPageType );
+    // console.log( "currentPageType=" + currentPageType );
     if( currentPageType == PAGE_TYPE_PLAYERS || currentPageType == PAGE_TYPE_ADDED_DROPPED )
     {
         dateRequestString = buildTodayDateRequestString();
@@ -636,8 +631,8 @@ async function requestHeaderFromServer( addOrUpdate )
         dateRequestString = buildSelectDateRequestString();
     }
 
-    console.log( "dateRequestString - " + dateRequestString );
-    console.log( typeof dateRequestString );
+    // console.log( "dateRequestString - " + dateRequestString );
+    // console.log( typeof dateRequestString );
     var leagueIdRequestString = buildLeagueIdRequestString();
 
     var pageNameRequestString = buildPageNameRequestString();
@@ -654,7 +649,7 @@ async function requestHeaderFromServer( addOrUpdate )
             }
             response.json().then( function( data )
             {
-                console.log( "requestHeaderFromServer - addOrUpdate: " + addOrUpdate + ", currentPageType: " + currentPageType );
+                // console.log( "requestHeaderFromServer - addOrUpdate: " + addOrUpdate + ", currentPageType: " + currentPageType );
                 var weekNum = data.weekNum;
                 if( addOrUpdate == "Add" )
                 {
@@ -694,8 +689,8 @@ async function requestHeaderFromServer( addOrUpdate )
 */
 function addGamesDataToLocalDictionary( data, teamsRequestString )
 {
-    console.log( "addDataToLocalDictionary" );
-    console.log( teamsRequestString );
+    // console.log( "addDataToLocalDictionary" );
+    // console.log( teamsRequestString );
     if( teamsRequestString != "teams=" )
     {
         // if( currentPageType != PAGE_TYPE_PLAYERS && currentPageType != PAGE_TYPE_ADDED_DROPPED )
@@ -704,7 +699,7 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
         || currentPageType == PAGE_TYPE_TEAM_STATS
         || currentPageType == PAGE_TYPE_TEAM_RESEARCH
         || currentPageType == PAGE_TYPE_TEAM_SCHEDULE
-        || currentPageType == PAGE_TYPE_TEAM_WEEKLY )
+        || currentPageType == WEEKLY_LEAGUE )
         {
             localGamesDataDict = {};
         }
@@ -717,7 +712,7 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
                 localGamesDataDict[teamsList[i]] = data[i];
             }
         }
-        console.log( localGamesDataDict );
+        // console.log( localGamesDataDict );
     }
 }
 
@@ -726,7 +721,7 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
 */
 async function requestGameDataFromServer( addOrUpdate )
 {
-    console.log( "requestGameDataFromServer" );
+    // console.log( "requestGameDataFromServer" );
     await sleep( 4000 );    
 
     var teamsRequestString = buildTeamsRequestString();
@@ -755,14 +750,11 @@ async function requestGameDataFromServer( addOrUpdate )
         }
 
         var leagueIdRequestString = buildLeagueIdRequestString();
-        console.log( dateRequestString );
-        console.log( leagueIdRequestString );
-        console.log( teamsRequestString );
         var pageNameRequestString = buildPageNameRequestString();
         if( ( dateRequestString != "date=" ) && (teamsRequestString != "teams=" ) && ( typeof dateRequestString !== 'undefined' ) )
         {
             var url = "https://www.fantasywizard.site/gamesremaining/?" + pageNameRequestString + "&" + teamsRequestString + "&format=json&" + dateRequestString + "&" + leagueIdRequestString;
-            console.log( url );
+            // console.log( url );
 
             fetch( url )
                 .then( function( response ){
@@ -776,7 +768,7 @@ async function requestGameDataFromServer( addOrUpdate )
                     addGamesDataToLocalDictionary( data, teamsRequestString );
                     if( addOrUpdate == "Add" )
                     {
-                        console.log( "currentPageType=" + currentPageType );
+                        // console.log( "currentPageType=" + currentPageType );
                         if( currentPageType == PAGE_TYPE_PLAYERS )
                         {
                             addGamesPlayersPage();
@@ -814,7 +806,7 @@ async function requestGameDataFromServer( addOrUpdate )
 */
 function addGamesTeamPage()
 {
-    console.log( "addGamesTeamPage" );
+    // console.log( "addGamesTeamPage" );
 
     var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
     var listOfTeamNameElements = document.getElementsByClassName( "playerinfo__playerteam" );
@@ -967,7 +959,7 @@ function addGamesTeamPage()
 */
 function addGamesFantasyCastPagePoints()
 {
-    console.log( "addGamesFantasyCastPagePoints" );
+    // console.log( "addGamesFantasyCastPagePoints" );
 
     var listOfElements = document.getElementsByClassName( "Table2__tr" );
     var leftTotalGamesRemaining = 0;
@@ -1057,8 +1049,8 @@ function addGamesFantasyCastPagePoints()
                 {
                     var teamNameElements = playerColumnRight.getElementsByClassName( "playerinfo__playerteam" );
                     var teamName = teamNameElements[0].innerHTML;
-                    console.log( "team:" + teamName );
-                    console.log( localGamesDataDict[teamName] );
+                    // console.log( "team:" + teamName );
+                    // console.log( localGamesDataDict[teamName] );
                     newRightGamesDiv.innerHTML = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     rightTotalGamesRemaining += parseInt( splitDataIndex[0] );
@@ -1087,7 +1079,7 @@ function addGamesFantasyCastPagePoints()
         rightTotalElements[0].innerHTML = rightTotalGamesString;
     }
     // Make the greater number of total games font color green
-    console.log( "leftTotalGamesRemaining=" + leftTotalGamesRemaining + ", rightTotalGamesRemaining=" + rightTotalGamesRemaining );
+    // console.log( "leftTotalGamesRemaining=" + leftTotalGamesRemaining + ", rightTotalGamesRemaining=" + rightTotalGamesRemaining );
     if( leftTotalGamesRemaining > rightTotalGamesRemaining )
     {
         leftTotalElements[0].style.color = "#acd888";
@@ -1108,7 +1100,7 @@ function addGamesFantasyCastPagePoints()
 */
 function addGamesPlayersPage()
 {
-    console.log( "addGamesPlayersPage" );
+    // console.log( "addGamesPlayersPage" );
 
     var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
     var totalGamesRemaining = 0;
@@ -1142,9 +1134,9 @@ function addGamesPlayersPage()
                 if( !isInjured )
                 {
                     var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
-                    console.log( "teamName=" + teamName );
+                    // console.log( "teamName=" + teamName );
                     newGamesDiv.innerHTML = localGamesDataDict[teamName];
-                    console.log( localGamesDataDict[teamName] );
+                    // console.log( localGamesDataDict[teamName] );
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
                     totalGamesRemaining += parseInt( splitDataIndex[0] );
                     totalGamesForWeek += parseInt( splitDataIndex[1] );
@@ -1169,7 +1161,7 @@ function addGamesPlayersPage()
 */
 function addGamesAddedDroppedPage()
 {
-    console.log( "addGamesAddedDroppedPage" );
+    // console.log( "addGamesAddedDroppedPage" );
 
     var listOfElements = document.getElementsByClassName( "Table2__tr--sm" );
     var totalGamesRemaining = 0;
@@ -1227,7 +1219,7 @@ function addGamesAddedDroppedPage()
 */
 function updateGameData()
 {
-    console.log( "updateGameData" );
+    // console.log( "updateGameData" );
     var backendIndex = 0;   
     var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
     var listOfGamesDiv = document.getElementsByClassName( "fbw-games-remaining-div" );
@@ -1242,7 +1234,7 @@ function updateGameData()
     {
         var listOfElementsTr = listOfElements[i];
 
-        console.log( "listOfElementsTr.children.length= " + listOfElementsTr.children.length );
+        // console.log( "listOfElementsTr.children.length= " + listOfElementsTr.children.length );
         if( listOfElementsTr.children.length == 6 || listOfElementsTr.children.length == 7 || listOfElementsTr.children.length == 13 || listOfElementsTr.children.length == 14 )
         {
             var isInjured = false;
@@ -1303,7 +1295,7 @@ function updateGameData()
 */
 function moveButtonStarterPressed()
 {
-    console.log( "moveButtonStarterPressed()" );
+    // console.log( "moveButtonStarterPressed" );
     
     var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
     for( var i = listOfElements.length-1; i > 0; i-- )
@@ -1515,7 +1507,7 @@ $( 'body' ).on( 'click', 'li.PaginationNav__list__item', function()
 {
     if( currentPageType == PAGE_TYPE_PLAYERS )
     {
-        console.log( $( this ).text() );
+        // console.log( $( this ).text() );
         var className = this.className;
 
         if( className.indexOf( "PaginationNav__list__item--active" ) == -1 )
@@ -1533,7 +1525,7 @@ $( 'body' ).on( 'click', 'label.picker-option', function()
 {
     if( currentPageType == PAGE_TYPE_PLAYERS )
     {
-        console.log( $( this ).text() );
+        // console.log( $( this ).text() );
         var className = this.className;
 
         if( className.indexOf( "checked" ) == -1 )
@@ -1602,7 +1594,7 @@ $( 'body' ).on( 'click', 'li.carousel__slide', function()
 {
     if( currentPageType == PAGE_TYPE_FANTASY_CAST_POINTS )
     {
-        console.log( "change menu" );
+        // console.log( "change menu" );
         var className = this.className;
         if( className.indexOf( "selected" ) == -1 )
         {
@@ -1623,8 +1615,8 @@ $( 'body' ).on( 'click', 'li.carousel__slide', function()
 */
 async function renderGamesSleep( type )
 {
-    console.log( "renderGamesSleep - type=" + type );
-    console.log( "renderGamesSleep - typeof type=" + typeof type );
+    // console.log( "renderGamesSleep - type=" + type );
+    // console.log( "renderGamesSleep - typeof type=" + typeof type );
     await sleep( 6000 );
     if( type == PAGE_TYPE_UNDEFINED || typeof type == 'undefined' )
     {
@@ -1632,9 +1624,6 @@ async function renderGamesSleep( type )
     }
     if( type == PAGE_TYPE_TEAM )
     {
-        console.log( "before  sleep" );
-
-        console.log( "after sleep" );
         isLeagueDailyOrWeekly();
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
@@ -1700,8 +1689,8 @@ async function renderGamesSleep( type )
 */
 async function renderGamesNoSleep( type )
 {
-    console.log( "renderGamesNoSleep - type=" + type );
-    console.log( "renderGamesNoSleep - typeof type=" + typeof type );
+    // console.log( "renderGamesNoSleep - type=" + type );
+    // console.log( "renderGamesNoSleep - typeof type=" + typeof type );
     await sleep( 4000 );
     if( type == PAGE_TYPE_UNDEFINED || typeof type == 'undefined' )
     {
@@ -1774,8 +1763,8 @@ async function renderGamesNoSleep( type )
 var observer = new MutationObserver( function ( mutations )
 {
     var currentUrl = getCurrentUrl();
-    console.log( currentUrl );
-    console.log( getPageTypeFromUrl( currentUrl ) );
+    // console.log( currentUrl );
+    // console.log( getPageTypeFromUrl( currentUrl ) );
     var pageType = getPageTypeFromUrl( currentUrl );
     localGamesDataDict = {};
     renderGamesNoSleep( pageType );
@@ -1798,8 +1787,8 @@ function waitForAddedNode( params )
         var element = document.getElementById( params.id );
         if ( element ) {
             var currentUrl = getCurrentUrl();
-            console.log( currentUrl );
-            console.log( getPageTypeFromUrl( currentUrl ) );
+            // console.log( currentUrl );
+            // console.log( getPageTypeFromUrl( currentUrl ) );
             var pageType = getPageTypeFromUrl( currentUrl );
             renderGamesSleep( pageType );
             this.disconnect();

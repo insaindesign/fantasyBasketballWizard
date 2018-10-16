@@ -167,15 +167,33 @@ renderGames = function(from_view) {
     num_rows = table.rows.length;
 
     first_player_row = get_first_row();
+    
+    if (first_player_row == table.rows.length - 1 || first_player_row == null){
+        console.log("all empty");
+        for (var i = 2; i < num_rows; i++) {
+            rowText = table.rows[i].innerText.split('\n').toString();
+            console.log("rowText: ", rowText);
+            if (!rowText.includes("(Empty)")) {
+                //console.log('i: ', i);
+                first_player_row = i;
+                break;
+            }
+        }
+    }
+    
+    console.log("first_player_row: ", first_player_row);
 
     //find player column
     th = table.rows[first_player_row];
     for (var i = 0; i < th.cells.length; i++) {
+        console.log("cell: ", th.cells[i].innerText);
         if (th.cells[i].innerText.includes("layer")) {
             player_col = i;
             break;
         }
     }
+    
+    console.log("player_col:", player_col);
 
     fantasy_col = -1;
     //find % Started column
@@ -197,8 +215,6 @@ renderGames = function(from_view) {
             }
         }
     }
-    
-    
 
     //replace Fantasy headers
     //find Fantasy header column
@@ -242,7 +258,8 @@ renderGames = function(from_view) {
 
     //read team names, write games
     row = 2;
-    totalGames = 0;
+    totalGamesNum = 0;
+    totalGamesDen = 0;
     info = table.rows[row].cells[player_col].innerText.split(" ");
     cellText = table.rows[row].cells[player_col].innerText;
     while (!cellText.includes("Starting Lineup Totals")) {
@@ -258,7 +275,8 @@ renderGames = function(from_view) {
             }
             table.rows[row].cells[fantasy_col].innerText = games;
             table.rows[row].cells[fantasy_col].style.backgroundColor = getColor(games)
-            totalGames += games;
+            totalGamesNum += parseFloat(games.split("/")[0]);
+            totalGamesDen += parseFloat(games.split("/")[1]);
         } else if (!cellText.includes("Empty") && table.rows[row].cells[0].innerText.includes("IL") || table.rows[row].innerText.includes("Injured")) {
             //add color to IL
             table.rows[row].cells[fantasy_col].innerText = "-";
@@ -280,6 +298,8 @@ renderGames = function(from_view) {
 
     try {
         //display total number of games and add class
+        totalGames = totalGamesNum.toString() + "/" + totalGamesDen.toString();
+        console.log("totalGames", totalGames);
         table.rows[row].cells[fantasy_col].innerText = totalGames;
         table.rows[row].cells[fantasy_col].id = "games";
         table.rows[row].cells[fantasy_col].className = "Alt Ta-end Nowrap Bdrend";
@@ -539,6 +559,7 @@ countStats = function() {
 }
 
 function init_AS_subnav() {
+    var refreshSleepTime = 800;
     try {
         var subNav = document.getElementById("subnav_AS");
         var today = document.getElementById("subnav_AS").childNodes[1];
@@ -589,6 +610,15 @@ function addListeners(){
     var refreshSleepTime = 800;
     try {
         document.getElementById("S").addEventListener("click", function() {
+            setTimeout(() => {
+                renderGames(0);
+            }, refreshSleepTime);
+        })
+    } catch (err) {
+        console.log(err)
+    }
+    try {
+        document.getElementById("subnav_S").addEventListener("click", function() {
             setTimeout(() => {
                 renderGames(0);
             }, refreshSleepTime);

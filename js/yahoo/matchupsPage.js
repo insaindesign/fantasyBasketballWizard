@@ -78,9 +78,20 @@ function getDateFromURL(url){
     return date
 }
 
+function getLeagueID(){
+    var url = window.location.href.split("/");
+    
+    for (var u = 0; u < url.length; u++){
+        if (url[u] == "nba"){
+            return url[u+1];
+        }
+    }
+}
+
 function getGamesRemaining(team){
     
     var dateString;
+    var leagueIDString = 'leagueID=' + getLeagueID();
     url = window.location.href;
     if (url.includes("date=")){
         dateString = getDateFromURL(url);
@@ -88,7 +99,7 @@ function getGamesRemaining(team){
         dateString = getFormattedDate();
     }
     
-    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yTeamPage&teams='+team+'&format=json&date='+dateString;
+    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yMatchupsPage&teams='+team+'&format=json&date='+dateString+'&'+leagueIDString;
     //console.log("url: ", url);
     fetch(url)
         .then(function(response){

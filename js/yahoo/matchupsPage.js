@@ -64,7 +64,7 @@ function getProjectionsColor(ratio){
         return '#3bff3b';
     } if (ratio <= 2.1){
         return '#3bff3b';
-    } else return '#14ff14';
+    } else return '#dee8f7';
 }
 
 function getFormattedDate() {
@@ -78,9 +78,20 @@ function getDateFromURL(url){
     return date
 }
 
+function getLeagueID(){
+    var url = window.location.href.split("/");
+    
+    for (var u = 0; u < url.length; u++){
+        if (url[u] == "nba"){
+            return url[u+1];
+        }
+    }
+}
+
 function getGamesRemaining(team){
     
     var dateString;
+    var leagueIDString = 'leagueID=' + getLeagueID();
     url = window.location.href;
     if (url.includes("date=")){
         dateString = getDateFromURL(url);
@@ -88,8 +99,8 @@ function getGamesRemaining(team){
         dateString = getFormattedDate();
     }
     
-    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yTeamPage&teams='+team+'&format=json&date='+dateString;
-    console.log("url: ", url);
+    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yMatchupsPage&teams='+team+'&format=json&date='+dateString+'&'+leagueIDString;
+    //console.log("url: ", url);
     fetch(url)
         .then(function(response){
         if (response.status !== 200) {
@@ -112,9 +123,9 @@ function getGamesRemaining(team){
 function initTable(){
 
     teamNames = document.getElementById("matchup-header").innerText.split('\n')
-    console.log("teams: ", );
+    //console.log("teams: ", );
     nameLeft = teamNames[1];
-    nameRight = teamNames[teamNames.length-3];
+    nameRight = teamNames[teamNames.length-4];
 
     matchup = document.getElementById("matchup-wall-header");
     pTable = document.createElement("table");
@@ -184,7 +195,7 @@ function getFormattedQueryFromURL() {
     if(str == "totals" || start == -1) {
         var weekNum = "weekNum=";
         weekNum+=document.getElementsByClassName("flyout-title")[0].innerText.split(" ")[1];
-        console.log(weekNum);
+        //console.log(weekNum);
         return weekNum;
     }
     return "date="+str;
@@ -309,13 +320,21 @@ function showProjections(data, side){
     for (cat = 1; cat < categories.length+1; cat++){
         num = parseFloat(pTable.rows[1].cells[cat].innerHTML);
         den = parseFloat(pTable.rows[2].cells[cat].innerHTML);
-        ratio = num / den;
+        if (categories[cat-1] == "TO"){
+            ratio = den / num;
+        } else {
+            ratio = num / den;
+        }
         color = getProjectionsColor(ratio);
         pTable.rows[1].cells[cat].style.backgroundColor = color;
         
         num = parseFloat(pTable.rows[2].cells[cat].innerHTML);
         den = parseFloat(pTable.rows[1].cells[cat].innerHTML);
-        ratio = num / den;
+        if (categories[cat-1] == "TO"){
+            ratio = den / num;
+        } else {
+            ratio = num / den;
+        }
         color = getProjectionsColor(ratio);
         pTable.rows[2].cells[cat].style.backgroundColor = color;
     }

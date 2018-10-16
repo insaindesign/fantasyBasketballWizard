@@ -12,6 +12,7 @@
                                                         
 ------------------------------------------------------------------------------------------------------------------------------------------ */
 
+const DAILY_LEAGUE = "Daily";
 const PAGE_TYPE_ADDED_DROPPED = "Added Dropped";
 const PAGE_TYPE_FANTASY_CAST = "Fantasy Cast";
 const PAGE_TYPE_FANTASY_CAST_MOST_CATEGORIES = "Fantasy Cast Most Categories";
@@ -23,8 +24,8 @@ const PAGE_TYPE_TEAM_RESEARCH = "Research";
 const PAGE_TYPE_TEAM_SCHEDULE = "Schedule";
 const PAGE_TYPE_TEAM_STATS = "Stats";
 const PAGE_TYPE_TEAM_SWITCH_DATES = "Switch Dates";
-const PAGE_TYPE_TEAM_WEEKLY = "Weekly";
 const PAGE_TYPE_UNDEFINED = "Undefined";
+const WEEKLY_LEAGUE = "Weekly";
 
 var currentPageType = "";
 var dailyOrWeekly = "";             // Value of daily or weekly league
@@ -46,9 +47,9 @@ function buildSelectDateRequestString()
 {
     console.log( "buildSelectDateRequestString" );
     var currentElements = document.getElementsByClassName( "is-current" );
-    var resultDateRequestString = "date="
+    var resultDateRequestString = "date=";
     console.log( dailyOrWeekly );
-    if( dailyOrWeekly == "Daily" )
+    if( dailyOrWeekly == DAILY_LEAGUE )
     {
         var currentDateDiv = currentElements[0];
         var currentDateChildren = currentDateDiv.children[0];
@@ -58,15 +59,16 @@ function buildSelectDateRequestString()
         var selectedDate = currentMonthDateSplit[1];
 
         // return formatDateString( selectedMonth, selectedDate );
-        resultDateRequestString += formatDateString( selectedMonth, selectedDate );
-        return resultDateRequestString;
+        resultDateRequestString = resultDateRequestString.concat( formatDateString( selectedMonth, selectedDate ) );
     }
-    else if( dailyOrWeekly == "Weekly" )
+    else if( dailyOrWeekly == WEEKLY_LEAGUE )
     {
+        console.log( "WEEEEEEEEKLLYYY" );
         var currentDateDiv = currentElements[0];
         var currentDateChildren = currentDateDiv.children[1];
         var currentMonthDate = currentDateChildren.innerHTML;
         var currentMonthDateSplit = currentMonthDate.split( " " );
+        var dateString = "";
         var selectedMonth = currentMonthDateSplit[0];
         var selectedDateLowerRange = currentMonthDateSplit[1];
         var selectedDateEndRange = currentMonthDateSplit[3];
@@ -77,22 +79,32 @@ function buildSelectDateRequestString()
         // lower range date to get the full amount of games
         if( ( todaysDate.getTime() <= new Date( formattedDateLowerRange ).getTime() ) ) 
         {
-            resultDateRequestString += formattedDateLowerRange;
-            return resultDateRequestString;
+            console.log( "1" );
+            dateString = formattedDateLowerRange;
+            resultDateRequestString = resultDateRequestString.concat( dateString );
         }
         // Today's date in between the week ranges then use today's date to get the accurate date
         else if( ( todaysDate.getTime() > new Date( formattedDateLowerRange ).getTime() ) && 
                  ( todaysDate.getTime() < new Date( formattedDateEndRange ).getTime() ) )
         {
-            resultDateRequestString += formatDateString( todaysDate.getMonth()+1, todaysDate.getDate() )
-            return resultDateRequestString;
+            console.log( "2" );
+            dateString = formatDateString( todaysDate.getMonth()+1, todaysDate.getDate() );
+            console.log( "dateString=" + dateString );
+            resultDateRequestString = resultDateRequestString.concat( dateString );
         }
         else if( ( todaysDate.getTime() > new Date( formattedDateEndRange ).getTime() ) )
         {
-            resultDateRequestString += formattedDateEndRange;
-            return resultDateRequestString;
+            console.log( "3" );
+            dateString = formattedDateEndRange;
+            resultDateRequestString = resultDateRequestString.concat( dateString );
+        }
+        else
+        {
+            console.log( "4" );
         }
     }
+    console.log( "resultDateRequestString=" + resultDateRequestString );
+    return resultDateRequestString;
 }
 
 /*
@@ -271,9 +283,10 @@ function buildPageNameRequestString()
 */
 function formatDateString( month, date )
 {
+    console.log( "formatDateString - month=" + month + ", date=" + date );
     var dateString = "";
 
-    if( month == "Oct" )
+    if( month == "Oct" || month == "10" )
     {
         dateString = ( "2018-10-" + date );
     }
@@ -301,7 +314,7 @@ function formatDateString( month, date )
     {
         dateString = ( "2019-04-" + date );
     }
-
+    console.log( "dateString=" + dateString );
     return dateString;
 }
 
@@ -375,7 +388,12 @@ function getPageTypeFromUrl( url )
     {
         var activeMenu = getActiveMenu();
         console.log( "activeMenu=" + activeMenu );
-        if( activeMenu == PAGE_TYPE_TEAM_SCHEDULE )
+        isLeagueDailyOrWeekly();
+        if( dailyOrWeekly == WEEKLY_LEAGUE )
+        {
+            currentPageType = WEEKLY_LEAGUE;
+        }
+        else if( activeMenu == PAGE_TYPE_TEAM_SCHEDULE )
         {
             currentPageType = PAGE_TYPE_TEAM_SCHEDULE;
         }
@@ -425,11 +443,13 @@ function isLeagueDailyOrWeekly()
     {
         if( dateElements[0].innerHTML.indexOf( "day" ) != -1 )
         {
-            dailyOrWeekly = "Daily";
+            dailyOrWeekly = DAILY_LEAGUE;
+            return DAILY_LEAGUE;
         }
         else if( dateElements[0].innerHTML.indexOf( "week" ) != -1 )
         {
-            dailyOrWeekly = "Weekly";
+            dailyOrWeekly = WEEKLY_LEAGUE;
+            return WEEKLY_LEAGUE;
         }
     }
 }
@@ -606,6 +626,7 @@ async function requestHeaderFromServer( addOrUpdate )
     // Sleep before getting the date string to allow the selected date some time to be changed
     await sleep( 4000 );
     var dateRequestString = "";
+    console.log( "currentPageType=" + currentPageType );
     if( currentPageType == PAGE_TYPE_PLAYERS || currentPageType == PAGE_TYPE_ADDED_DROPPED )
     {
         dateRequestString = buildTodayDateRequestString();
@@ -1667,7 +1688,7 @@ async function renderGamesSleep( type )
         requestHeaderFromServer( "Update" );  
         requestGameDataFromServer( "Add" );
     }
-    else if( type == PAGE_TYPE_TEAM_WEEKLY )
+    else if( type == WEEKLY_LEAGUE )
     {
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
@@ -1741,7 +1762,7 @@ async function renderGamesNoSleep( type )
         requestHeaderFromServer( "Update" );
         requestGameDataFromServer( "Add" );
     }
-    else if( type == PAGE_TYPE_TEAM_WEEKLY )
+    else if( type == WEEKLY_LEAGUE )
     {
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
@@ -1756,6 +1777,7 @@ var observer = new MutationObserver( function ( mutations )
     console.log( currentUrl );
     console.log( getPageTypeFromUrl( currentUrl ) );
     var pageType = getPageTypeFromUrl( currentUrl );
+    localGamesDataDict = {};
     renderGamesNoSleep( pageType );
 });
 

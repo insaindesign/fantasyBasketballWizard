@@ -14,8 +14,19 @@ var statsRight = [];
 
 var pTable;
 
+
 //init stats table
 table = document.getElementById("statTable3");
+
+if (table == null){
+    setTimeout(function(){
+        var matchup = document.getElementById("matchup");
+        console.log("first table null");
+        table = matchup.childNodes[0];
+        console.log("new table: ", table);
+    }, 1000);
+    
+}
 
 //find stats headers
 header = table.rows[0].innerText.split("\n");
@@ -93,11 +104,13 @@ function getGamesRemaining(team){
     var dateString;
     var leagueIDString = 'leagueID=' + getLeagueID();
     url = window.location.href;
-    if (url.includes("date=")){
+    if (url.includes("date=") && !url.includes("date=totals")){
         dateString = getDateFromURL(url);
     } else {
         dateString = getFormattedDate();
     }
+    
+    console.log("dateString: ", dateString);
     
     var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yMatchupsPage&teams='+team+'&format=json&date='+dateString+'&'+leagueIDString;
     //console.log("url: ", url);
@@ -109,9 +122,11 @@ function getGamesRemaining(team){
         }
 
         response.json().then(function(data) {
+            //console.log("data: ", data);
+            //console.log("games: ", games);
             for (var t = 0; t < Teams.length; t++) {
                 team = Teams[t];
-                Schedule[team.toUpperCase()] = games[t];
+                Schedule[team.toUpperCase()] = data[t];
             }
             getPlayers();
         });
@@ -279,7 +294,6 @@ function getPlayers(){
 }
 
 function getProjections(playersString, side){
-    table = document.getElementById("statTable3");
     
     var url = 'https://www.fantasywizard.site/getplayers/?players=' + playersString;
     fetch(url)
@@ -430,6 +444,6 @@ if (categories.toString() == "FG%,FT%,3PTM,PTS,REB,AST,ST,BLK,TO"){
     
 }
 
-getGamesToday();
+//getGamesToday();
 
 

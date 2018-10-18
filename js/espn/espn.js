@@ -14,6 +14,7 @@
 
 const DAILY_LEAGUE = "Daily";
 const PAGE_TYPE_ADDED_DROPPED = "Added Dropped";
+const PAGE_TYPE_BOXSCORE = "Boxscore";
 const PAGE_TYPE_FANTASY_CAST = "Fantasy Cast";
 const PAGE_TYPE_FANTASY_CAST_MOST_CATEGORIES = "Fantasy Cast Most Categories";
 const PAGE_TYPE_FANTASY_CAST_POINTS = "Fantasy Cast Points";
@@ -268,6 +269,10 @@ function buildPageNameRequestString()
     {
         pageNameResult += "espnFantasyCastMostCats";
     }
+    else if( currentPageType == PAGE_TYPE_BOXSCORE )
+    {
+        pageNameResult += "espnBoxscore";
+    }
 
     // console.log( pageNameResult );
     return pageNameResult;
@@ -417,11 +422,15 @@ function getPageTypeFromUrl( url )
     {
         currentPageType = PAGE_TYPE_FANTASY_CAST;
     }
+    else if( url.indexOf( "boxscore" ) != -1 )
+    {
+        currentPageType = PAGE_TYPE_BOXSCORE;
+    }
     else
     {
         return PAGE_TYPE_UNDEFINED;
     }
-    // console.log( "currentPageType=" + currentPageType );
+    console.log( "currentPageType=" + currentPageType );
     return currentPageType;
 }
 
@@ -596,6 +605,41 @@ function addWeekGamesHeadersAddedDroppedPage( data )
 }
 
 /*
+    addWeekGamesHeadersBoxscorePage - adds the 'GR/G' header to the HTML of the page.
+*/
+function addWeekGamesHeadersBoxscorePage( data )
+{
+    console.log( "addWeekGamesHeadersBoxscorePage" );
+    var weekNum = data.weekNum;
+    var listOfElements = document.getElementsByClassName( "Table2__header-row" );
+
+    for( var i = 0; i < listOfElements.length; i++ )
+    {
+        console.log( listOfElements[i] );
+        if( listOfElements[i].innerHTML.indexOf( "STARTERS" ) != -1 || listOfElements[i].innerHTML.indexOf( "BENCH" ) != -1  )
+        {
+            var newGamesHeader = document.createElement( "th" );
+            newGamesHeader.title = "Week number " + weekNum.toString() + " of fantasy basketball";
+            newGamesHeader.colSpan = "1";
+            newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header fbw-new-element";
+            newGamesHeader.innerHTML = "WEEK" + weekNum.toString();
+            listOfElements[i].appendChild( newGamesHeader );
+            // listOfElements[i].insertAdjacentElement( 'beforeend', newGamesHeader );
+        }
+        else if( listOfElements[i].innerHTML.indexOf( "STATUS" ) != -1 )
+        {
+            var newGamesHeader = document.createElement( "th" );
+            newGamesHeader.title = "Games Remaining / Games This Week";
+            newGamesHeader.colSpan = "1";
+            newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header fbw-new-element";
+            newGamesHeader.innerHTML = "GR/G";
+            listOfElements[i].appendChild( newGamesHeader );
+            // listOfElements[i].insertAdjacentElement( 'beforeend', newGamesHeader );
+        }
+    }
+}
+
+/*
     updateWeekNumberHeader - updates the 'GAMES' and 'WEEK' headers
 */
 function updateWeekNumberHeader( data )
@@ -622,7 +666,7 @@ async function requestHeaderFromServer( addOrUpdate )
     await sleep( 4000 );
     var dateRequestString = "";
     // console.log( "currentPageType=" + currentPageType );
-    if( currentPageType == PAGE_TYPE_PLAYERS || currentPageType == PAGE_TYPE_ADDED_DROPPED )
+    if( currentPageType == PAGE_TYPE_PLAYERS || currentPageType == PAGE_TYPE_ADDED_DROPPED || currentPageType == PAGE_TYPE_BOXSCORE )
     {
         dateRequestString = buildTodayDateRequestString();
     }
@@ -660,6 +704,10 @@ async function requestHeaderFromServer( addOrUpdate )
                     else if( currentPageType == PAGE_TYPE_ADDED_DROPPED )
                     {
                         addWeekGamesHeadersAddedDroppedPage( data );
+                    }
+                    else if( currentPageType == PAGE_TYPE_BOXSCORE )
+                    {
+                        addWeekGamesHeadersBoxscorePage( data );
                     }
                     else
                     {
@@ -1638,6 +1686,11 @@ async function renderGamesSleep( type )
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
     }
+    else if( type == PAGE_TYPE_BOXSCORE )
+    {
+        requestHeaderFromServer( "Add" );
+        // requestGameDataFromServer( "Add" );
+    }
     else if( type == PAGE_TYPE_FANTASY_CAST )
     {
         isFantasyCastMostCatsOrPoints();
@@ -1711,6 +1764,11 @@ async function renderGamesNoSleep( type )
     {
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
+    }
+    else if( type == PAGE_TYPE_BOXSCORE )
+    {
+        requestHeaderFromServer( "Add" );
+        // requestGameDataFromServer( "Add" );
     }
     else if( type == PAGE_TYPE_FANTASY_CAST )
     {

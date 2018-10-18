@@ -102,6 +102,29 @@ function buildSelectDateRequestString()
 }
 
 /*
+    buildDropdownSelectDateRequestString - creates a date request string for the
+    the parameter for the server request for either daily or weekly leagues
+*/
+function buildDropdownSelectDateRequestString()
+{
+    console.log( "buildDropdownSelectDateRequestString" );
+    var currentElements = document.getElementsByClassName( "dropdown__select" );
+    var resultDateRequestString = "date=";
+    console.log( currentElements[0] );
+    console.log( currentElements[0].innerHTML );
+    var dropdownElement = currentElements[0].options[currentElements[0].selectedIndex];
+    var selectedDate = dropdownElement.text;
+    var selectedDateSplit = selectedDate.split( " " );
+    var month = selectedDateSplit[0];
+    var date = selectedDateSplit[1];
+    var formattedDate = formatDateString( month, date );
+
+    resultDateRequestString = resultDateRequestString.concat( formattedDate );
+
+    return resultDateRequestString;
+}
+
+/*
     buildTodayDateRequestString - 
 */
 function buildTodayDateRequestString()
@@ -138,35 +161,10 @@ function buildDateRequestStringFantasyCast()
     var date = selectedDateSplit[1];
     var resultDateRequestString = "date=";
     // console.log( "selectedDate=" + selectedDate + ", month=" + month + ", date=" + date );
+    var formattedDate = formatDateString( month, date );
+    resultDateRequestString = resultDateRequestString.concat( formattedDate );
 
-    if( month == "Oct" )
-    {
-        resultDateRequestString += ( "2018-10-" + date );
-    }
-    else if( month == "Nov" )
-    {
-        resultDateRequestString += ( "2018-11-" + date );
-    }
-    else if( month == "Dec" )
-    {
-        resultDateRequestString += ( "2018-12-" + date );
-    }
-    else if( month == "Jan" )
-    {
-        resultDateRequestString += ( "2019-01-" + date );
-    }
-    else if( month == "Feb" )
-    {
-        resultDateRequestString += ( "2019-02-" + date );
-    }
-    else if( month == "Mar" )
-    {
-        resultDateRequestString += ( "2019-03-" + date );
-    }
-    else if( month == "Apr" )
-    {
-        resultDateRequestString += ( "2019-04-" + date );
-    }
+    console.log( resultDateRequestString );
     return resultDateRequestString;
 }
 
@@ -192,7 +190,7 @@ function buildLeagueIdRequestString()
 */
 function buildTeamsRequestString()
 {
-    // console.log( "buildTeamsRequestString" );
+    console.log( "buildTeamsRequestString" );
 
     var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );
     var teamsRequestString = "teams=";
@@ -201,7 +199,8 @@ function buildTeamsRequestString()
     for( var i = 0; i < listOfElements.length; i++ )
     {
         if( currentPageType == PAGE_TYPE_PLAYERS
-        || currentPageType == PAGE_TYPE_ADDED_DROPPED 
+        || currentPageType == PAGE_TYPE_ADDED_DROPPED
+        || currentPageType == PAGE_TYPE_BOXSCORE
         || currentPageType == PAGE_TYPE_FANTASY_CAST_POINTS
         || currentPageType == PAGE_TYPE_FANTASY_CAST_MOST_CATEGORIES )
         {
@@ -225,7 +224,7 @@ function buildTeamsRequestString()
             }
         }
     }
-    // console.log( teamsRequestString );
+    console.log( teamsRequestString );
     return teamsRequestString;
 }
 
@@ -613,7 +612,7 @@ function addWeekGamesHeadersAddedDroppedPage( data )
 }
 
 /*
-    addWeekGamesHeadersBoxscorePage - adds the 'GR/G' header to the HTML of the page.
+    addWeekGamesHeadersBoxscorePage - adds the 'Week #' and 'GR/G' header to the HTML of the page.
 */
 function addWeekGamesHeadersBoxscorePage( data )
 {
@@ -623,7 +622,6 @@ function addWeekGamesHeadersBoxscorePage( data )
 
     for( var i = 0; i < listOfElements.length; i++ )
     {
-        console.log( listOfElements[i] );
         if( listOfElements[i].innerHTML.indexOf( "STARTERS" ) != -1 || listOfElements[i].innerHTML.indexOf( "BENCH" ) != -1  )
         {
             var newGamesHeader = document.createElement( "th" );
@@ -632,7 +630,6 @@ function addWeekGamesHeadersBoxscorePage( data )
             newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header fbw-new-element";
             newGamesHeader.textContent = "WEEK" + weekNum.toString();
             listOfElements[i].appendChild( newGamesHeader );
-            // listOfElements[i].insertAdjacentElement( 'beforeend', newGamesHeader );
         }
         else if( listOfElements[i].innerHTML.indexOf( "STATUS" ) != -1 )
         {
@@ -642,7 +639,6 @@ function addWeekGamesHeadersBoxscorePage( data )
             newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header fbw-new-element";
             newGamesHeader.textContent = "GR/G";
             listOfElements[i].appendChild( newGamesHeader );
-            // listOfElements[i].insertAdjacentElement( 'beforeend', newGamesHeader );
         }
     }
 }
@@ -768,7 +764,7 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
                 localGamesDataDict[teamsList[i]] = data[i];
             }
         }
-        // console.log( localGamesDataDict );
+        console.log( localGamesDataDict );
     }
 }
 
@@ -800,11 +796,14 @@ async function requestGameDataFromServer( addOrUpdate )
         {
             dateRequestString = buildDateRequestStringFantasyCast();
         }
+        else if( currentPageType == PAGE_TYPE_BOXSCORE )
+        {
+            dateRequestString = buildDropdownSelectDateRequestString();
+        }
         else
         {
             dateRequestString = buildSelectDateRequestString();
         }
-
         var leagueIdRequestString = buildLeagueIdRequestString();
         var pageNameRequestString = buildPageNameRequestString();
         if( ( dateRequestString != "date=" ) && (teamsRequestString != "teams=" ) && ( typeof dateRequestString !== 'undefined' ) )
@@ -832,6 +831,10 @@ async function requestGameDataFromServer( addOrUpdate )
                         else if( currentPageType == PAGE_TYPE_ADDED_DROPPED )
                         {
                             addGamesAddedDroppedPage();
+                        }
+                        else if( currentPageType == PAGE_TYPE_BOXSCORE )
+                        {
+                            addGamesBoxscorePage();
                         }
                         else if( currentPageType == PAGE_TYPE_FANTASY_CAST_POINTS )
                         {
@@ -1271,6 +1274,81 @@ function addGamesAddedDroppedPage()
 }
 
 /*
+    addGamesBoxscorePage - creates the games remaining cells and
+    adds the data to the HTML of the page
+*/
+function addGamesBoxscorePage()
+{
+    console.log( "addGamesBoxscorePage" );
+
+    var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
+    var totalGamesRemaining = 0;
+    var totalGamesForWeek = 0;
+
+    var listOfTeamNameElements = document.getElementsByClassName( "playerinfo__playerteam" );
+    var listOfTeamNameElementsIndex = 0;
+
+    for( var i = 0; i < listOfElements.length; i++ )
+    {
+        var listOfElementsTr = listOfElements[i];
+        console.log( listOfElementsTr );
+        console.log( listOfElementsTr.children.length );
+        if( listOfElementsTr.children.length == 4 )
+        {
+            var newGamesTd = document.createElement( "td" );
+            var newGamesDiv = document.createElement( "div" );
+            newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
+            newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div fbw-new-element";
+            newGamesDiv.style.textAlign = "center";
+
+            var isInjured = false;
+            // 'O'ut, injured player
+            if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
+            {
+                console.log( "Injured" );
+                isInjured = true;
+            }
+            // TOTALS row
+            if( listOfElementsTr.innerHTML.indexOf( ">TOTALS</div>" ) != -1 )
+            {
+                console.log( "Total ROW" );
+                var totalGamesString = totalGamesRemaining.toString() + "/" + totalGamesForWeek.toString();
+                newGamesDiv.innerHTML = totalGamesString;
+                newGamesTd.className += " bg-clr-gray-08";
+                newGamesDiv.className += " bg-clr-gray-08";
+            }
+            // Normal player
+            else if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
+            {
+                if( !isInjured )
+                {
+                    console.log( "Normal, healthy player" );
+                    var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
+                    newGamesDiv.innerHTML = localGamesDataDict[teamName];
+                    var splitDataIndex = localGamesDataDict[teamName].split( "/" );
+                    totalGamesRemaining += parseInt( splitDataIndex[0] );
+                    totalGamesForWeek += parseInt( splitDataIndex[1] );
+                    newGamesTd.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
+                }
+                else
+                {
+                    console.log( "Injured player" );
+                    newGamesDiv.innerHTML = "-/-";
+                }
+                listOfTeamNameElementsIndex++;
+            }
+            // Empty player
+            else
+            {
+                newGamesDiv.innerHTML = "-/-";    
+            }
+            newGamesTd.appendChild( newGamesDiv );
+            listOfElementsTr.appendChild( newGamesTd );
+        }
+    }
+}
+
+/*
     updateGameData - update the game data when the dates have been switched
 */
 function updateGameData()
@@ -1697,7 +1775,7 @@ async function renderGamesSleep( type )
     else if( type == PAGE_TYPE_BOXSCORE )
     {
         requestHeaderFromServer( "Add" );
-        // requestGameDataFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
     }
     else if( type == PAGE_TYPE_FANTASY_CAST )
     {
@@ -1776,7 +1854,7 @@ async function renderGamesNoSleep( type )
     else if( type == PAGE_TYPE_BOXSCORE )
     {
         requestHeaderFromServer( "Add" );
-        // requestGameDataFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
     }
     else if( type == PAGE_TYPE_FANTASY_CAST )
     {

@@ -107,11 +107,9 @@ function buildSelectDateRequestString()
 */
 function buildDropdownSelectDateRequestString()
 {
-    console.log( "buildDropdownSelectDateRequestString" );
+    // console.log( "buildDropdownSelectDateRequestString" );
     var currentElements = document.getElementsByClassName( "dropdown__select" );
     var resultDateRequestString = "date=";
-    console.log( currentElements[0] );
-    console.log( currentElements[0].innerHTML );
     var dropdownElement = currentElements[0].options[currentElements[0].selectedIndex];
     var selectedDate = dropdownElement.text;
     var selectedDateSplit = selectedDate.split( " " );
@@ -190,7 +188,7 @@ function buildLeagueIdRequestString()
 */
 function buildTeamsRequestString()
 {
-    console.log( "buildTeamsRequestString" );
+    // console.log( "buildTeamsRequestString" );
 
     var listOfElements = document.getElementsByClassName( "playerinfo__playerteam" );
     var teamsRequestString = "teams=";
@@ -224,7 +222,7 @@ function buildTeamsRequestString()
             }
         }
     }
-    console.log( teamsRequestString );
+    // console.log( teamsRequestString );
     return teamsRequestString;
 }
 
@@ -429,7 +427,7 @@ function getPageTypeFromUrl( url )
     {
         return PAGE_TYPE_UNDEFINED;
     }
-    console.log( "currentPageType=" + currentPageType );
+    // console.log( "currentPageType=" + currentPageType );
     return currentPageType;
 }
 
@@ -616,7 +614,7 @@ function addWeekGamesHeadersAddedDroppedPage( data )
 */
 function addWeekGamesHeadersBoxscorePage( data )
 {
-    console.log( "addWeekGamesHeadersBoxscorePage" );
+    // console.log( "addWeekGamesHeadersBoxscorePage" );
     var weekNum = data.weekNum;
     var listOfElements = document.getElementsByClassName( "Table2__header-row" );
 
@@ -764,7 +762,7 @@ function addGamesDataToLocalDictionary( data, teamsRequestString )
                 localGamesDataDict[teamsList[i]] = data[i];
             }
         }
-        console.log( localGamesDataDict );
+        // console.log( localGamesDataDict );
     }
 }
 
@@ -1138,7 +1136,6 @@ function addGamesFantasyCastPagePoints()
         rightTotalElements[0].textContent = rightTotalGamesString;
     }
     // Make the greater number of total games font color green
-    // console.log( "leftTotalGamesRemaining=" + leftTotalGamesRemaining + ", rightTotalGamesRemaining=" + rightTotalGamesRemaining );
     if( leftTotalGamesRemaining > rightTotalGamesRemaining )
     {
         leftTotalElements[0].style.color = "#acd888";
@@ -1279,22 +1276,38 @@ function addGamesAddedDroppedPage()
 */
 function addGamesBoxscorePage()
 {
-    console.log( "addGamesBoxscorePage" );
+    // console.log( "addGamesBoxscorePage" );
 
     var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
     var totalGamesRemaining = 0;
     var totalGamesForWeek = 0;
 
+    var table1;
+    var table2;
+    var isTable = true;
+    var teamOneTotalGamesRemaining = 0;
+    var teamOneTotalGamesForWeek = 0;
+    var teamTwoTotalGamesRemaining = 0;
+    var teamTwoTotalGamesForWeek = 0;
+
     var listOfTeamNameElements = document.getElementsByClassName( "playerinfo__playerteam" );
     var listOfTeamNameElementsIndex = 0;
+
 
     for( var i = 0; i < listOfElements.length; i++ )
     {
         var listOfElementsTr = listOfElements[i];
-        console.log( listOfElementsTr );
-        console.log( listOfElementsTr.children.length );
         if( listOfElementsTr.children.length == 4 )
         {
+            if( isTable == true )
+            {
+                table1 = listOfElementsTr.closest( "tbody" );
+                isTable = false;
+            }
+            else
+            {
+                table2 = listOfElementsTr.closest( "tbody" );
+            }
             var newGamesTd = document.createElement( "td" );
             var newGamesDiv = document.createElement( "div" );
             newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
@@ -1305,15 +1318,23 @@ function addGamesBoxscorePage()
             // 'O'ut, injured player
             if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
             {
-                console.log( "Injured" );
                 isInjured = true;
             }
             // TOTALS row
             if( listOfElementsTr.innerHTML.indexOf( ">TOTALS</div>" ) != -1 )
             {
-                console.log( "Total ROW" );
-                var totalGamesString = totalGamesRemaining.toString() + "/" + totalGamesForWeek.toString();
-                newGamesDiv.innerHTML = totalGamesString;
+                var parentTable = listOfElementsTr.closest( "tbody" );
+                if( $( table1 ).is( $( parentTable ) ) )
+                {
+                    newGamesDiv.className += " fbw-team-one-total-games";
+                }
+                else if( $( table2 ).is( $( parentTable ) ) )
+                {
+                    // newGamesDiv.textContent = teamTwoTotalGamesRemaining.toString() + "/" + teamTwoTotalGamesForWeek.toString();
+                    newGamesDiv.className += " fbw-team-two-total-games";
+                }
+                // var totalGamesString = totalGamesRemaining.toString() + "/" + totalGamesForWeek.toString();
+                // newGamesDiv.textContent = totalGamesString;
                 newGamesTd.className += " bg-clr-gray-08";
                 newGamesDiv.className += " bg-clr-gray-08";
             }
@@ -1322,29 +1343,91 @@ function addGamesBoxscorePage()
             {
                 if( !isInjured )
                 {
-                    console.log( "Normal, healthy player" );
                     var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
-                    newGamesDiv.innerHTML = localGamesDataDict[teamName];
+                    newGamesDiv.textContent = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
-                    totalGamesRemaining += parseInt( splitDataIndex[0] );
-                    totalGamesForWeek += parseInt( splitDataIndex[1] );
+                    var parentTable = listOfElementsTr.closest( "tbody" );
+                    if( $( table1 ).is( $( parentTable ) ) )
+                    {
+                        teamOneTotalGamesRemaining += parseInt( splitDataIndex[0] );
+                        teamOneTotalGamesForWeek += parseInt( splitDataIndex[1] );
+                    }
+                    else if( $( table2 ).is( $( parentTable ) ) )
+                    {
+                        teamTwoTotalGamesRemaining += parseInt( splitDataIndex[0] );
+                        teamTwoTotalGamesForWeek += parseInt( splitDataIndex[1] );                    
+                    }
+                    // totalGamesRemaining += parseInt( splitDataIndex[0] );
+                    // totalGamesForWeek += parseInt( splitDataIndex[1] );
                     newGamesTd.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
                 }
                 else
                 {
-                    console.log( "Injured player" );
-                    newGamesDiv.innerHTML = "-/-";
+                    newGamesDiv.textContent = "-/-";
                 }
                 listOfTeamNameElementsIndex++;
             }
             // Empty player
             else
             {
-                newGamesDiv.innerHTML = "-/-";    
+                newGamesDiv.textContent = "-/-";    
             }
             newGamesTd.appendChild( newGamesDiv );
             listOfElementsTr.appendChild( newGamesTd );
         }
+    }
+
+    // Update total games amounts
+    var teamOneTotal = document.getElementsByClassName( "fbw-team-one-total-games" );
+    var teamTwoTotal = document.getElementsByClassName( "fbw-team-two-total-games" );
+    teamOneTotal[0].textContent = teamOneTotalGamesRemaining.toString() + "/" + teamOneTotalGamesForWeek.toString();
+    teamTwoTotal[0].textContent = teamTwoTotalGamesRemaining.toString() + "/" + teamTwoTotalGamesForWeek.toString();
+
+    // Add total games to the top table
+    var tableTableElements = document.getElementsByClassName( "Table2__header-row" );
+    var topTable = tableTableElements[0];
+    var newHeader = document.createElement( "th" );
+    var newDiv = document.createElement( "div" );
+    var newSpan = document.createElement( "span" );
+    newHeader.className = "Table2__th fbw-new-element";
+    newDiv.title = "Games Remaining / Games this Week";
+    newDiv.className = "jsx-2810852873 table--cell header fbw-new-element";
+    newSpan.textContent = "GR/G";
+    newDiv.appendChild( newSpan );
+    newHeader.appendChild( newDiv );
+    topTable.appendChild( newHeader );
+
+    var tableRowElements = document.getElementsByClassName( "Table2__tr--md" );
+    var teamOneRow = tableRowElements[0];
+    var teamTwoRow = tableRowElements[1];
+    var newTdTeamOne = document.createElement( "td" );
+    var newDivTeamOne = document.createElement( "div" );
+    var newTdTeamTwo = document.createElement( "td" );
+    var newDivTeamTwo = document.createElement( "div" );
+
+    newTdTeamOne.appendChild( newDivTeamOne );
+    newTdTeamTwo.appendChild( newDivTeamTwo );
+    teamOneRow.appendChild( newTdTeamOne );
+    teamTwoRow.appendChild( newTdTeamTwo );
+    
+    newTdTeamOne.className = "pl2 fw-bold Table2__td fbw-new-element";
+    newTdTeamTwo.className = "pl2 fw-bold Table2__td fbw-new-element";
+    newDivTeamOne.className = "jsx-2810852873 table--cell pl2 fw-bold fbw-new-element";
+    newDivTeamTwo.className = "jsx-2810852873 table--cell pl2 fw-bold fbw-new-element";
+    newDivTeamOne.textContent = teamOneTotalGamesRemaining.toString() + "/" + teamOneTotalGamesForWeek.toString();
+    newDivTeamTwo.textContent = teamTwoTotalGamesRemaining.toString() + "/" + teamTwoTotalGamesForWeek.toString();
+
+    if( teamOneTotalGamesRemaining > teamTwoTotalGamesRemaining )
+    {
+        newDivTeamOne.className += " cell-highlight";
+    }
+    else if( teamTwoTotalGamesRemaining > teamOneTotalGamesRemaining )
+    {
+        newDivTeamTwo.className += " cell-highlight";
+    }
+    else if( teamTwoTotalGamesRemaining == teamOneTotalGamesRemaining )
+    {
+        // Do nothing
     }
 }
 
@@ -1734,6 +1817,39 @@ $( 'body' ).on( 'click', 'li.carousel__slide', function()
         {
             removeEntireColumn();
             setTimeout( requestGameDataFromServer( "Add" ), 1000 );
+        }
+    }
+});
+
+/* ------------------------------------------------------------------------------------------------------------------------------------------
+
+                                                    Boxscore - HTML Object Changes 
+
+------------------------------------------------------------------------------------------------------------------------------------------ */
+
+$( 'body' ).on( 'change', 'select.dropdown__select', function() 
+{
+    if( currentPageType == PAGE_TYPE_BOXSCORE )
+    {
+        removeEntireColumn();
+        localGamesDataDict = {};
+        requestHeaderFromServer( "Add" );
+        requestGameDataFromServer( "Add" );
+    }
+
+});
+
+$( 'body' ).on( 'click', 'li.carousel__slide', function() 
+{
+    if( currentPageType == PAGE_TYPE_BOXSCORE )
+    {
+        // console.log( "change menu" );
+        var className = this.className;
+        if( className.indexOf( "selected" ) == -1 )
+        {
+            removeEntireColumn();
+            setTimeout( requestHeaderFromServer( "Add" ), 2000 );
+            setTimeout( requestGameDataFromServer( "Add" ), 3000 );
         }
     }
 });

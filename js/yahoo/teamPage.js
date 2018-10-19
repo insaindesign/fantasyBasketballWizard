@@ -7,7 +7,15 @@ Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "H
 Schedule = {}
 
 teams = Teams.join(",") + ","
-games = JSON.parse(getGames(teams))
+
+function initSchedule(){
+    games = JSON.parse(getGames(teams));
+    for (var t = 0; t < Teams.length; t++) {
+        team = Teams[t];
+        Schedule[team] = games[t];
+    }
+}
+
 
 //Initialize Functions
 //-----------------------------------------------------------------------------
@@ -71,11 +79,6 @@ function getGames(team){
     req.open("GET", url, false);
     req.send(null);
     return req.responseText;
-}
-
-for (var t = 0; t < Teams.length; t++) {
-    team = Teams[t];
-    Schedule[team] = games[t];
 }
 
 //get week of year
@@ -686,6 +689,7 @@ myTeamRegex = /https?:\/\/basketball[.]fantasysports[.]yahoo[.]com\/nba\/\d{3,7}
 teamURLMatch = currentUrl.match(myTeamRegex);
 
 if (document.getElementById('team-card-info') != null && currentUrl.indexOf(teamURLMatch) !== -1) {
+    initSchedule();
     render();
     //renderGames();
     //countStats();

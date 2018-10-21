@@ -44,10 +44,6 @@ class GamesRemaining(APIView):
                 gameCountList.append("0/0")
             print("Response for Games Remaining")
             print(gameCountList)
-            Use(useType=UseType.objects.get(pageName=pageName),
-                    queryString=queryString,
-                    leagueID=leagueID
-            ).save()
             return Response(gameCountList)
 
         # if no week in the request, get the corresponding week
@@ -72,10 +68,6 @@ class GamesRemaining(APIView):
 
         print("Response for Games Remaining")
         print(gameCountList)
-        Use(useType=UseType.objects.get(pageName=pageName),
-                queryString=queryString,
-                leagueID=leagueID
-        ).save()
         #numGames = Game.objects.filter(Q(homeTeam = requestTeam) | Q(roadTeam = requestTeam), week=requestWeek).count()
 
         return Response(gameCountList)

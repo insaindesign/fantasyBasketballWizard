@@ -25,10 +25,13 @@ Enjoy!
 
 
 Release notes:
-Version 3.0.1 (October 17, 2018):
+Version 3.0.2 (Oct 21, 2018):
+- Various bug fixes
+
+Version 3.0.1 (Oct 17, 2018):
 - Fixed blank projections on matchup page bug
 
-Version 3.0 (October 14, 2018):
+Version 3.0 (Oct 14, 2018):
 - New and improved Fantasy Basketball Wizard!
 - See Description for new features.
 

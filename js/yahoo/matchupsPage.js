@@ -444,6 +444,6 @@ if (categories.toString() == "FG%,FT%,3PTM,PTS,REB,AST,ST,BLK,TO"){
     
 }
 
-//getGamesToday();
+getGamesToday();
 
 

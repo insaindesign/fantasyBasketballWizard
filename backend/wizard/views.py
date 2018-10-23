@@ -102,10 +102,9 @@ class GamesRemaining(APIView):
 
         threeHours = datetime.timedelta(hours=3)
         gameEndTime = gameDateTime + threeHours
-        if now > gameEndTime:
-            return True
-        else:
-            return False
+
+        return gameEndTime > now
+        
 
     def getCleanedTeamsString(self, teamsString):
         # remove last character (comma in this case)

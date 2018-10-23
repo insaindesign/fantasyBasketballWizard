@@ -4,13 +4,15 @@
         <title></title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" type="text/css" href="popup.css">
+        <script type="text/javascript" src="frontend/options.js"></script>
+        <script type="text/javascript" src="frontend/jquery-3.3.1.min.js"></script>
     </head>
     <body tabindex="1">
         <div class="fbw-header">
             <h1>Fantasy Basketball Wizard</h1>
         </div>
 
-        <img class="yahoo-logo" src="images/yahoo-logo.jpg">
+        <h1 class="yahoo-header">Yahoo</h1>
 
         <div class="yahoo-text">
             <p class="feature-text">Games remaining for the week & Total games tonight and for the week</p>
@@ -20,8 +22,9 @@
             <p class="feature-text">Projected matchup stats</p>
             <p class="detail-text"> > Matchups page</p>
         </div>
+        
+        <h1 class="espn-header">ESPN</h1>
 
-        <img class="espn-logo" src="images/espn-logo.jpg">
         <div class="espn-text">
             <p class="feature-text">
             Games remaining for the week & Total games tonight and for the week</p>
@@ -30,9 +33,7 @@
             <p class="detail-text"> > COMING SOON! </p>  
         </div>
 
-        <strong>Version 3.0.2</strong>
-        <div> 
-            <p>If you enjoy Fantasy Basketball Wizard, we would really appreciate a review on the chrome web store!</p>
+        <div class="links">
             <a href="https://chrome.google.com/webstore/detail/fantasy-basketball-wizard/bmojbnihkmbdandkddobjnilkegcooll/reviews" target="_blank">Review</a>
             &nbsp;
             <a href="https://chrome.google.com/webstore/detail/fantasy-basketball-wizard/bmojbnihkmbdandkddobjnilkegcooll/support" target="_blank">Feedback?</a>
@@ -41,5 +42,9 @@
             &nbsp;
             <a href="https://paypal.me/pools/c/7ZUO3Mxjnf" target="_blank">Donations :)</a>
         </div>
+
+        <div id="options">Options</div>
+        <button id="go-to-options">Go to options</button>
     </body>
+
 </html>

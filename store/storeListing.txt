@@ -25,6 +25,10 @@ Enjoy!
 
 
 Release notes:
+Version 3.1 (Oct 22, 2018):
+- Games remaining on box score page (ESPN)
+- Various bug fixes
+
 Version 3.0.2 (Oct 21, 2018):
 - Various bug fixes
 

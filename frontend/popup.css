@@ -1,0 +1,18 @@
+body { width: 300px; background-image: url('images/BasketballWizard.png'); 
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: 150px 150px;
+    background-color: rgba(255,255,255,0.85);
+    background-blend-mode: lighten; }
+
+.basketball-bg{ display: block; margin-left: auto; margin-right: auto; width: 50%; }
+
+.detail-text{ font-style: italic; }
+
+.espn-header{ color: #f44141; text-align: center; }
+
+.feature-text{ font-weight: bold; }
+
+.yahoo-header{ color: #5f42f4; text-align: center; }
+

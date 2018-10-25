@@ -94,6 +94,10 @@ function resetGames(weekNum) {
     var leagueIDString = 'leagueID=' + getLeagueID();
     console.log("dateString = " + dateString);
     var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=weekSelect&' + teamsString + '&format=json' + '&weekNum=' + weekNum + '&' + dateString + '&' + leagueIDString;
+    //remove weekNum if retrieving games for today
+    if(weekNum == 0) {
+        url = url.replace("weekNum="+weekNum,"");
+    }
     console.log("weekNum=" + weekNum);
     fetch(url)
         .then(function (response) {

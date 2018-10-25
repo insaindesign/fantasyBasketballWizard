@@ -49,7 +49,7 @@ function renderGames() {
         playerInfo = rows[i].cells[1].innerText.split(" ");
         for (var j = 0; j < Teams.length; j++) {
             if (Teams.includes(playerInfo[j])) {
-                console.log(playerInfo[j]);
+                //console.log(playerInfo[j]);
                 var teamAcronym = playerInfo[j];
                 var rowNumber = i;
                 teamsString += teamAcronym + ",";
@@ -57,18 +57,18 @@ function renderGames() {
             }
         }
     }
-    console.log(teamsString);
+    //console.log(teamsString);
 
     //"2019-1-7" must be in this format. we need to pull from the matchups screen to display number of games
     var dateString = getFormattedDate();
     var leagueIDString = 'leagueID=' + getLeagueID();
-    console.log('dateString = ' + dateString);
+    //console.log('dateString = ' + dateString);
     var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=research&' + teamsString + '&format=json&date=' + dateString + '&' + leagueIDString;
-    console.log("before request");
+    //console.log("before request");
     fetch(url)
         .then(function (response) {
             if (response.status !== 200) {
-                console.log('Called to backend failed: ' + response.status);
+                //console.log('Called to backend failed: ' + response.status);
                 return;
             }
 
@@ -76,12 +76,12 @@ function renderGames() {
                 addGames(data);
             });
         }).catch(function (err) {
-            console.log('Fetch Error :-S', err);
+            //console.log('Fetch Error :-S', err);
         });
 }
 
 function addGames(data) {
-    console.log("in add Games");
+    //console.log("in add Games");
     var table = document.getElementById("buzzindextable");
     var rows = table.rows;
     var gpHeader = document.createElement("th");

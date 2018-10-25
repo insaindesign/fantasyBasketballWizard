@@ -75,7 +75,7 @@ function addDropDown() {
         }
         select.appendChild(option);
     }
-    console.log(select);
+    //console.log(select);
     var div = document.createElement("div");
     div.innerText = "wk";
     div.setAttribute("class", "navtarget");
@@ -89,33 +89,33 @@ function resetGames(weekNum) {
     var rows = document.getElementsByClassName("Tst-table Table")[0].rows;
     var playerInfo;
 
-    console.log(teamsString)
+    //console.log(teamsString)
     var dateString = "date=" + getFormattedDate();
     var leagueIDString = 'leagueID=' + getLeagueID();
-    console.log("dateString = " + dateString);
+    //console.log("dateString = " + dateString);
     var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=weekSelect&' + teamsString + '&format=json' + '&weekNum=' + weekNum + '&' + dateString + '&' + leagueIDString;
     //remove weekNum if retrieving games for today
     if(weekNum == 0) {
         url = url.replace("weekNum="+weekNum,"");
     }
-    console.log("weekNum=" + weekNum);
+    //console.log("weekNum=" + weekNum);
     fetch(url)
         .then(function (response) {
             if (response.status !== 200) {
-                console.log('Called to backend failed: ' + response.status);
+                //console.log('Called to backend failed: ' + response.status);
                 return;
             }
 
             response.json().then(function (data) {
                 var gameColumn = document.getElementsByClassName("gameColumn");
-                console.log(data)
+                //console.log(data)
                 for (var i = 0; i < rows.length-1; i++) {
                     gameColumn[i].innerText = data[i];
                     gameColumn[i].style.backgroundColor = getColor(data[i])
                 }
             });
         }).catch(function (err) {
-            console.log('Fetch Error :-S', err);
+            //console.log('Fetch Error :-S', err);
         });
 }
 
@@ -141,16 +141,16 @@ function renderGames() {
         playerInfo = rows[i].cells[1].innerText.split(" ");
         teamsString += getTeamFromInfo(playerInfo) + ",";
     }
-    console.log(teamsString)
+    //console.log(teamsString)
     var dateString = getFormattedDate();
     var leagueIDString = 'leagueID=' + getLeagueID();
-    console.log("dateString = " + dateString);
+    //console.log("dateString = " + dateString);
     var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=transactionTrends&' + teamsString + '&format=json&date=' + dateString + '&' + leagueIDString;
-    console.log("before request");
+    //console.log("before request");
     fetch(url)
         .then(function (response) {
             if (response.status !== 200) {
-                console.log('Called to backend failed: ' + response.status);
+                //console.log('Called to backend failed: ' + response.status);
                 return;
             }
 
@@ -158,14 +158,14 @@ function renderGames() {
                 addGames(data);
             });
         }).catch(function (err) {
-            console.log('Fetch Error :-S', err);
+            //console.log('Fetch Error :-S', err);
         });
 
 }
 
 function addGames(data) {
-    console.log("in add Games");
-    console.log(data);
+    //console.log("in add Games");
+    //console.log(data);
     var table = document.getElementsByClassName("Tst-table Table")[0];
     var rows = table.rows;
     var newCell;

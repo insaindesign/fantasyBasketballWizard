@@ -166,11 +166,11 @@ function initGlobals(){
 renderGames = function(from_view) {
 
     if (document.getElementById(games_id) != null) {
-        console.log("no changes");
+        //console.log("no changes");
         return;
     }
 
-    console.log("rendering games...")
+    //console.log("rendering games...")
     
     //init stats table
     table = document.getElementById("statTable0");
@@ -184,10 +184,10 @@ renderGames = function(from_view) {
     first_player_row = get_first_row();
     
     if (first_player_row == table.rows.length - 1 || first_player_row == null){
-        console.log("all empty");
+        //console.log("all empty");
         for (var i = 2; i < num_rows; i++) {
             rowText = table.rows[i].innerText.split('\n').toString();
-            console.log("rowText: ", rowText);
+            //console.log("rowText: ", rowText);
             if (!rowText.includes("(Empty)")) {
                 //console.log('i: ', i);
                 first_player_row = i;
@@ -196,19 +196,19 @@ renderGames = function(from_view) {
         }
     }
     
-    console.log("first_player_row: ", first_player_row);
+    //console.log("first_player_row: ", first_player_row);
 
     //find player column
     th = table.rows[first_player_row];
     for (var i = 0; i < th.cells.length; i++) {
-        console.log("cell: ", th.cells[i].innerText);
+        //console.log("cell: ", th.cells[i].innerText);
         if (th.cells[i].innerText.includes("layer")) {
             player_col = i;
             break;
         }
     }
     
-    console.log("player_col:", player_col);
+    //console.log("player_col:", player_col);
 
     fantasy_col = -1;
     //find % Started column
@@ -305,7 +305,7 @@ renderGames = function(from_view) {
             //console.log(cellText);
             info = table.rows[row].cells[player_col].innerText.split(" ");
         } catch (err) {
-            console.log("error finishing reads");
+            //console.log("error finishing reads");
             break;
         }
 
@@ -314,12 +314,12 @@ renderGames = function(from_view) {
     try {
         //display total number of games and add class
         totalGames = totalGamesNum.toString() + "/" + totalGamesDen.toString();
-        console.log("totalGames", totalGames);
+        //console.log("totalGames", totalGames);
         table.rows[row].cells[fantasy_col].innerText = totalGames;
         table.rows[row].cells[fantasy_col].id = "games";
         table.rows[row].cells[fantasy_col].className = "Alt Ta-end Nowrap Bdrend";
     } catch (err) {
-        console.log("error writing");
+        //console.log("error writing");
     }
 }
 
@@ -338,12 +338,12 @@ countStats = function() {
     }
 
     if (document.getElementById(avg_stats_id) != null) {
-        console.log("no changes");
+        //console.log("no changes");
         return;
     }
 
     view = AS_VIEW;
-    console.log("counting stats...")
+    //console.log("counting stats...")
 
     init_AS_subnav();
 
@@ -359,7 +359,7 @@ countStats = function() {
         num_cols = table.rows[2].cells.length;
     }
 
-    console.log("cols: ", num_cols);
+    //console.log("cols: ", num_cols);
 
     //append new row(s) to table
     footer = document.createElement("tfoot");
@@ -432,18 +432,18 @@ countStats = function() {
     //on opponent page
     if (document.getElementsByClassName("F-icon Fz-xs F-trade T-action-icon-trade").length > 1 || document.getElementsByClassName("noactiondt-tradedeadlinepassed F-icon Fz-xs F-disabled T-action-icon-disabled-trade").length > 1) {
         offset = true;
-        console.log("offset");
+        //console.log("offset");
     } else {
         col++;
-        console.log("not offset");
+        //console.log("not offset");
     }
 
     header_cell = table.rows[1].cells[col].innerText;
 
-    console.log("header cell: ", header_cell);
+    //console.log("header cell: ", header_cell);
 
     while (header_cell.length > 0) {
-        console.log("col: ", table.rows[1].cells[col].innerText);
+        //console.log("col: ", table.rows[1].cells[col].innerText);
         //column is (x/y)
         if (header_cell.includes("/")) {
             while (!cellText.includes(week_row_name)) {
@@ -473,8 +473,8 @@ countStats = function() {
             stats_all.cells[write].innerText = round_float(num, 1) + "/" + round_float(den, 1);
             stats_week.cells[write].innerText = round_float(weekly_num, 1) + "/" + round_float(weekly_den, 1);
 
-            console.log("/ stats: ", round_float(num, 1));
-            console.log("/ stats: ", round_float(den, 1));
+            //console.log("/ stats: ", round_float(num, 1));
+            //console.log("/ stats: ", round_float(den, 1));
 
 
             //calculate % based on shooting volume
@@ -496,7 +496,7 @@ countStats = function() {
                     write = col + 1;
                 }
 
-                console.log("shooting % detected");
+                //console.log("shooting % detected");
 
                 //console.log(avg);
                 stats_all.cells[write].innerText = avg;
@@ -507,7 +507,7 @@ countStats = function() {
         }
         //column is %
         else if (header_cell.includes("%")) {
-            console.log("%!");
+            //console.log("%!");
             while (!cellText.includes(week_row_name)) {
                 value = table.rows[row].cells[col].innerText;
                 if (!isNaN(value) && value.length > 0) {
@@ -526,7 +526,7 @@ countStats = function() {
             write = col;
 
         } else {
-            console.log("col: ", col);
+            //console.log("col: ", col);
             weekly_stats = 0;
             while (!cellText.includes(week_row_name)) {
                 if (!cellText.includes("Injured")) {
@@ -553,7 +553,7 @@ countStats = function() {
             stats_all.cells[write].innerText = round_float(num, 1);
             stats_week.cells[write].innerText = round_float(weekly_stats, 1);
 
-            console.log("stats: ", round_float(num, 1));
+            //console.log("stats: ", round_float(num, 1));
 
             weekly_stats = 0;
 
@@ -613,7 +613,7 @@ function init_AS_subnav() {
             }, refreshSleepTime);
         });
     } catch (err) {
-        console.log(err)
+        //console.log(err)
     }
 }
 
@@ -630,7 +630,7 @@ function addListeners(){
             }, refreshSleepTime);
         })
     } catch (err) {
-        console.log(err)
+        //console.log(err)
     }
     try {
         document.getElementById("subnav_S").addEventListener("click", function() {
@@ -639,7 +639,7 @@ function addListeners(){
             }, refreshSleepTime);
         })
     } catch (err) {
-        console.log(err)
+        //console.log(err)
     }
     try {
         document.getElementById("P").addEventListener("click", function() {
@@ -648,7 +648,7 @@ function addListeners(){
             }, refreshSleepTime);
         })
     } catch (err) {
-        console.log(err)
+        //console.log(err)
     }
     try {
         document.getElementById("SPS").addEventListener("click", function() {
@@ -657,7 +657,7 @@ function addListeners(){
             }, refreshSleepTime);
         })
     } catch (err) {
-        console.log(err)
+        //console.log(err)
     }
     try {
         document.getElementById("AS").addEventListener("click", function() {
@@ -672,7 +672,7 @@ function addListeners(){
         })
 
     } catch (err) {
-        console.log(err)
+        //console.log(err)
     }
 }
 

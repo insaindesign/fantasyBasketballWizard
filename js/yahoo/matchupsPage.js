@@ -4,7 +4,7 @@ Schedule = {};
 
 teams = Teams.join(",") + ",";
 
-console.log("teams: ", teams);
+//console.log("teams: ", teams);
 
 var leftName;
 var rightName;
@@ -21,9 +21,9 @@ table = document.getElementById("statTable3");
 if (table == null){
     setTimeout(function(){
         var matchup = document.getElementById("matchup");
-        console.log("first table null");
+        //console.log("first table null");
         table = matchup.childNodes[0];
-        console.log("new table: ", table);
+        //console.log("new table: ", table);
     }, 1000);
     
 }
@@ -110,14 +110,14 @@ function getGamesRemaining(team){
         dateString = getFormattedDate();
     }
     
-    console.log("dateString: ", dateString);
+    //console.log("dateString: ", dateString);
     
     var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yMatchupsPage&teams='+team+'&format=json&date='+dateString+'&'+leagueIDString;
     //console.log("url: ", url);
     fetch(url)
         .then(function(response){
         if (response.status !== 200) {
-            console.log('Called to backend failed: ' + response.status);
+            //console.log('Called to backend failed: ' + response.status);
             return;
         }
 
@@ -131,7 +131,7 @@ function getGamesRemaining(team){
             getPlayers();
         });
     }).catch(function(err) {
-        console.log('Fetch Error :-S', err);
+        //console.log('Fetch Error :-S', err);
     });
 }
 
@@ -222,7 +222,7 @@ function getGamesToday() {
     fetch(url)
         .then(function(response){
         if (response.status !== 200) {
-            console.log('Called to backend failed: ' + response.status);
+            //console.log('Called to backend failed: ' + response.status);
             return;
         }
 
@@ -230,7 +230,7 @@ function getGamesToday() {
             displayGamesToday(data);
         });
     }).catch(function(err) {
-        console.log('Fetch Error :-S', err);
+        //console.log('Fetch Error :-S', err);
     });
 }
 
@@ -284,11 +284,11 @@ function getPlayers(){
     }
     
     leftString = playersLeft.join(",") + ",";
-    console.log("leftString: ", leftString);
+    //console.log("leftString: ", leftString);
     getProjections(leftString, "left");
     
     rightString = playersRight.join(",") + ",";
-    console.log("rightString: ", rightString);
+    //console.log("rightString: ", rightString);
     getProjections(rightString, "right");
     
 }
@@ -299,7 +299,7 @@ function getProjections(playersString, side){
     fetch(url)
         .then(function (response) {
             if (response.status !== 200) {
-                console.log('Called to backend failed: ' + response.status);
+                //console.log('Called to backend failed: ' + response.status);
                 return;
             }
 
@@ -308,14 +308,14 @@ function getProjections(playersString, side){
                 //console.log(data);
             });
         }).catch(function (err) {
-            console.log('Fetch Error :-S', err);
+            //console.log('Fetch Error :-S', err);
         });
     
 }
 
 function showProjections(data, side){
     
-    console.log("showProjections -- ", side, ": ", data);
+    //console.log("showProjections -- ", side, ": ", data);
     
     //add text
     for (cat = 0; cat < categories.length; cat++){

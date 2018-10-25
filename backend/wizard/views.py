@@ -37,14 +37,6 @@ class GamesRemaining(APIView):
         print(requestTeams)
         requestDate = DataLoader.stringDateToDateObject(date)  # yyyy-m-d
 
-        # preseaosn dates should always return 0/0 because there is no week associated with preseason
-        if dayBeforeSeasonStartDate > requestDate and pageName != "weekSelect":
-            print("pre season - no games")
-            for teamAcronym in requestTeams:
-                gameCountList.append("0/0")
-            print("Response for Games Remaining")
-            print(gameCountList)
-            return Response(gameCountList)
 
         # if no week in the request, get the corresponding week
         if requestWeek == None:
@@ -80,12 +72,16 @@ class GamesRemaining(APIView):
                 - if one of these games is today
                     -is it currently 3 hours after this game start time?
             requestDate - date that the request came in on
+
+            if there is a game today AND it is over - True
+            else - False
         """
         # get nowtime
         now = datetime.datetime.now().astimezone(pytz.timezone('US/Eastern'))
         # get todays game
         todaysGameQuery = gamesRemaining.filter(date=requestDate)
 
+        # no game today
         if todaysGameQuery.count() < 1:
             return False
 
@@ -102,10 +98,19 @@ class GamesRemaining(APIView):
 
         threeHours = datetime.timedelta(hours=3)
         gameEndTime = gameDateTime + threeHours
-        if now > gameEndTime:
-            return True
-        else:
-            return False
+
+        print("START")
+        print(gameDateTime)
+        print("NOW")
+        print(now)
+        print("ENDTime")
+        print(gameEndTime)
+        print(gameEndTime < now)
+        
+        # date1 < date2
+        # date1 is considered less than date2 when date1 precedes date2 in time. 
+        return gameEndTime < now
+        
 
     def getCleanedTeamsString(self, teamsString):
         # remove last character (comma in this case)

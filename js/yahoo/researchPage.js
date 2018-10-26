@@ -68,7 +68,7 @@ function renderGames() {
     fetch(url)
         .then(function (response) {
             if (response.status !== 200) {
-                //console.log('Called to backend failed: ' + response.status);
+                console.log('response status: ' + response.status);
                 return;
             }
 
@@ -76,7 +76,7 @@ function renderGames() {
                 addGames(data);
             });
         }).catch(function (err) {
-            //console.log('Fetch Error :-S', err);
+            console.log("EXCEPTION", err);
         });
 }
 

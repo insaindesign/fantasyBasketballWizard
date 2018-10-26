@@ -66,11 +66,11 @@ function addDropDown() {
     for (var i = 1; i <= 24; i++) {
         var option = document.createElement("option");
         option.setAttribute("value", i);
-        option.innerText = "Week " + i;
+        option.innerText = "Wk" + i;
         if (i != 18) {
-            option.innerText = "Week " + i;
+            option.innerText = "Wk" + i;
         } else {
-            option.innerText = "Week " + i + "/19";
+            option.innerText = "Wk" + i + "/19";
             i++;
         }
         select.appendChild(option);
@@ -80,6 +80,7 @@ function addDropDown() {
     div.innerText = "wk";
     div.setAttribute("class", "navtarget");
     select.style.cssFloat = "right";
+    select.style.letterSpacing = "initial";
     document.getElementsByClassName("Nav-h Py-med No-brdbot Tst-pos-nav")[0].appendChild(select);
 }
 

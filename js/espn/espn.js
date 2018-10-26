@@ -28,10 +28,43 @@ const PAGE_TYPE_TEAM_SWITCH_DATES = "Switch Dates";
 const PAGE_TYPE_UNDEFINED = "Undefined";
 const WEEKLY_LEAGUE = "Weekly";
 
+var acronymEspnToYahoo = {};
 var currentPageType = "";
 var dailyOrWeekly = "";             // Value of daily or weekly league
 var localGamesDataDict = {};        // Holds the game remaining data
 var updateHeaders = false;          // Flag to update headers
+
+
+acronymEspnToYahoo["Atl"]  =  "Atl";
+acronymEspnToYahoo["Bos"]  =  "Bos";
+acronymEspnToYahoo["Bkn"]  =  "Bkn";
+acronymEspnToYahoo["Cha"]  =  "Cha";
+acronymEspnToYahoo["Chi"]  =  "Chi";
+acronymEspnToYahoo["Cle"]  =  "Cle";
+acronymEspnToYahoo["Dal"]  =  "Dal";
+acronymEspnToYahoo["Den"]  =  "Den";
+acronymEspnToYahoo["Det"]  =  "Det";
+acronymEspnToYahoo["GS"]   =  "GS";
+acronymEspnToYahoo["Hou"]  =  "Hou";
+acronymEspnToYahoo["Ind"]  =  "Ind";
+acronymEspnToYahoo["LAC"]  =  "LAC";
+acronymEspnToYahoo["LAL"]  =  "LAL";
+acronymEspnToYahoo["Mem"]  =  "Mem";
+acronymEspnToYahoo["Mia"]  =  "Mia";
+acronymEspnToYahoo["Mil"]  =  "Mil";
+acronymEspnToYahoo["Min"]  =  "Min";
+acronymEspnToYahoo["No"]   =  "NO";
+acronymEspnToYahoo["NY"]   =  "NY";
+acronymEspnToYahoo["OKC"]  =  "OKC";
+acronymEspnToYahoo["Orl"]  =  "Orl";
+acronymEspnToYahoo["Phi"]  =  "Phi";
+acronymEspnToYahoo["Phx"]  =  "Pho";
+acronymEspnToYahoo["Por"]  =  "Por";
+acronymEspnToYahoo["Sac"]  =  "Sac";
+acronymEspnToYahoo["SA"]   =  "SA";
+acronymEspnToYahoo["Tor"]  =  "Tor";
+acronymEspnToYahoo["Utah"] =  "Uta";
+acronymEspnToYahoo["Wsh"]  =  "Was";
 
 /* ------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -274,6 +307,46 @@ function buildPageNameRequestString()
     // console.log( pageNameResult );
     return pageNameResult;
 }
+
+/*
+    buildPlayerProjectionsString -
+*/
+async function buildPlayerProjectionsString()
+{
+    console.log( "buildPlayerProjectionsString" );
+    await sleep( 5000 );
+    var playerNamesArray = [];
+    var playerNameElements = document.getElementsByClassName( "player-column__athlete" );
+    var teamNameElements = document.getElementsByClassName( "playerinfo__playerteam" );
+    console.log( "playerNameElements.length= " + playerNameElements.length );
+    for( var i = 0; i < playerNameElements.length; i++ )
+    {
+        // console.log( playerNameElements[i].children[0].children[0].innerHTML );
+        var fullPlayerName = playerNameElements[i].children[0].children[0].innerHTML;
+        var playerNameSplit = fullPlayerName.split( " " );
+        // console.log( playerNameSplit.length );
+        var formattedPlayerName = "";
+        if( playerNameSplit.length == 2 )
+        {
+            formattedPlayerName = playerNameSplit[0].charAt( 0 ).concat( playerNameSplit[1] );
+        }
+        // Jr's, long last names
+        else if( playerNameSplit.length == 3 && playerNameSplit[2] == "Jr." )
+        {
+            formattedPlayerName = playerNameSplit[0].charAt( 0 ).concat( playerNameSplit[1] + "Jr" );
+        }
+        playerNamesArray.push( formattedPlayerName );
+        // console.log( formattedPlayerName );
+    }
+    for( var i = 0; i < playerNamesArray.length; i++ )
+    {
+        
+        // console.log( teamNameElements[i].innerHTML );
+        playerNamesArray[i] = playerNamesArray[i].concat( teamNameElements[i].innerHTML );
+        console.log( playerNamesArray[i] );
+    }
+}
+
 
 /*
     formatDateString - formats a date string in YYYY-MM-DD
@@ -686,6 +759,7 @@ async function requestHeaderFromServer( addOrUpdate )
     if( ( dateRequestString != "date=" ) && ( typeof dateRequestString !== 'undefined' ) )
     {
         var url = "http://www.fantasywizard.site/getweek/?" + pageNameRequestString + "&format=json&" + dateRequestString + "&" + leagueIdRequestString;
+        console.log( url );
         fetch( url )
             .then( function( response ){
             if ( response.status !== 200 )
@@ -807,7 +881,7 @@ async function requestGameDataFromServer( addOrUpdate )
         if( ( dateRequestString != "date=" ) && (teamsRequestString != "teams=" ) && ( typeof dateRequestString !== 'undefined' ) )
         {
             var url = "https://www.fantasywizard.site/gamesremaining/?" + pageNameRequestString + "&" + teamsRequestString + "&format=json&" + dateRequestString + "&" + leagueIdRequestString;
-            // console.log( url );
+            console.log( url );
 
             fetch( url )
                 .then( function( response ){
@@ -1848,6 +1922,7 @@ $( 'body' ).on( 'click', 'li.carousel__slide', function()
         if( className.indexOf( "selected" ) == -1 )
         {
             removeEntireColumn();
+            buildPlayerProjectionsString();
             setTimeout( requestHeaderFromServer( "Add" ), 2000 );
             setTimeout( requestGameDataFromServer( "Add" ), 3000 );
         }
@@ -1890,6 +1965,7 @@ async function renderGamesSleep( type )
     }
     else if( type == PAGE_TYPE_BOXSCORE )
     {
+        buildPlayerProjectionsString();
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
     }
@@ -1969,6 +2045,7 @@ async function renderGamesNoSleep( type )
     }
     else if( type == PAGE_TYPE_BOXSCORE )
     {
+        buildPlayerProjectionsString();
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
     }

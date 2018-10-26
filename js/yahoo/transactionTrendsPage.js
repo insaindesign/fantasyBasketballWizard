@@ -61,16 +61,16 @@ function addDropDown() {
     select.setAttribute("id", "dropdown");
     var option = document.createElement("option");
     option.setAttribute("value", 0);
-    option.innerText = "Today";
+    option.innerText = "-";
     select.appendChild(option);
     for (var i = 1; i <= 24; i++) {
         var option = document.createElement("option");
         option.setAttribute("value", i);
-        option.innerText = "Week " + i;
+        option.innerText = "Wk" + i;
         if (i != 18) {
-            option.innerText = "Week " + i;
+            option.innerText = "Wk" + i;
         } else {
-            option.innerText = "Week " + i + "/19";
+            option.innerText = "Wk" + i + "/19";
             i++;
         }
         select.appendChild(option);

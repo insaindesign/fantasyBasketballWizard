@@ -30,6 +30,7 @@
     }
   ],
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "*://www.fantasywizard.site/*"
   ]
 }

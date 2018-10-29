@@ -61,7 +61,7 @@ function addDropDown() {
     select.setAttribute("id", "dropdown");
     var option = document.createElement("option");
     option.setAttribute("value", 0);
-    option.innerText = "-";
+    option.innerText = "Today";
     select.appendChild(option);
     for (var i = 1; i <= 24; i++) {
         var option = document.createElement("option");
@@ -80,6 +80,7 @@ function addDropDown() {
     div.innerText = "wk";
     div.setAttribute("class", "navtarget");
     select.style.cssFloat = "right";
+    select.style.letterSpacing = "initial";
     document.getElementsByClassName("Nav-h Py-med No-brdbot Tst-pos-nav")[0].appendChild(select);
 }
 

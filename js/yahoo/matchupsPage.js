@@ -75,6 +75,8 @@ function getProjectionsColor(ratio){
         return '#3bff3b';
     } if (ratio <= 2.1){
         return '#3bff3b';
+    } if (ratio <= 4.5){
+        return '#18f204';
     } else return '#dee8f7';
 }
 

@@ -28,10 +28,43 @@ const PAGE_TYPE_TEAM_SWITCH_DATES = "Switch Dates";
 const PAGE_TYPE_UNDEFINED = "Undefined";
 const WEEKLY_LEAGUE = "Weekly";
 
+var acronymEspnToYahoo = {};
 var currentPageType = "";
 var dailyOrWeekly = "";             // Value of daily or weekly league
 var localGamesDataDict = {};        // Holds the game remaining data
 var updateHeaders = false;          // Flag to update headers
+
+
+acronymEspnToYahoo["Atl"]  =  "Atl";
+acronymEspnToYahoo["Bos"]  =  "Bos";
+acronymEspnToYahoo["Bkn"]  =  "Bkn";
+acronymEspnToYahoo["Cha"]  =  "Cha";
+acronymEspnToYahoo["Chi"]  =  "Chi";
+acronymEspnToYahoo["Cle"]  =  "Cle";
+acronymEspnToYahoo["Dal"]  =  "Dal";
+acronymEspnToYahoo["Den"]  =  "Den";
+acronymEspnToYahoo["Det"]  =  "Det";
+acronymEspnToYahoo["GS"]   =  "GS";
+acronymEspnToYahoo["Hou"]  =  "Hou";
+acronymEspnToYahoo["Ind"]  =  "Ind";
+acronymEspnToYahoo["LAC"]  =  "LAC";
+acronymEspnToYahoo["LAL"]  =  "LAL";
+acronymEspnToYahoo["Mem"]  =  "Mem";
+acronymEspnToYahoo["Mia"]  =  "Mia";
+acronymEspnToYahoo["Mil"]  =  "Mil";
+acronymEspnToYahoo["Min"]  =  "Min";
+acronymEspnToYahoo["No"]   =  "NO";
+acronymEspnToYahoo["NY"]   =  "NY";
+acronymEspnToYahoo["OKC"]  =  "OKC";
+acronymEspnToYahoo["Orl"]  =  "Orl";
+acronymEspnToYahoo["Phi"]  =  "Phi";
+acronymEspnToYahoo["Phx"]  =  "Pho";
+acronymEspnToYahoo["Por"]  =  "Por";
+acronymEspnToYahoo["Sac"]  =  "Sac";
+acronymEspnToYahoo["SA"]   =  "SA";
+acronymEspnToYahoo["Tor"]  =  "Tor";
+acronymEspnToYahoo["Utah"] =  "Uta";
+acronymEspnToYahoo["Wsh"]  =  "Was";
 
 /* ------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -274,6 +307,90 @@ function buildPageNameRequestString()
     // console.log( pageNameResult );
     return pageNameResult;
 }
+
+/*
+    buildPlayerProjectionsString -
+*/
+function buildPlayerProjectionsStrings()
+{
+    // console.log( "buildPlayerProjectionsStrings" );
+    var resultPlayersStrings = [];
+    var teamOnePlayerNamesArray = [];
+    var teamTwoPlayerNamesArray = [];
+    var playerNameElements = document.getElementsByClassName( "player-column__athlete" );
+    var teamNameElements = document.getElementsByClassName( "playerinfo__playerteam" );
+    var teamOnePlayersString = "players=";
+    var teamTwoPlayersString = "players=";
+    var teamOneTable;
+    var teamTwoTable;
+    var tableElements = document.getElementsByClassName( "Table2__table-fixed" );
+    
+    for( var i = 0; i < tableElements.length; i++ )
+    {
+        if( i == 0 )
+        {
+            teamOneTable = tableElements[i];
+        }
+        else
+        {
+            teamTwoTable = tableElements[i];
+        }
+    }
+
+    for( var i = 0; i < playerNameElements.length; i++ )
+    {
+        var fullPlayerName = playerNameElements[i].children[0].children[0].innerHTML;
+        var playerNameSplit = fullPlayerName.split( " " );
+        var formattedPlayerName = "";
+        if( playerNameSplit.length == 2 )
+        {
+            formattedPlayerName = playerNameSplit[0].charAt( 0 ).concat( playerNameSplit[1] );
+        }
+        // Jr's, long last names
+        else if( playerNameSplit.length == 3 && playerNameSplit[2] == "Jr." )
+        {
+            formattedPlayerName = playerNameSplit[0].charAt( 0 ).concat( playerNameSplit[1] + "Jr" );
+        }
+        var parentTable = playerNameElements[i].closest( ".Table2__table-fixed" );
+        if( $( teamOneTable ).is( $( parentTable ) ) )
+        {
+            teamOnePlayerNamesArray.push( formattedPlayerName );
+        }
+        else if( $( teamTwoTable ).is( $( parentTable ) ) )
+        {
+            teamTwoPlayerNamesArray.push( formattedPlayerName );
+        }
+    }
+
+    var teamNameIndex = 0;
+
+    for( var i = 0; i < teamOnePlayerNamesArray.length; i++ )
+    {
+        var parentTable = playerNameElements[teamNameIndex].closest( ".Table2__table-fixed" );
+        if( $( teamOneTable ).is( $( parentTable ) ) )
+        {
+            teamOnePlayerNamesArray[i] = teamOnePlayerNamesArray[i].concat( acronymEspnToYahoo[teamNameElements[teamNameIndex].innerHTML] );
+            teamOnePlayersString += ( teamOnePlayerNamesArray[i] + "," );
+        }
+        teamNameIndex++;
+    }
+    for( var i = 0; i < teamTwoPlayerNamesArray.length; i++ )
+    {
+        var parentTable = playerNameElements[teamNameIndex].closest( ".Table2__table-fixed" );
+        if( $( teamTwoTable ).is( $( parentTable ) ) )
+        {
+            teamTwoPlayerNamesArray[i] = teamTwoPlayerNamesArray[i].concat( acronymEspnToYahoo[teamNameElements[teamNameIndex].innerHTML] );
+            teamTwoPlayersString += ( teamTwoPlayerNamesArray[i] + "," );
+        }
+        teamNameIndex++;
+    }
+
+    resultPlayersStrings.push( teamOnePlayersString );
+    resultPlayersStrings.push( teamTwoPlayersString );
+
+    return resultPlayersStrings;
+}
+
 
 /*
     formatDateString - formats a date string in YYYY-MM-DD
@@ -686,6 +803,7 @@ async function requestHeaderFromServer( addOrUpdate )
     if( ( dateRequestString != "date=" ) && ( typeof dateRequestString !== 'undefined' ) )
     {
         var url = "http://www.fantasywizard.site/getweek/?" + pageNameRequestString + "&format=json&" + dateRequestString + "&" + leagueIdRequestString;
+        // console.log( url );
         fetch( url )
             .then( function( response ){
             if ( response.status !== 200 )
@@ -1429,6 +1547,8 @@ function addGamesBoxscorePage()
     {
         // Do nothing
     }
+
+    requestProjectionsFromServer();
 }
 
 /*
@@ -1499,6 +1619,487 @@ function updateGameData()
     }
 }
 
+/* ------------------------------------------------------------------------------------------------------------------------------------------
+
+                                                                Projected Stats 
+                                                        
+------------------------------------------------------------------------------------------------------------------------------------------ */
+
+acronymFromPlayerProjections = {};
+
+acronymFromPlayerProjections["ATL"]  =  "Atl";
+acronymFromPlayerProjections["BOS"]  =  "Bos";
+acronymFromPlayerProjections["BKN"]  =  "Bkn";
+acronymFromPlayerProjections["CHA"]  =  "Cha";
+acronymFromPlayerProjections["CHI"]  =  "Chi";
+acronymFromPlayerProjections["CLE"]  =  "Cle";
+acronymFromPlayerProjections["DAL"]  =  "Dal";
+acronymFromPlayerProjections["DEN"]  =  "Den";
+acronymFromPlayerProjections["DET"]  =  "Det";
+acronymFromPlayerProjections["GS"]   =  "GS";
+acronymFromPlayerProjections["HOU"]  =  "Hou";
+acronymFromPlayerProjections["IND"]  =  "Ind";
+acronymFromPlayerProjections["LAC"]  =  "LAC";
+acronymFromPlayerProjections["LAL"]  =  "LAL";
+acronymFromPlayerProjections["MEM"]  =  "Mem";
+acronymFromPlayerProjections["MIA"]  =  "Mia";
+acronymFromPlayerProjections["MIL"]  =  "Mil";
+acronymFromPlayerProjections["MIN"]  =  "Min";
+acronymFromPlayerProjections["NO"]   =  "No";
+acronymFromPlayerProjections["NY"]   =  "NY";
+acronymFromPlayerProjections["OKC"]  =  "OKC";
+acronymFromPlayerProjections["ORL"]  =  "Orl";
+acronymFromPlayerProjections["PHI"]  =  "Phi";
+acronymFromPlayerProjections["PHO"]  =  "Phx";
+acronymFromPlayerProjections["POR"]  =  "Por";
+acronymFromPlayerProjections["SAC"]  =  "Sac";
+acronymFromPlayerProjections["SA"]   =  "SA";
+acronymFromPlayerProjections["TOR"]  =  "Tor";
+acronymFromPlayerProjections["UTA"] =  "Utah";
+acronymFromPlayerProjections["WAS"]  =  "Wsh";
+
+function getProjectionsColor( ratio )
+{
+    if ( ratio <= .1 )
+    {
+        return '#ff3b3b';
+    }
+    if ( ratio <= .2 )
+    {
+        return '#ff4e4e';
+    }
+    if (ratio <= .3)
+    {
+        return '#ff6262';
+    }
+    if (ratio <= .4)
+    {
+        return '#ff7676';
+    }
+    if (ratio <= .5)
+    {
+        return '#ff8989';
+    }
+    if (ratio <= .6)
+    {
+        return '#ff9d9d';
+    }
+    if (ratio <= .7)
+    {
+        return '#ffb1b1';
+    }
+    if (ratio <= .8)
+    {
+        return '#ffc4c4';
+    }
+    if (ratio <= .9)
+    {
+        return '#ffd8d8';
+    }
+    if (ratio <= 1.0)
+    {
+        return '#ffebeb';
+    }
+    if (ratio <= 1.1)
+    {
+        return '#ebffeb';
+    }
+    if (ratio <= 1.2)
+    {
+        return '#d8ffd8';
+    }
+    if (ratio <= 1.3){
+        return '#c4ffc4';
+    }
+    if (ratio <= 1.4)
+    {
+        return '#b1ffb1';
+    }
+    if (ratio <= 1.5)
+    {
+        return '#9dff9d';
+    }
+    if (ratio <= 1.6)
+    {
+        return '#89ff89';
+    }
+    if (ratio <= 1.7)
+    {
+        return '#76ff76';
+    }
+    if (ratio <= 1.8)
+    {
+        return '#62ff62';
+    }
+    if (ratio <= 1.9)
+    {
+        return '#4eff4e';
+    }
+    if (ratio <= 2)
+    {
+        return '#3bff3b';
+    }
+    if (ratio <= 2.1)
+    {
+        return '#3bff3b';
+    }
+    else
+    {
+        return '#dee8f7';
+    }
+}
+
+function getCategoriesBoxscorePage()
+{
+    // console.log( "getCategoriesBoxscorePage" );
+    var tableElements = document.getElementsByClassName( "Table2__shadow-scroller" );
+    var firstTable = tableElements[0];
+    var thElements = firstTable.getElementsByClassName( "Table2__th" );
+    var categories = [];
+
+    for( var i = 0; i < thElements.length; i++ )
+    {
+        var headerHTML = thElements[i].children[0].children[0].innerHTML;
+        if( headerHTML != "team" && headerHTML != "score" && headerHTML != "GR/G" )
+        {
+            categories.push( thElements[i].children[0].children[0].innerHTML );
+        }
+    }
+    // console.log( categories );
+    return categories;
+}
+
+function getTeamNames()
+{
+    // console.log( "getTeamNames" );
+    var teamNames = [];
+    var teamNameElements = document.getElementsByClassName( "teamName truncate" );
+
+    teamNames.push( teamNameElements[0].innerHTML );
+    teamNames.push( teamNameElements[1].innerHTML );
+
+    return teamNames;
+}
+
+
+function addProjectionsTable( categories, projections )
+{
+    // console.log( "addProjectionsTable" );
+
+    var teamNames = getTeamNames();
+    var tableElements = document.getElementsByClassName( "Table2__shadow-scroller" );
+    var firstTable = tableElements[0];
+    var newTable = document.createElement( "table" );
+    newTable.className = "Table2__table-scroller Table2__table fbw-projections-table fbw-projections-element";
+    newTable.cellPadding = "0";
+    newTable.cellSpacing = "0";
+
+
+    var newThead = document.createElement( "thead" );
+    newThead.className = "Table2__sub-header Table2__thead fbw-projections-element";
+    var newTrHeader = document.createElement( "tr" );
+    newTrHeader.className = "Table2__header-row Table2__tr Table2__even fbw-projections-element";
+    newThead.appendChild( newTrHeader );
+
+    var fbwProjectionsHeaderTh = document.createElement( "th" );
+    fbwProjectionsHeaderTh.className = "team-abbrev Table2__th fbw-projections-element";
+    var fbwProjectionsHeaderDiv = document.createElement( "div" );
+    fbwProjectionsHeaderDiv.className = "team-abbrev jsx-2810852873 table--cell header fbw-projections-element";
+    fbwProjectionsHeaderDiv.innerText = "FBW Projections";
+    fbwProjectionsHeaderTh.appendChild( fbwProjectionsHeaderDiv );
+    newTrHeader.appendChild( fbwProjectionsHeaderTh );
+
+    for( var i = 0; i < categories.length; i++ )
+    {
+        var newThHeader = document.createElement( "th" );
+        newThHeader.className = "Table2__th fbw-projections-element";
+        var newDiv = document.createElement( "div" );
+        newDiv.className = "jsx-2810852873 table--cell tar header fbw-projections-element";
+        newDiv.innerText = categories[i];
+
+        newThHeader.appendChild( newDiv );
+        newTrHeader.appendChild( newThHeader );
+    }
+
+    // Body of Table
+    var newTbody = document.createElement( "tbody" );
+    newTbody.className = "Table2__tbody fbw-projections-element";
+
+    var teamOneBodyTr = document.createElement( "tr" );
+    var teamTwoBodyTr = document.createElement( "tr" );
+
+    // Team One Name
+    var teamOneBodyNameTd = document.createElement( "td" );
+    var teamOneBodyNameDiv = document.createElement( "div" );
+    teamOneBodyNameTd.className = "pl2 away-team-name team-name truncate Table2__td fbw-projections-element";
+    teamOneBodyNameDiv.className = "jsx-2810852873 table--cell pl2 away-team-name team-name truncate fbw-projections-element";
+    teamOneBodyNameDiv.innerText = teamNames[0];
+
+    var teamTwoBodyNameTd = document.createElement( "td" );
+    var teamTwoBodyNameDiv = document.createElement( "div" );
+    teamTwoBodyNameTd.className = "pl2 away-team-name team-name truncate Table2__td fbw-projections-element";
+    teamTwoBodyNameDiv.className = "jsx-2810852873 table--cell pl2 away-team-name team-name truncate fbw-projections-element";
+    teamTwoBodyNameDiv.innerText = teamNames[1];
+
+    teamOneBodyNameTd.appendChild( teamOneBodyNameDiv );
+    teamOneBodyTr.appendChild( teamOneBodyNameTd );
+    teamTwoBodyNameTd.appendChild( teamTwoBodyNameDiv );
+    teamTwoBodyTr.appendChild( teamTwoBodyNameTd );
+    newTbody.appendChild( teamOneBodyTr );
+    newTbody.appendChild( teamTwoBodyTr );
+
+    // Projected Stats
+    var teamOneProjections = projections[0];
+    var teamTwoProjections = projections[1];
+
+    for( var i = 0; i < teamOneProjections.length; i++ )
+    {
+        var statTd = document.createElement( "td" );
+        var statDiv = document.createElement( "div" );
+        statTd.className = "Table2__td fbw-projections-element";
+        statDiv.className = "jsx-2810852873 table--cell pl2 pr3 tar fbw-team-one-projection fbw-projections-element";
+        statDiv.innerText = teamOneProjections[i];
+        statTd.appendChild( statDiv );
+        teamOneBodyTr.appendChild( statTd );
+    }
+
+    for( var i = 0; i < teamTwoProjections.length; i++ )
+    {
+        var statTd = document.createElement( "td" );
+        var statDiv = document.createElement( "div" );
+        statTd.className = "Table2__td fbw-projections-element";
+        statDiv.className = "jsx-2810852873 table--cell pl2 pr3 tar fbw-team-two-projection fbw-projections-element";
+        statDiv.innerText = teamTwoProjections[i];
+        statTd.appendChild( statDiv );
+        teamTwoBodyTr.appendChild( statTd );
+    }
+
+    // Colgroups for formatting
+    var colgroup = document.createElement( "colgroup" );
+    colgroup.span = "1";
+    colgroup.className = "Table2__colgroup fbw-projections-element";
+    var col = document.createElement( "col" );
+    col.className = "Table2__col fbw-projections-element";
+    colgroup.appendChild( col );
+
+    var colgroup2 = document.createElement( "colgroup" );
+    colgroup2.span = "9";
+    colgroup2.className = "Table2__colgroup fbw-projections-element";
+    var col2 = document.createElement( "col" );
+    col2.className = "Table2__col fbw-projections-element";
+    colgroup2.appendChild( col2 );
+
+    newTable.appendChild( colgroup );
+    newTable.appendChild( colgroup2 );
+    newTable.appendChild( newThead );
+    newTable.appendChild( newTbody );
+    firstTable.appendChild( newTable );
+}
+
+function calculateProjections( data, categories )
+{
+    // console.log( "calculateProjections" );
+    var projections = [];
+    for( var i = 0; i < categories.length; i++ )
+    {
+        if( categories[i] == "FG%" )
+        {
+            var totalFgm = 0.0;
+            var totalFga = 0.0;
+
+            for( var j = 0; j < data.length; j++ )
+            {
+                var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+                var gamesForWeek = localGamesDataDict[teamAcronym].split( "/" )[1];
+
+                totalFgm += ( parseFloat( data[j]["fgmpg"] ) * gamesForWeek );
+                totalFga += ( parseFloat( data[j]["fgapg"] ) * gamesForWeek );
+            }
+            projections.push( parseFloat( totalFgm / totalFga ).toFixed( 3 ) );
+        }
+        else if( categories[i] == "FT%" )
+        {
+            var totalFtm = 0;
+            var totalFta = 0;
+
+            for( var j = 0; j < data.length; j++ )
+            {
+                var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+                var gamesForWeek = localGamesDataDict[teamAcronym].split( "/" )[1];
+
+                totalFtm += ( parseFloat( data[j]["ftmpg"] ) * gamesForWeek );
+                totalFta += ( parseFloat( data[j]["ftapg"] ) * gamesForWeek );
+            }
+            projections.push( parseFloat( totalFtm / totalFta ).toFixed( 3 ) );
+        }
+        else if( categories[i] == "3PM" )
+        {
+            var totalThrees = 0;
+
+            for( var j = 0; j < data.length; j++ )
+            {
+                var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+                var gamesForWeek = localGamesDataDict[teamAcronym].split( "/" )[1];
+
+                totalThrees += ( parseFloat( data[j]["threepg"] ) * gamesForWeek );
+            }
+            projections.push( parseFloat( totalThrees ).toFixed( 1 ) );
+        }
+        else if( categories[i] == "REB" )
+        {
+            var totalReb = 0;
+
+            for( var j = 0; j < data.length; j++ )
+            {
+                var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+                var gamesForWeek = localGamesDataDict[teamAcronym].split( "/" )[1];
+
+                totalReb += ( parseFloat( data[j]["rpg"] ) * gamesForWeek );
+            }
+            projections.push( parseFloat( totalReb ).toFixed( 1 ) );
+        }
+        else if( categories[i] == "AST" )
+        {
+            var totalAst = 0;
+
+            for( var j = 0; j < data.length; j++ )
+            {
+                var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+                var gamesForWeek = localGamesDataDict[teamAcronym].split( "/" )[1];
+
+                totalAst += ( parseFloat( data[j]["apg"] ) * gamesForWeek );
+            }
+            projections.push( parseFloat( totalAst ).toFixed( 1 ) );
+        }
+        else if( categories[i] == "STL" )
+        {
+            var totalStl = 0.0;
+            for( var j = 0; j < data.length; j++ )
+            {
+                var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+                var gamesForWeek = localGamesDataDict[teamAcronym].split( "/" )[1];
+
+                totalStl += ( parseFloat( data[j]["spg"] ) * gamesForWeek );
+            }
+            projections.push( parseFloat( totalStl ).toFixed( 1 ) );
+        }
+        else if( categories[i] == "BLK" )
+        {
+            var totalBlk = 0.0;
+
+            for( var j = 0; j < data.length; j++ )
+            {
+                var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+                var gamesForWeek = localGamesDataDict[teamAcronym].split( "/" )[1];
+
+                totalBlk += ( parseFloat( data[j]["bpg"] ) * gamesForWeek );
+            }
+            projections.push( parseFloat( totalBlk ).toFixed( 1 ) );
+        }
+        else if( categories[i] == "TO" )
+        {
+            var totalTO = 0;
+
+            for( var j = 0; j < data.length; j++ )
+            {
+                var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+                var gamesForWeek = localGamesDataDict[teamAcronym].split( "/" )[1];
+
+                totalTO += ( parseFloat( data[j]["topg"] ) * gamesForWeek );
+            }
+            projections.push( parseFloat( totalTO ).toFixed( 1 ) );
+        }
+        else if( categories[i] == "PTS" )
+        {
+            var totalPts = 0;
+
+            for( var j = 0; j < data.length; j++ )
+            {
+                var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+                var gamesForWeek = localGamesDataDict[teamAcronym].split( "/" )[1];
+
+                totalPts += ( parseFloat( data[j]["ppg"] ) * gamesForWeek );
+            }
+            projections.push( parseFloat( totalPts ).toFixed( 1 ) );
+        }
+    }
+    // console.log( projections );
+    return projections;
+}
+
+function addProjectionsBackgroundColor( categories )
+{
+    var teamOneProjections = document.getElementsByClassName( "fbw-team-one-projection" );
+    var teamTwoProjections = document.getElementsByClassName( "fbw-team-two-projection" );
+
+    for( var i = 0; i < categories.length; i++ )
+    {
+        var numerator = parseFloat( teamOneProjections[i].innerHTML );
+        var denominator = parseFloat( teamTwoProjections[i].innerHTML );
+        if( categories[i] == "TO" )
+        {
+            var ratio = denominator / numerator;
+        }
+        else
+        {
+            var ratio = numerator / denominator;
+        }
+        var backgroundColor = getProjectionsColor( ratio );
+        teamOneProjections[i].style.backgroundColor = backgroundColor;
+
+        if( categories[i] == "TO" )
+        {
+            var ratio = numerator / denominator;
+        }
+        else
+        {
+            var ratio = denominator / numerator;
+        }
+
+        backgroundColor = getProjectionsColor( ratio );
+        teamTwoProjections[i].style.backgroundColor = backgroundColor;
+    }
+}
+
+function requestProjectionsFromServer()
+{
+    // console.log( "requestProjectionsFromServer" );
+    var playersRequestStrings = buildPlayerProjectionsStrings();
+
+    var categories = getCategoriesBoxscorePage();
+    var projections = [];
+
+    for( var i = 0; i < playersRequestStrings.length; i++ )
+    {
+        var url = "https://www.fantasywizard.site/getplayers/?" + playersRequestStrings[i];
+        // console.log( url );
+        fetch( url )
+            .then( function( response )
+            {
+                if ( response.status !== 200 )
+                {
+                    //console.log('Called to backend failed: ' + response.status);
+                    return;
+                }
+
+                response.json().then( function( data )
+                {
+                    var projection = calculateProjections( data, categories );
+                    projections.push( projection );
+                    if( projections.length == 2 )
+                    {
+                        addProjectionsTable( categories, projections );
+                        addProjectionsBackgroundColor( categories );
+                    }
+                });
+            }).catch( function( err )
+            {
+                //console.log('Fetch Error :-S', err);
+            });
+    }
+
+
+}
 
 /* ------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1566,6 +2167,16 @@ function removeEntireColumn()
 {
     // console.log( "removeEntireColumn" );
     var elements = document.getElementsByClassName( "fbw-new-element" );
+
+    while( elements.length > 0 )
+    {
+        elements[0].parentNode.removeChild( elements[0] );
+    }
+}
+
+function removeProjectionsElements()
+{
+    var elements = document.getElementsByClassName( "fbw-projections-element" );
 
     while( elements.length > 0 )
     {
@@ -1832,6 +2443,7 @@ $( 'body' ).on( 'change', 'select.dropdown__select', function()
     if( currentPageType == PAGE_TYPE_BOXSCORE )
     {
         removeEntireColumn();
+        removeProjectionsElements();
         localGamesDataDict = {};
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
@@ -1848,6 +2460,8 @@ $( 'body' ).on( 'click', 'li.carousel__slide', function()
         if( className.indexOf( "selected" ) == -1 )
         {
             removeEntireColumn();
+            removeProjectionsElements();
+            buildPlayerProjectionsStrings();
             setTimeout( requestHeaderFromServer( "Add" ), 2000 );
             setTimeout( requestGameDataFromServer( "Add" ), 3000 );
         }
@@ -1890,6 +2504,7 @@ async function renderGamesSleep( type )
     }
     else if( type == PAGE_TYPE_BOXSCORE )
     {
+        await sleep( 5000 );
         requestHeaderFromServer( "Add" );
         requestGameDataFromServer( "Add" );
     }

@@ -14,7 +14,7 @@ requests.get("https://www.fantasywizard.site/sreyalpllaeteled")
 
 login_url = "https://login.yahoo.com/config/login?.src=fantasy&specId=usernameRegWithName&.intl=us&.lang=en-US&.done=https://basketball.fantasysports.yahoo.com/nba"
 
-players_url = "https://basketball.fantasysports.yahoo.com/nba/23790/players?status=ALL"
+players_url = "https://basketball.fantasysports.yahoo.com/nba/23790/players?&sort=AR&sdir=1&status=ALL&pos=P&stat1=S_AS_2018&myteam=1&jsenabled=1"
 
 page = 0
 
@@ -84,6 +84,8 @@ def get_url(p):
         fgpct = str(fgpct)
     except:
         fgpct = "0.0"
+    if ftpct == "100.0":
+        ftpct = ".999"
     p['team'] = p['team'].upper()
     return "https://www.fantasywizard.site/addplayer/?id=" + id + "&team=" + p['team'] + "&ppg=" + p['ppg'] + "&rpg=" + p['rpg'] + "&apg=" + p['apg'] + "&spg=" + p['spg'] + "&bpg=" + p['bpg'] + "&topg=" + p['topg'] + "&ftmpg=" + p['ftm'] + "&ftapg=" + p['fta'] + "&ftpct=" + ftpct + "&fgmpg=" + p['fgm'] + "&fgapg=" + p['fga'] + "&fgpct=" + fgpct + "&threepg=" + p['threepg'] + "&format=json"
 

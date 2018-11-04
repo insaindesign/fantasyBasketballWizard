@@ -267,7 +267,7 @@ function getPlayers(){
             continue;
         }
         
-        console.log("row: ", row);
+        //console.log("row: ", row);
 
         noteIndex = getNoteIndex(row.slice(0, row.length/2 - 1));
         playerIndex = noteIndex+1;

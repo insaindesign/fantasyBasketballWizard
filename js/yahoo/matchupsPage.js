@@ -450,7 +450,13 @@ if (categories.toString() == "FG%,FT%,3PTM,PTS,REB,AST,ST,BLK,TO"){
     
 }
 
+try {
+    getGamesToday();
+}
+catch(err) {
+    console.log("error displaying games today");
+}
 
-getGamesToday();
+
 
 

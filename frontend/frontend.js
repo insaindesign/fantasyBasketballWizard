@@ -43,4 +43,6 @@ $( 'body' ).on( 'click', '.feature-footer', function() {
   window.open('https://www.reddit.com/r/fantasywizard/comments/9tfqm1/feature_request_thread/');
 });
 
-
+$( 'body' ).on( 'click', '.patreon-footer', function() {
+  window.open('https://www.patreon.com/user?u=14706221');
+});

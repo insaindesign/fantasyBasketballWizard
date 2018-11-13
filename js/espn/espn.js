@@ -495,6 +495,14 @@ function getCurrentUrl()
     return window.location.href;
 }
 
+function getNumberOfPlayersTeamPage()
+{
+    // console.log( "getNumberOfPlayersTeamPage" );
+    var playerElements = document.getElementsByClassName( "playerinfo__playerteam" );
+
+    return playerElements.length;
+}
+
 function getPageTypeFromUrl( url )
 {
     // console.log( "getPageTypeFromUrl" );
@@ -986,14 +994,17 @@ function addGamesTeamPage()
     var listOfElements = document.getElementsByClassName( "Table2__tr--lg" );
     var listOfTeamNameElements = document.getElementsByClassName( "playerinfo__playerteam" );
     var listOfTeamNameElementsIndex = 0;
-    var totalGamesRemaining = 0;
-    var totalGamesForWeek = 0;
+    var numberOfPlayers = getNumberOfPlayersTeamPage();
+    var totalGamesRemainingAll = 0;
+    var totalGamesForWeekAll = 0;
+    var totalGamesRemainingStarters = 0;
+    var totalGamesForWeekStarters = 0;
 
     for( var i = 0; i < listOfElements.length; i++ )
     {
         var listOfElementsTr = listOfElements[i];
         // console.log( "listOfElementsTr.children.length=" + listOfElementsTr.children.length );
-
+        // console.log( "listOfElements.length=" + listOfElements.length );
         // Initial render for Stats menu
         if( listOfElementsTr.children.length == 5 )
         {
@@ -1012,10 +1023,18 @@ function addGamesTeamPage()
             // TOTALS row
             if( listOfElementsTr.innerHTML.indexOf( ">TOTALS</div>" ) != -1 )
             {
-                var totalGamesString = totalGamesRemaining.toString() + "/" + totalGamesForWeek.toString();
+                var totalGamesString = totalGamesRemainingStarters.toString() + "/" + totalGamesForWeekStarters.toString();
                 newGamesDiv.textContent = totalGamesString;
-                newGamesTd.className += " bg-clr-gray-08";
-                newGamesDiv.className += " bg-clr-gray-08";
+                newGamesTd.className += " bg-clr-gray-08 fbw-games-total-td";
+                newGamesDiv.className += " bg-clr-gray-08 fbw-games-total-div";
+
+                var startersGameTotalDiv = document.createElement( "div" );
+                startersGameTotalDiv.className = "jsx-2810852873 table--cell bg-clr-gray-08 fbw-starters-games-div"
+                startersGameTotalDiv.style.textAlign = "center";
+                startersGameTotalDiv.textContent = "S: " + totalGamesString;
+                startersGameTotalDiv.title = "Starters";
+                newGamesTd.appendChild( startersGameTotalDiv );
+
             }
             // Normal player
             else if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )
@@ -1025,8 +1044,8 @@ function addGamesTeamPage()
                     var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
                     newGamesDiv.textContent = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
-                    totalGamesRemaining += parseInt( splitDataIndex[0] );
-                    totalGamesForWeek += parseInt( splitDataIndex[1] );
+                    totalGamesRemainingStarters += parseInt( splitDataIndex[0] );
+                    totalGamesForWeekStarters += parseInt( splitDataIndex[1] );
                     newGamesTd.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
                 }
                 else
@@ -1039,6 +1058,13 @@ function addGamesTeamPage()
             else
             {
                 newGamesDiv.textContent = "-/-";    
+            }
+            if( i == numberOfPlayers )
+            {
+                var totalElements = document.getElementsByClassName( "fbw-games-total-div" );
+                var totalGamesString = totalGamesRemainingStarters.toString() + "/" + totalGamesForWeekStarters.toString();
+                totalElements[0].title = "Total team";
+                totalElements[0].textContent = "T: " + totalGamesString;
             }
             newGamesTd.appendChild( newGamesDiv );
             listOfElementsTr.appendChild( newGamesTd );
@@ -1066,8 +1092,8 @@ function addGamesTeamPage()
                     var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
                     newGamesDiv.textContent = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
-                    totalGamesRemaining += parseInt( splitDataIndex[0] );
-                    totalGamesForWeek += parseInt( splitDataIndex[1] );
+                    totalGamesRemainingStarters += parseInt( splitDataIndex[0] );
+                    totalGamesForWeekStarters += parseInt( splitDataIndex[1] );
                     newGamesTd.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
                 }
                 else
@@ -1108,8 +1134,8 @@ function addGamesTeamPage()
                     var teamName = listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
                     newGamesDiv.textContent = localGamesDataDict[teamName];
                     var splitDataIndex = localGamesDataDict[teamName].split( "/" );
-                    totalGamesRemaining += parseInt( splitDataIndex[0] );
-                    totalGamesForWeek += parseInt( splitDataIndex[1] );
+                    totalGamesRemainingStarters += parseInt( splitDataIndex[0] );
+                    totalGamesForWeekStarters += parseInt( splitDataIndex[1] );
                     newCell.style.backgroundColor = getBackgroundColor( splitDataIndex[0] );
                 }
                 else
@@ -1269,7 +1295,7 @@ function addGamesFantasyCastPagePoints()
 }
 
 /*
-    addGamesTeamPage - creates the games remaining cells and
+    addGamesPlayersPage - creates the games remaining cells and
     adds the data to the HTML of the page
 */
 function addGamesPlayersPage()
@@ -1564,6 +1590,7 @@ function updateGameData()
     var listOfTeamNameElements = document.getElementsByClassName( "playerinfo__playerteam" );
     var listOfTeamNameElementsIndex = 0;
     var listOfGamesIndex = 0;
+    var numberOfPlayers = getNumberOfPlayersTeamPage();
     var totalGamesForWeek = 0;
     var totalGamesRemaining = 0;
 
@@ -1584,7 +1611,8 @@ function updateGameData()
             if( listOfElementsTr.innerHTML.indexOf( ">TOTALS</div>" ) != -1 )
             {
                 var totalGamesString = totalGamesRemaining.toString() + "/" + totalGamesForWeek.toString();
-                listOfGamesDiv[listOfGamesIndex].textContent = totalGamesString;
+                var startersDiv = document.getElementsByClassName( "fbw-starters-games-div" );
+                startersDiv[0].textContent = "S: " + totalGamesString;
             }
             // // Normal player
             else if( listOfElementsTr.innerHTML.indexOf( "player-column__empty" ) == -1 )

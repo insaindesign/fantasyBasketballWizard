@@ -2589,7 +2589,7 @@ async function renderGamesNoSleep( type )
 {
     // console.log( "renderGamesNoSleep - type=" + type );
     // console.log( "renderGamesNoSleep - typeof type=" + typeof type );
-    await sleep( 4000 );
+    await sleep( 2000 );
     if( type == PAGE_TYPE_UNDEFINED || typeof type == 'undefined' )
     {
         return;

@@ -2404,6 +2404,22 @@ $( 'body' ).on( 'change', 'select.dropdown__select', function()
     }
 });
 
+/*
+    Sortable
+*/
+$( 'body' ).on( 'click', 'div.sortable', function() 
+{
+    if( currentPageType == PAGE_TYPE_PLAYERS )
+    {
+        if( $( this ).parent().attr( "class" ) == "Table2__th" )
+        {
+            removeGamesColumn();
+            setTimeout( requestGameDataFromServer( "Add" ), 2000 );
+        }
+    }
+});
+
+
 /* ------------------------------------------------------------------------------------------------------------------------------------------
 
                                                         Added Dropped - HTML Object Changes 

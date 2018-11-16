@@ -263,6 +263,10 @@ function getPlayers(){
     for (var i = 1; i < num_rows; i++){
         row = table.rows[i].innerText.split('\n')
         
+        if (row.includes("--")){
+            continue;
+        }
+        
         //console.log("row: ", row);
 
         noteIndex = getNoteIndex(row.slice(0, row.length/2 - 1));
@@ -446,6 +450,13 @@ if (categories.toString() == "FG%,FT%,3PTM,PTS,REB,AST,ST,BLK,TO"){
     
 }
 
-getGamesToday();
+try {
+    getGamesToday();
+}
+catch(err) {
+    console.log("error displaying games today");
+}
+
+
 
 

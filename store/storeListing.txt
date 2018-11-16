@@ -1,30 +1,48 @@
-Fantasy Basketball Wizard gives ESPN & Yahoo Fantasy Basketball players extra tools to help them succeed.
-The new and improved #1 Yahoo and ESPN Fantasy Basketball extension!
+** The new and improved #1 Fantasy Basketball Extension **
 
-Fantasy Basketball Wizard 3.0
+Fantasy Basketball Wizard Chrome Extension is FOR Fantasy Basketball lovers, created BY Fantasy Basketball lovers. We designed the extension make your life easier and to help you win your league. This extension adds Fantasy Wizard tools directly into your webpage!
+Features:
+
+Highlights:
+• Yahoo and ESPN support for 2018 - 2019 season
+• Fantasy Wizard tools added directly into the ESPN and Yahoo Fantasy Basketball webpages
+• *FANTASY WIZARD WEEKLY MATCHUP PROJECTIONS* on Matchups page - (ESPN & Yahoo) - (Standard 9-Cat - More league support coming soon)
+• Individual player’s number of games for the week - (View on any week for the entire season)
+• LIVE updates to games remaining for the week for each player
+• Total games for the week on multiple pages
+• Actively updated! New features and updates released often!
 
 
-Fantasy Basketball Wizard Chrome Extension is FOR Fantasy Basketball lovers, created BY Fantasy Basketball lovers. We designed the extension make your life easy.
-
-- Yahoo! and ESPN Support!
-- Games remaining for the week! (NEW)
-- Total games this week!
-- Updated colors! (NEW)
-- Weekly projections on matchups page! (NEW)
-- Daily projections on team page!
-- Total team averages!
-- Future games per week! (NEW)
-- Number of games on tonights NBA Schedule on matchups page! (NEW)
-
-*Standard 9 category
+*NEW* Features added in version 3.0 and above:
+• *FANTASY WIZARD WEEKLY MATCHUP PROJECTIONS*
+• ESPN’s website redesign compatible for 2018-2019 season
+• Games remaining for the week
+• Number of games on tonights NBA Schedule on Yahoo Matchups page
+• Updated colors
+Yahoo:
+• Leagues supported: Standard 9-Category
+• Pages supported: Team pages, Matchups, Research
+• Total team averages
+• Daily projections on team page
+ESPN:
+• Leagues supported: Standard 9-Category, Daily / Weekly, points
+• Pages supported: Team pages, Free Agents / Players, Most Added / Dropped, Fantasy Cast
 **Contact us for custom league configurations
-
 Please leave us feedback, suggestions, frustrations, etc. We read and act on everything that comes in.
-
 Enjoy!
 
 
 Release notes:
+Versio 3.3 (Nov 15, 2018):
+- Added new help page to show available features 
+- Added subreddit links to popup to report bugs and request new features
+- Added starters vs. entire team count of games on team page (ESPN)
+- Various bug gixes
+
+Version 3.2.1 (Nov 1, 2018):
+- Matchups projections for ESPN!
+- various bug fixes
+
 Version 3.1 (Oct 22, 2018):
 - Games remaining on box score page (ESPN)
 - Various bug fixes

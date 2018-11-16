@@ -4,8 +4,8 @@
         <title></title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" type="text/css" href="popup.css">
-        <!-- <script type="text/javascript" src="frontend/options.js"></script> -->
-        <script type="text/javascript" src="frontend/jquery-3.3.1.min.js"></script>
+        <script type="text/javascript" src="jquery-3.3.1.min.js"></script>
+
     </head>
     <body tabindex="1">
         <div class="fbw-header">
@@ -15,12 +15,17 @@
         <h1 class="yahoo-header">Yahoo!</h1>
 
         <div class="yahoo-text">
-            <p class="feature-text">Games remaining for the week & Total games tonight and for the week</p>
-            <p class="detail-text"> > Teams, research, and transaction trends page</p>
-            <p class="feature-text">Sum of average stats & FBW projected stats for the week</p>
-            <p class="detail-text"> > Teams pages > Average Stats tab</p>
-            <p class="feature-text">Projected matchup stats</p>
-            <p class="detail-text"> > Matchups page (Non-Live)</p>
+            <p class="feature-text">My Team</p>
+            <p class="detail-text"> > [Weekly] Games Remaining/Total Games</p>
+            <p class="detail-text"> > Average Stats (sub-tab)</p>
+            <ul><li>Calculated Average Stats</li></ul>
+            <p class="feature-text">Matchups</p>
+            <p class="detail-text"> > Projected Matchup Calculations (Non-Live) (9cat only)</p>
+            <p class="detail-text"> > # of NBA Games (Non-Live)</p>
+            <p class="feature-text"> Research </p>
+            <p class="detail-text"> > [Weekly] Games Remaining/Total Games </p>
+            <p class="detail-text"> > Transaction Trends (sub-tab)</p>
+            <ul><li>[Weekly] Games Remaining/Total Games</li></ul>
         </div>
         
         <h1 class="espn-header">ESPN</h1>
@@ -32,7 +37,7 @@
             <p class="feature-text">Projected matchup stats</p>
             <p class="detail-text"> > Scoreboard, Box Score page - Standard 9Cat (Support for other leagues coming soon) </p>  
         </div>
-        <strong>Version 3.2.1</strong>
+        <strong>Version 3.3</strong>
         <div class="links">
             <a href="https://chrome.google.com/webstore/detail/fantasy-basketball-wizard/bmojbnihkmbdandkddobjnilkegcooll/reviews" target="_blank">Review</a>
             &nbsp;
@@ -42,10 +47,13 @@
             &nbsp;
             <a href="https://paypal.me/pools/c/7ZUO3Mxjnf" target="_blank">Donations :)</a>
         </div>
-        <!--
-        <div id="options">Options</div>
-        <button id="go-to-options">Go to options</button>
-        -->
+
+        <div class="help footer help-footer"><p class="footer-text">Help</p></div>
+        <div class="footer bug-footer"><p class="footer-text">Report a bug</p></div>
+        <div class="footer feature-footer"><p class="footer-text">Request a new feature</p></div>
+        <div class="footer patreon-footer"><p class="footer-text">Support us on Patreon</p></div>
     </body>
+
+    <script type="text/javascript" src="frontend.js"></script>
 
 </html>

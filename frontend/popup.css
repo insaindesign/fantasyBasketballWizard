@@ -10,6 +10,12 @@ body { width: 300px; background-image: url('images/BasketballWizard.png');
 
 .detail-text{ font-style: italic; }
 
+.footer{ text-align: center; padding: 4px; }
+
+.footer:hover{ background-color: #ededed; }
+
+.footer-text{  color: #4286f4; font-weight: bold; }
+
 .espn-header{ color: #f44141; text-align: center; }
 
 .feature-text{ font-weight: bold; }

@@ -33,7 +33,9 @@ header = table.rows[0].innerText.split("\n");
 categories = header.slice(1, (header.length/2)-1);
 
 function getProjectionsColor(ratio){
-    if (ratio <= .1){
+    if (ratio == 0){
+        return "white";
+    } else if (ratio <= .1){
         return '#ff3b3b';
     } if (ratio <= .2){
         return '#ff4e4e';
@@ -263,11 +265,11 @@ function getPlayers(){
     for (var i = 1; i < num_rows; i++){
         row = table.rows[i].innerText.split('\n')
         
-        if (row.includes("--")){
+        if (row.includes("--") || row.includes("IL")){
             continue;
         }
         
-        //console.log("row: ", row);
+        console.log("row: ", row);
 
         noteIndex = getNoteIndex(row.slice(0, row.length/2 - 1));
         playerIndex = noteIndex+1;
@@ -321,7 +323,7 @@ function getProjections(playersString, side){
 
 function showProjections(data, side){
     
-    //console.log("showProjections -- ", side, ": ", data);
+    console.log("showProjections -- ", side, ": ", data);
     
     //add text
     for (cat = 0; cat < categories.length; cat++){

@@ -1,5 +1,25 @@
 Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"];
 
+week_to_date = {
+    '9': '2018-12-10',
+    '10': '2018-12-17',
+    '11': '2018-12-24',
+    '12': '2018-12-31',
+    '13': '2018-1-7',
+    '14': '2018-1-14',
+    '15': '2018-1-21',
+    '16': '2018-1-28',
+    '17': '2018-2-4',
+    '18': '2018-2-11',
+    '19': '2018-2-25',
+    '20': '2018-3-4',
+    '21': '2018-3-11',
+    '22': '2018-3-18',
+    '23': '2018-3-25',
+    '23': '2018-4-1'
+    
+}
+
 Schedule = {};
 
 teams = Teams.join(",") + ",";
@@ -88,7 +108,7 @@ function getFormattedDate() {
 }
 
 function getDateFromURL(url){
-    url = url.split("date=")[1]
+    url = url.split("week=")[1]
     date = url.split("&")[0]
     return date
 }
@@ -108,11 +128,14 @@ function getGamesRemaining(team){
     var dateString;
     var leagueIDString = 'leagueID=' + getLeagueID();
     url = window.location.href;
-    if (url.includes("date=") && !url.includes("date=totals")){
+    if (url.includes("week=") && !url.includes("date=totals")){
         dateString = getDateFromURL(url);
+        dateString = week_to_date[dateString];
     } else {
         dateString = getFormattedDate();
     }
+    
+    //console.log("initialized dateString");
     
     //console.log("dateString: ", dateString);
     
@@ -269,7 +292,7 @@ function getPlayers(){
             continue;
         }
         
-        console.log("row: ", row);
+        //console.log("row: ", row);
 
         noteIndex = getNoteIndex(row.slice(0, row.length/2 - 1));
         playerIndex = noteIndex+1;
@@ -323,7 +346,7 @@ function getProjections(playersString, side){
 
 function showProjections(data, side){
     
-    console.log("showProjections -- ", side, ": ", data);
+    //console.log("showProjections -- ", side, ": ", data);
     
     //add text
     for (cat = 0; cat < categories.length; cat++){

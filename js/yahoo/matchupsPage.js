@@ -5,18 +5,18 @@ week_to_date = {
     '10': '2018-12-17',
     '11': '2018-12-24',
     '12': '2018-12-31',
-    '13': '2018-1-7',
-    '14': '2018-1-14',
-    '15': '2018-1-21',
-    '16': '2018-1-28',
-    '17': '2018-2-4',
-    '18': '2018-2-11',
-    '19': '2018-2-25',
-    '20': '2018-3-4',
-    '21': '2018-3-11',
-    '22': '2018-3-18',
-    '23': '2018-3-25',
-    '23': '2018-4-1'
+    '13': '2019-1-7',
+    '14': '2019-1-14',
+    '15': '2019-1-21',
+    '16': '2019-1-28',
+    '17': '2019-2-4',
+    '18': '2019-2-11',
+    '19': '2019-2-25',
+    '20': '2019-3-4',
+    '21': '2019-3-11',
+    '22': '2019-3-18',
+    '23': '2019-3-25',
+    '23': '2019-4-1'
     
 }
 
@@ -140,7 +140,7 @@ function getGamesRemaining(team){
     //console.log("dateString: ", dateString);
     
     var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yMatchupsPage&teams='+team+'&format=json&date='+dateString+'&'+leagueIDString;
-    //console.log("url: ", url);
+    console.log("url: ", url);
     fetch(url)
         .then(function(response){
         if (response.status !== 200) {

@@ -8,17 +8,17 @@ body { width: 300px; background-image: url('images/BasketballWizard.png');
 
 .basketball-bg{ display: block; margin-left: auto; margin-right: auto; width: 50%; }
 
+.center{ text-align: center; }
+
 .detail-text{ font-style: italic; }
 
-.footer{ text-align: center; padding: 4px; }
+.footer{ text-align: center; padding: 2px; }
 
 .footer:hover{ background-color: #ededed; }
 
 .footer-text{  color: #4286f4; font-weight: bold; }
 
-.espn-header{ color: #f44141; text-align: center; }
-
-.feature-text{ font-weight: bold; }
+.espn-header{ color: #f44141; text-align: center; font-weight: bold;  font-size: 16px; }
 
 .yahoo-header{ color: #5f42f4; text-align: center; }
 

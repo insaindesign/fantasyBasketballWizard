@@ -1,5 +1,25 @@
 Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"];
 
+week_to_date = {
+    '9': '2018-12-10',
+    '10': '2018-12-17',
+    '11': '2018-12-24',
+    '12': '2018-12-31',
+    '13': '2019-1-7',
+    '14': '2019-1-14',
+    '15': '2019-1-21',
+    '16': '2019-1-28',
+    '17': '2019-2-4',
+    '18': '2019-2-11',
+    '19': '2019-2-25',
+    '20': '2019-3-4',
+    '21': '2019-3-11',
+    '22': '2019-3-18',
+    '23': '2019-3-25',
+    '23': '2019-4-1'
+    
+}
+
 Schedule = {};
 
 teams = Teams.join(",") + ",";
@@ -33,7 +53,9 @@ header = table.rows[0].innerText.split("\n");
 categories = header.slice(1, (header.length/2)-1);
 
 function getProjectionsColor(ratio){
-    if (ratio <= .1){
+    if (ratio == 0){
+        return "white";
+    } else if (ratio <= .1){
         return '#ff3b3b';
     } if (ratio <= .2){
         return '#ff4e4e';
@@ -86,7 +108,7 @@ function getFormattedDate() {
 }
 
 function getDateFromURL(url){
-    url = url.split("date=")[1]
+    url = url.split("week=")[1]
     date = url.split("&")[0]
     return date
 }
@@ -106,16 +128,19 @@ function getGamesRemaining(team){
     var dateString;
     var leagueIDString = 'leagueID=' + getLeagueID();
     url = window.location.href;
-    if (url.includes("date=") && !url.includes("date=totals")){
+    if (url.includes("week=") && !url.includes("date=totals")){
         dateString = getDateFromURL(url);
+        dateString = week_to_date[dateString];
     } else {
         dateString = getFormattedDate();
     }
     
+    //console.log("initialized dateString");
+    
     //console.log("dateString: ", dateString);
     
     var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yMatchupsPage&teams='+team+'&format=json&date='+dateString+'&'+leagueIDString;
-    //console.log("url: ", url);
+    console.log("url: ", url);
     fetch(url)
         .then(function(response){
         if (response.status !== 200) {
@@ -263,7 +288,7 @@ function getPlayers(){
     for (var i = 1; i < num_rows; i++){
         row = table.rows[i].innerText.split('\n')
         
-        if (row.includes("--")){
+        if (row.includes("--") || row.includes("IL")){
             continue;
         }
         

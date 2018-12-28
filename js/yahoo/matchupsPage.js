@@ -17,7 +17,6 @@ week_to_date = {
     '22': '2019-3-18',
     '23': '2019-3-25',
     '23': '2019-4-1'
-    
 }
 
 Schedule = {};
@@ -182,14 +181,14 @@ function initTable(){
     //insert left team name
     var cell = document.createElement("td");
     cell.innerHTML = nameLeft;
-    cell.style.color = "#0f6800";
+    cell.style.color = "#black";
     cell.style.fontWeight = "bold";
     rowLeft.appendChild(cell);
 
     //insert right team name
     var cell = document.createElement("td");
     cell.innerHTML = nameRight;
-    cell.style.color = "#6d0505";
+    cell.style.color = "#black";
     cell.style.fontWeight = "bold";
     rowRight.appendChild(cell);
     

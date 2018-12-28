@@ -8,14 +8,6 @@ Schedule = {}
 
 teams = Teams.join(",") + ","
 
-function initSchedule(){
-    games = JSON.parse(getGames(teams));
-    for (var t = 0; t < Teams.length; t++) {
-        team = Teams[t];
-        Schedule[team] = games[t];
-    }
-}
-
 
 //Initialize Functions
 //-----------------------------------------------------------------------------
@@ -60,6 +52,43 @@ function getLeagueID(){
             return url[u+1];
         }
     }
+}
+
+function loadFromAPI(teams){
+    var dateString;
+    var leagueIDString = 'leagueID=' + getLeagueID();
+    url = window.location.href;
+    if (url.includes("week=") && !url.includes("date=totals")){
+        dateString = getDateFromURL(url);
+        dateString = week_to_date[dateString];
+    } else {
+        dateString = getFormattedDate();
+    }
+    
+    //console.log("initialized dateString");
+    
+    //console.log("dateString: ", dateString);
+    
+    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yTeamPage&teams='+teams+'&format=json&date='+dateString+'&'+leagueIDString;
+    fetch(url)
+        .then(function(response){
+        if (response.status !== 200) {
+            //console.log('Called to backend failed: ' + response.status);
+            return;
+        }
+
+        response.json().then(function(data) {
+            for (var t = 0; t < Teams.length; t++) {
+                team = Teams[t];
+                Schedule[team] = data[t];
+            }
+            renderGames();
+            countStats();
+            
+        });
+    }).catch(function(err) {
+        //console.log('Fetch Error :-S', err);
+    });
 }
 
 function getGames(team){
@@ -678,9 +707,9 @@ function addListeners(){
 
 render = function() {
     initGlobals();
+    loadFromAPI(teams);
     addListeners();
-    renderGames();
-    countStats();
+    
 }
 
 //-----------------------------------------------------------------
@@ -689,7 +718,6 @@ myTeamRegex = /https?:\/\/basketball[.]fantasysports[.]yahoo[.]com\/nba\/\d{3,7}
 teamURLMatch = currentUrl.match(myTeamRegex);
 
 if (document.getElementById('team-card-info') != null && currentUrl.indexOf(teamURLMatch) !== -1) {
-    initSchedule();
     render();
     //renderGames();
     //countStats();

@@ -58,9 +58,8 @@ function loadFromAPI(teams){
     var dateString;
     var leagueIDString = 'leagueID=' + getLeagueID();
     url = window.location.href;
-    if (url.includes("week=") && !url.includes("date=totals")){
+    if (url.includes("date=")){
         dateString = getDateFromURL(url);
-        dateString = week_to_date[dateString];
     } else {
         dateString = getFormattedDate();
     }

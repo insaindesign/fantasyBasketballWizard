@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Fantasy Basketball Wizard",
-  "version": "3.3.1",
+  "version": "3.3.2",
   "description": "Fantasy Basketball Wizard gives ESPN & Yahoo Fantasy Basketball players extra tools to help them succeed.",
   "browser_action": {
     "default_icon": "frontend/icon.png",
@@ -27,6 +27,10 @@
     {
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/matchup*"],
       "js": ["js/yahoo/matchupsPage.js"]
+    },
+    {
+      "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/players*"],
+      "js": ["js/yahoo/playersPage.js"]
     }
   ],
   "permissions": [

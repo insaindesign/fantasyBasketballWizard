@@ -180,21 +180,25 @@ function initTable(){
     
     //insert left team name
     var cell = document.createElement("td");
+  
     cell.innerHTML = nameLeft;
     cell.style.color = "#black";
+  
     cell.style.fontWeight = "bold";
     rowLeft.appendChild(cell);
 
     //insert right team name
     var cell = document.createElement("td");
+
     cell.innerHTML = nameRight;
     cell.style.color = "#black";
+
     cell.style.fontWeight = "bold";
     rowRight.appendChild(cell);
     
     //insert "projections" cell
     var cell = document.createElement("td");
-    cell.innerHTML = "Wizard Projections";
+    cell.innerText = "Wizard Projections";
     cell.style.color = "#8a0491";
     cell.style.fontWeight = "bold";
     rowHeader.appendChild(cell);
@@ -202,19 +206,19 @@ function initTable(){
     for (var cat = 0; cat < categories.length; cat++){
         //add cells to header
         var cell = document.createElement("th");
-        cell.innerHTML = categories[cat];
+        cell.innerText = categories[cat];
         cell.style.fontWeight = "bold";
         rowHeader.appendChild(cell);
         
         //add cells to top row
         var cell = document.createElement("td");
-        cell.innerHTML = " "
+        cell.innerText = " "
         
         rowLeft.appendChild(cell);
         
         //add cells to bottom row
         var cell = document.createElement("td");
-        cell.innerHTML = " "
+        cell.innerText = " "
         rowRight.appendChild(cell);
     }
 

@@ -1,103 +1,68 @@
 //playersPage.js
 //Populates player page with number of games for the week
 //--------------------------------Schedule-------------------------------------
-var Schedule = {}
-
-AtlantaHawks = [3,4,3,3,3,4,2,4,3,4,3,3,3,3,4,4,4,3,4,3,3,4,3,4,1]
-BostonCeltics = [3,3,4,4,3,4,3,4,4,4,4,3,1,3,3,4,4,3,3,3,3,3,3,4,2]
-BrooklynNets = [3,4,2,4,3,3,3,3,4,3,4,3,4,4,3,4,3,3,4,3,3,4,3,3,2]
-CharlotteHornets = [2,4,4,2,3,4,2,4,4,4,3,2,3,3,4,4,4,4,4,3,3,4,4,3,1]
-ChicagoBulls = [2,3,3,3,3,4,3,4,3,4,4,4,3,3,4,2,3,4,3,4,3,4,4,3,2]
-ClevelandCavaliers = [3,4,3,3,3,3,4,4,4,2,3,3,3,3,3,3,4,4,3,4,3,4,4,3,2]
-DallasMavericks = [3,4,4,3,3,3,3,4,3,4,4,3,3,2,4,3,4,3,4,3,3,3,4,4,1]
-DenverNuggets = [2,4,4,3,3,3,3,4,3,4,3,3,4,3,3,4,3,4,3,4,3,3,4,3,2]
-DetroitPistons = [3,4,3,3,3,2,4,4,4,2,3,3,3,4,3,3,4,4,4,3,3,4,4,3,2]
-GoldenStateWarriors = [3,4,3,3,4,3,4,3,2,4,4,3,4,3,3,3,3,4,3,4,3,3,4,4,1]
-HoustonRockets = [3,4,4,3,3,2,3,2,4,3,4,3,3,3,4,3,4,4,3,4,4,4,3,3,2]
-IndianaPacers = [3,3,4,4,3,3,3,4,3,3,4,2,4,4,3,4,4,2,4,4,3,3,3,4,1]
-LosAngelesClippers = [2,3,4,3,3,3,4,2,4,4,3,3,4,3,4,2,3,4,4,3,4,4,4,3,2]
-LosAngelesLakers = [3,3,4,3,4,2,4,2,2,4,4,4,3,4,3,3,3,4,3,4,3,3,4,4,2]
-MemphisGrizzlies = [2,4,4,2,3,4,3,4,4,3,4,2,2,4,3,4,3,3,4,4,3,4,4,3,2]
-MiamiHeat = [2,3,4,4,3,3,4,2,4,4,3,3,3,4,3,4,3,4,3,4,3,4,3,3,2]
-MilwaukeeBucks = [3,3,3,3,3,3,3,4,3,3,3,4,4,3,3,4,3,4,4,3,3,4,4,3,2]
-MinnesotaTimberwolves = [3,3,4,2,4,4,4,3,3,3,4,4,4,3,4,4,3,4,3,2,3,3,4,2,2]
-NewOrleansPelicans = [3,3,4,3,3,4,3,4,3,3,3,2,4,3,4,3,4,4,3,4,4,3,3,3,2]
-NewYorkKnicks = [2,3,4,3,3,4,3,4,3,3,4,4,3,4,3,4,3,4,3,3,3,4,3,3,2]
-OklahomaCityThunder = [3,3,3,4,2,4,3,3,4,4,4,3,3,3,4,4,3,4,4,3,4,3,3,2,2]
-OrlandoMagic = [3,3,4,3,3,4,4,4,3,3,3,3,3,3,2,3,4,4,4,4,3,3,3,4,2]
-Philadelphia76ers = [3,3,3,3,3,3,4,4,2,4,4,2,1,3,4,4,3,5,4,3,3,4,4,4,2]
-PhoenixSuns = [3,3,4,4,4,3,3,4,3,4,3,4,2,2,4,4,3,4,4,3,3,3,4,3,1]
-PortlandTrailBlazers = [3,3,4,2,4,4,3,2,4,4,2,4,4,3,3,4,4,3,3,3,4,3,4,3,2]
-SacramentoKings = [3,3,3,3,4,3,4,3,3,3,4,2,4,3,4,3,3,4,5,3,4,3,4,2,2]
-SanAntonioSpurs = [2,4,4,3,3,3,4,4,3,4,3,4,3,4,4,3,2,4,2,3,4,4,3,3,2]
-TorontoRaptors = [2,3,4,3,4,3,2,3,4,3,3,3,4,4,3,4,3,3,4,4,4,4,2,4,2]
-UtahJazz = [3,3,4,3,4,3,3,4,3,4,3,3,2,4,3,3,4,4,3,4,3,4,3,3,2]
-WashingtonWizards = [2,4,3,3,4,3,3,4,4,3,4,3,3,3,3,3,4,4,4,3,3,3,4,3,2]
-
-Schedule["Atl"] = AtlantaHawks
-Schedule["Bos"] = BostonCeltics
-Schedule["Bkn"] = BrooklynNets
-Schedule["Cha"] = CharlotteHornets
-Schedule["Chi"] = ChicagoBulls
-Schedule["Cle"] = ClevelandCavaliers
-Schedule["Dal"] = DallasMavericks
-Schedule["Den"] = DenverNuggets
-Schedule["Det"] = DetroitPistons
-Schedule["GS"] = GoldenStateWarriors
-Schedule["Hou"] = HoustonRockets
-Schedule["Ind"] = IndianaPacers
-Schedule["LAC"] = LosAngelesClippers
-Schedule["LAL"] = LosAngelesLakers
-Schedule["Mem"] = MemphisGrizzlies
-Schedule["Mia"] = MiamiHeat
-Schedule["Mil"] = MilwaukeeBucks
-Schedule["Min"] = MinnesotaTimberwolves
-Schedule["NO"] = NewOrleansPelicans
-Schedule["NY"] = NewYorkKnicks
-Schedule["OKC"] = OklahomaCityThunder
-Schedule["Orl"] = OrlandoMagic
-Schedule["Phi"] = Philadelphia76ers
-Schedule["Pho"] = PhoenixSuns
-Schedule["Por"] = PortlandTrailBlazers
-Schedule["Sac"] = SacramentoKings
-Schedule["SA"] = SanAntonioSpurs
-Schedule["Tor"] = TorontoRaptors
-Schedule["Uta"] = UtahJazz
-Schedule["Was"] = WashingtonWizards
-
 Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"]
-var lowColor = "#ffffcc";
-var medColor = "#d8ffcc";
-var highColor = "#adebad";
-var whiteColor = "white";
-
-//get week of year
-Date.prototype.getWeek = function() {
-    var onejan = new Date(this.getFullYear(), 0, 1);
-    return Math.ceil((((this - onejan) / 86400000) + onejan.getDay() + 1) / 7);
-}
-
-function getColor(games){
-    if (games > 3){
-        return highColor
-    } else if (games == 3){
-        return medColor
-    } else if (games == 2){
-        return lowColor
-    } else if (games == 1){
-        return lowColor
+var teamsString = "teams=Atl,Bos,Bkn,Cha,Chi,Cle,Dal,Den,Det,GS,Hou,Ind,LAC,LAL,Mem,Mia,Mil,Min,NO,NY,OKC,Orl,Phi,Pho,Por,Sac,SA,Tor,Uta,Was,"
+//determine color based on number of games
+function getColor(games) {
+    if (games == '0/0') {
+        return "#56d2ff"
+    }
+    games = parseInt(games.split('/')[0]);
+    if (games == 5) {
+        return "#7ee57e"
+    } else if (games == 4) {
+        return "#adebad"
+    } else if (games == 3) {
+        return "#d8ffcc"
+    } else if (games == 2) {
+        return "#ffffcc"
+    } else if (games == 1) {
+        return "#ffd6cc"
+    } else if (games == 0) {
+        return "#f97a7a"
     } else {
-        return whiteColor
+        return "white"
     }
 }
-function findColumnToReplace() {
-    //return column number
+
+function getFormattedDate() {
+    var d = new Date();
+    return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
 }
 
-function replaceColumnData(number) {
-    //replace column number
-}
+
+//alert("hi");
+var dateString = getFormattedDate();
+var leagueIDString = "leagueID=1111111";
+var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=test&' + teamsString + '&format=json&date=' + dateString + '&' + leagueIDString;
+
+fetch(url).then(function (response) {
+    if (response.status !== 200) {
+        //console.log('Called to backend failed: ' + response.status);
+        return;
+    }
+
+    response.json().then(function (data) {
+        renderGames();
+        
+
+    });
+    }).catch(function (err) {
+        //console.log('Fetch Error :-S', err);
+    });
 
 
-console.log("hello world")
-//this is where we can put logic to add games to the players page
+    function renderGames() {
+        var table = document.getElementsByClassName("Table Ta-start Fz-xs Table-mid Table-px-xs Table-interactive")[0];
+        var rows = table.rows;
+        var playerInfoDivs = document.getElementsByClassName("ysf-player-name Nowrap Grid-u Relative Lh-xs Ta-start");
+        for(var i=0; i<rows.length; i++) {
+            var playerInfo = playerInfoDivs[i].innerText.split(" ");
+            for(var j=0; j<playerInfo.length; j++) {
+                if(teamsString.includes(playerInfo[j])) {
+                    console.log(playerInfo[j]);
+                }
+            }
+        }
+    }

@@ -48,6 +48,7 @@ function getTeamString() {
 }
 function getGames() {
     if(document.getElementById("gamesHeader") != null ) {
+        console.log("inside if");
         return;
     }
     var dateString = getFormattedDate();
@@ -64,7 +65,7 @@ function getGames() {
         for(var i = 0; i < data.length; i++) {
             gamesDictionary[Teams[i]] = data[i];  
         }
-        console.log(data);
+        //console.log(data);
         renderGames(data);
         });
     }).catch(function (err) {
@@ -82,7 +83,7 @@ function renderGames(data) {
     th.setAttribute("id","gamesHeader");
     rows[1].appendChild(th);
     for(var i = 2; i<rows.length;i++) {
-        console.log(rows[i]);
+        //console.log(rows[i]);
         var td = document.createElement("td");
         var div = document.createElement("div");
         div.innerText = data[i-2];
@@ -100,3 +101,17 @@ button.setAttribute("class","Btn-primary Mstart-xxs Va-bot Fw-b");
 document.getElementsByClassName("playersearchbox Relative")[0].appendChild(button);
 button.addEventListener("click", getGames);
 getGames();
+
+document.body.addEventListener("click", function(event){
+    console.log("trying");
+    getGames();
+    if(document.getElementById("gamesHeader") == null ) {
+        setTimeout(() => {
+            console.log("second call");
+            getGames();
+        }, 1000);
+    }
+    else {
+        return;
+    }
+}, true);

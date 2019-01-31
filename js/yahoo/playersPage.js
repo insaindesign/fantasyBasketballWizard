@@ -47,6 +47,9 @@ function getTeamString() {
     return str;   
 }
 function getGames() {
+    if(document.getElementById("gamesHeader") != null ) {
+        return;
+    }
     var dateString = getFormattedDate();
     var leagueIDString = "leagueID=1111111";
     var teamsString = getTeamString();
@@ -90,21 +93,10 @@ function renderGames(data) {
         rows[i].appendChild(td);
     }
 }
+//<button id="fetchGamesButton" class="Btn-primary Mstart-xxs Va-bot">Fetch Games Remaining</button>
 var button = document.createElement("button");
-button.innerText ="games";
-document.getElementsByClassName("selects Grid-h-bot Mtop-lg")[0].appendChild(button);
+button.innerText = "Fantasy Wizard Gr/G";
+button.setAttribute("class","Btn-primary Mstart-xxs Va-bot Fw-b");
+document.getElementsByClassName("playersearchbox Relative")[0].appendChild(button);
 button.addEventListener("click", getGames);
-//getGames();
-
-
-var headerRow = document.getElementsByClassName("Table Ta-start Fz-xs Table-mid Table-px-xs Table-interactive")[0].rows[1];
-headerRow.addEventListener("click", function() {
-    alert("working");
-}, false);
-for(var i = 1; i < headerRow.length; i++) {
-    var head = headerRow.children[i];
-
-    head.addEventListener("click", function() {
-        console.log("listener");
-    }, false);
-}
+getGames();

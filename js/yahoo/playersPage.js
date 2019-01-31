@@ -95,7 +95,7 @@ function renderGames(data) {
 }
 //<button id="fetchGamesButton" class="Btn-primary Mstart-xxs Va-bot">Fetch Games Remaining</button>
 var button = document.createElement("button");
-button.innerText = "Fantasy Wizard Gr/G";
+button.innerText = "Wizard Gr/G";
 button.setAttribute("class","Btn-primary Mstart-xxs Va-bot Fw-b");
 document.getElementsByClassName("playersearchbox Relative")[0].appendChild(button);
 button.addEventListener("click", getGames);

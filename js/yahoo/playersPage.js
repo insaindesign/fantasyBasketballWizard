@@ -33,7 +33,7 @@ function getFormattedDate() {
 }
 
 function getTeamString() {
-    var str = "teams=";
+    var str = "";
     var playerInfoDivs = document.getElementsByClassName("ysf-player-name Nowrap Grid-u Relative Lh-xs Ta-start");
     for (var i = 0; i < playerInfoDivs.length; i++) {
         var playerInfo = playerInfoDivs[i].innerText.split(" ");
@@ -48,12 +48,11 @@ function getTeamString() {
 }
 function getGames() {
     if(document.getElementById("gamesHeader") != null ) {
-        console.log("inside if");
         return;
     }
     var dateString = getFormattedDate();
     var leagueIDString = "leagueID=1111111";
-    var teamsString = getTeamString();
+    var teamsString = "teams=" + getTeamString();
     var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=test&' + teamsString + '&format=json&date=' + dateString + '&' + leagueIDString;
     fetch(url).then(function (response) {
         if (response.status !== 200) {
@@ -103,11 +102,9 @@ button.addEventListener("click", getGames);
 getGames();
 
 document.body.addEventListener("click", function(event){
-    console.log("trying");
-    getGames();
+    console.log(event);
     if(document.getElementById("gamesHeader") == null ) {
         setTimeout(() => {
-            console.log("second call");
             getGames();
         }, 1000);
     }

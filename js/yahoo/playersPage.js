@@ -4,6 +4,7 @@
 var Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"];
 var teamsString = "teams=Atl,Bos,Bkn,Cha,Chi,Cle,Dal,Den,Det,GS,Hou,Ind,LAC,LAL,Mem,Mia,Mil,Min,NO,NY,OKC,Orl,Phi,Pho,Por,Sac,SA,Tor,Uta,Was,";
 var gamesDictionary = {};
+var hasGamesLocally = false;
 //determine color based on number of games
 function getColor(games) {
     if (games == '0/0') {
@@ -47,12 +48,16 @@ function getTeamString() {
     return str;   
 }
 function getGames() {
-    if(document.getElementById("gamesHeader") != null ) {
+    if(document.getElementById("gamesHeader") != null) {
+        return;
+    }
+    if(hasGamesLocally) {
+        renderGames(null);
         return;
     }
     var dateString = getFormattedDate();
     var leagueIDString = "leagueID=1111111";
-    var teamsString = "teams=" + getTeamString();
+    //var teamsString = "teams=" + getTeamString();
     var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=test&' + teamsString + '&format=json&date=' + dateString + '&' + leagueIDString;
     fetch(url).then(function (response) {
         if (response.status !== 200) {
@@ -64,17 +69,21 @@ function getGames() {
         for(var i = 0; i < data.length; i++) {
             gamesDictionary[Teams[i]] = data[i];  
         }
-        //console.log(data);
+        console.log(data);
+        console.log(gamesDictionary);
         renderGames(data);
+        hasGamesLocally = true;
         });
     }).catch(function (err) {
         //console.log('Fetch Error :-S', err);
     });
+    //console.log(gamesDictionary);
 }
 
 
 
 function renderGames(data) {
+    var teamsArray = getTeamString().split(",");
     var table = document.getElementsByClassName("Table Ta-start Fz-xs Table-mid Table-px-xs Table-interactive")[0];
     var rows = table.rows;
     var th = document.createElement("th");
@@ -85,30 +94,20 @@ function renderGames(data) {
         //console.log(rows[i]);
         var td = document.createElement("td");
         var div = document.createElement("div");
-        div.innerText = data[i-2];
+        div.innerText = gamesDictionary[teamsArray[i-2]];
+        //div.innerText = data[i-2];
         td.appendChild(div);
-        td.style.backgroundColor = getColor(data[i-2])
+        td.style.backgroundColor = getColor(gamesDictionary[teamsArray[i-2]])
         td.setAttribute("class","Last Ta-end");
         td.setAttribute("id", "gamesColumn");
         rows[i].appendChild(td);
     }
 }
-//<button id="fetchGamesButton" class="Btn-primary Mstart-xxs Va-bot">Fetch Games Remaining</button>
-var button = document.createElement("button");
-button.innerText = "Wizard Gr/G";
-button.setAttribute("class","Btn-primary Mstart-xxs Va-bot Fw-b");
-document.getElementsByClassName("playersearchbox Relative")[0].appendChild(button);
-button.addEventListener("click", getGames);
-getGames();
 
 document.body.addEventListener("click", function(event){
     console.log(event);
-    if(document.getElementById("gamesHeader") == null ) {
-        setTimeout(() => {
-            getGames();
-        }, 1000);
-    }
-    else {
-        return;
-    }
+    setTimeout(() => {
+        getGames();
+    }, 800);
+    
 }, true);

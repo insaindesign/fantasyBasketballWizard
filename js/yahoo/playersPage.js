@@ -111,3 +111,5 @@ document.body.addEventListener("click", function(event){
     }, 800);
     
 }, true);
+
+getGames();

@@ -4,7 +4,7 @@
 var Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"];
 var teamsString = "teams=Atl,Bos,Bkn,Cha,Chi,Cle,Dal,Den,Det,GS,Hou,Ind,LAC,LAL,Mem,Mia,Mil,Min,NO,NY,OKC,Orl,Phi,Pho,Por,Sac,SA,Tor,Uta,Was,";
 var gamesDictionary = {};
-var hasGamesLocally = false;
+var gamesCached = false;
 //determine color based on number of games
 function getColor(games) {
     if (games == '0/0') {
@@ -33,6 +33,7 @@ function getFormattedDate() {
     return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
 }
 
+//gets a comma separaeted list of the team acronyms on the players table
 function getTeamString() {
     var str = "";
     var playerInfoDivs = document.getElementsByClassName("ysf-player-name Nowrap Grid-u Relative Lh-xs Ta-start");
@@ -47,17 +48,29 @@ function getTeamString() {
     }
     return str;   
 }
+
+//gets current user's leagueID
+function getLeagueID() {
+    return document.getElementById("league-info").
+    firstElementChild.firstElementChild.
+    innerText.split("# ")[1].replace(')', '');
+}
+
 function getGames() {
+    //if games column is present, don't render. finish here.
     if(document.getElementById("gamesHeader") != null) {
         return;
     }
-    if(hasGamesLocally) {
+
+    //if games are cached in gamesDictionary, render from cached data gamesDictionary
+    if(gamesCached) {
         renderGames(null);
         return;
     }
+    
+    //server call (should only run on first page load)
     var dateString = getFormattedDate();
-    var leagueIDString = "leagueID=1111111";
-    //var teamsString = "teams=" + getTeamString();
+    var leagueIDString = "leagueID="+getLeagueID();
     var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=test&' + teamsString + '&format=json&date=' + dateString + '&' + leagueIDString;
     fetch(url).then(function (response) {
         if (response.status !== 200) {
@@ -69,10 +82,10 @@ function getGames() {
         for(var i = 0; i < data.length; i++) {
             gamesDictionary[Teams[i]] = data[i];  
         }
-        console.log(data);
-        console.log(gamesDictionary);
+        //console.log(data);
+        //console.log(gamesDictionary);
         renderGames(data);
-        hasGamesLocally = true;
+        gamesCached = true;
         });
     }).catch(function (err) {
         //console.log('Fetch Error :-S', err);
@@ -89,23 +102,23 @@ function renderGames(data) {
     var th = document.createElement("th");
     th.innerText = "Gr/G";
     th.setAttribute("id","gamesHeader");
+    th.setAttribute("class","Ta-end");
     rows[1].appendChild(th);
     for(var i = 2; i<rows.length;i++) {
         //console.log(rows[i]);
         var td = document.createElement("td");
         var div = document.createElement("div");
         div.innerText = gamesDictionary[teamsArray[i-2]];
-        //div.innerText = data[i-2];
         td.appendChild(div);
-        td.style.backgroundColor = getColor(gamesDictionary[teamsArray[i-2]])
-        td.setAttribute("class","Last Ta-end");
-        td.setAttribute("id", "gamesColumn");
+        td.style.backgroundColor = getColor(gamesDictionary[teamsArray[i-2]]);
+        td.setAttribute("class","Last Ta-end gamesColumn");
         rows[i].appendChild(td);
     }
 }
 
 document.body.addEventListener("click", function(event){
-    console.log(event);
+    //the table takes some time to filter/sort.
+    //this gives time for it to finish before adding games
     setTimeout(() => {
         getGames();
     }, 800);

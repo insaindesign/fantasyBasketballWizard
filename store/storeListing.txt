@@ -33,6 +33,12 @@ Enjoy!
 
 
 Release notes:
+Version 3.4 (Feb 8, 2018):
+- Added support for players page!
+
+Version 3.3.2 (Jan 2, 2018):
+- Fixed bug where team page was hanging at times.
+
 Versio 3.3 (Nov 15, 2018):
 - Added new help page to show available features 
 - Added subreddit links to popup to report bugs and request new features

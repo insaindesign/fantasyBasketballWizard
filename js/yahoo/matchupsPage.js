@@ -472,8 +472,9 @@ function displayGamesToday(data) {
     parentDiv.appendChild(div);
 }
 
-if (categories.toString() == "FG%,FT%,3PTM,PTS,REB,AST,ST,BLK,TO"){
+if (categories.toString().replace(/\s/g, "").replace(/,/g, "") == "FG%FT%3PTMPTSREBASTSTBLKTO"){
     initTable();
+    console.log("9cat league");
     getGamesRemaining(teams);
     
 }

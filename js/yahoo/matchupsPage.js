@@ -42,7 +42,7 @@ if (table == null){
         var matchup = document.getElementById("matchup");
         //console.log("first table null");
         table = matchup.childNodes[0];
-        //console.log("new table: ", table);
+        console.log("new table: ", table);
     }, 1000);
     
 }
@@ -50,6 +50,8 @@ if (table == null){
 //find stats headers
 header = table.rows[0].innerText.split("\n");
 categories = header.slice(1, (header.length/2)-1);
+categories = categories.join('').split('\t').join(' ').trim().split(' ')
+
 
 function getProjectionsColor(ratio){
     if (ratio == 0){
@@ -163,10 +165,10 @@ function getGamesRemaining(team){
 
 function initTable(){
 
-    teamNames = document.getElementById("matchup-header").innerText.split('\n')
+    teamNames = document.evaluate('//a[@class="F-link"]', document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
     //console.log("teams: ", );
-    nameLeft = teamNames[1];
-    nameRight = teamNames[teamNames.length-4];
+    nameLeft = teamNames.snapshotItem(0).innerHTML;
+    nameRight = teamNames.snapshotItem(1).innerHTML;
 
     matchup = document.getElementById("matchup-wall-header");
     pTable = document.createElement("table");

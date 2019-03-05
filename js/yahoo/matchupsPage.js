@@ -50,6 +50,8 @@ if (table == null){
 //find stats headers
 header = table.rows[0].innerText.split("\n");
 categories = header.slice(1, (header.length/2)-1);
+categories = categories.join('').split('\t').join(' ').trim().split(' ')
+
 
 function getProjectionsColor(ratio){
     if (ratio == 0){
@@ -139,7 +141,7 @@ function getGamesRemaining(team){
     //console.log("dateString: ", dateString);
     
     var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yMatchupsPage&teams='+team+'&format=json&date='+dateString+'&'+leagueIDString;
-    console.log("url: ", url);
+    //console.log("url: ", url);
     fetch(url)
         .then(function(response){
         if (response.status !== 200) {
@@ -163,10 +165,10 @@ function getGamesRemaining(team){
 
 function initTable(){
 
-    teamNames = document.getElementById("matchup-header").innerText.split('\n')
+    teamNames = document.evaluate('//a[@class="F-link"]', document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
     //console.log("teams: ", );
-    nameLeft = teamNames[1];
-    nameRight = teamNames[teamNames.length-4];
+    nameLeft = teamNames.snapshotItem(0).innerHTML;
+    nameRight = teamNames.snapshotItem(1).innerHTML;
 
     matchup = document.getElementById("matchup-wall-header");
     pTable = document.createElement("table");
@@ -472,8 +474,9 @@ function displayGamesToday(data) {
     parentDiv.appendChild(div);
 }
 
-if (categories.toString() == "FG%,FT%,3PTM,PTS,REB,AST,ST,BLK,TO"){
+if (categories.toString().replace(/\s/g, "").replace(/,/g, "") == "FG%FT%3PTMPTSREBASTSTBLKTO"){
     initTable();
+    //console.log("9cat league");
     getGamesRemaining(teams);
     
 }
@@ -482,7 +485,7 @@ try {
     getGamesToday();
 }
 catch(err) {
-    console.log("error displaying games today");
+    //console.log("error displaying games today");
 }
 
 

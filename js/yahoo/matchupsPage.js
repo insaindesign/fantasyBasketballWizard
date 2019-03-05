@@ -42,7 +42,7 @@ if (table == null){
         var matchup = document.getElementById("matchup");
         //console.log("first table null");
         table = matchup.childNodes[0];
-        console.log("new table: ", table);
+        //console.log("new table: ", table);
     }, 1000);
     
 }
@@ -141,7 +141,7 @@ function getGamesRemaining(team){
     //console.log("dateString: ", dateString);
     
     var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yMatchupsPage&teams='+team+'&format=json&date='+dateString+'&'+leagueIDString;
-    console.log("url: ", url);
+    //console.log("url: ", url);
     fetch(url)
         .then(function(response){
         if (response.status !== 200) {
@@ -476,7 +476,7 @@ function displayGamesToday(data) {
 
 if (categories.toString().replace(/\s/g, "").replace(/,/g, "") == "FG%FT%3PTMPTSREBASTSTBLKTO"){
     initTable();
-    console.log("9cat league");
+    //console.log("9cat league");
     getGamesRemaining(teams);
     
 }
@@ -485,7 +485,7 @@ try {
     getGamesToday();
 }
 catch(err) {
-    console.log("error displaying games today");
+    //console.log("error displaying games today");
 }
 
 

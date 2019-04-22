@@ -1,46 +1,39 @@
-/*
+
 //including player NBA team names
-var text = document.evaluate('//*[@class="Bd"]//a', document, null, XPathResult.ANY_TYPE, null);
+var text = document.evaluate('//*[@class="Bd"]', document, null, XPathResult.ANY_TYPE, null);
 var thisPar = text.iterateNext();
-var paragraph = thisPar.textContent.split("\n");
-*/
+var paragraph = thisPar.textContent.split('\n');
+paragraph = paragraph.filter(function(str){return /\S/.test(str.trim());});
+paragraph = paragraph.map(Function.prototype.call, String.prototype.trim);
 
-//league team name and player names only
-function initLeague(){
-    var text = document.evaluate('//*[@class="Bd"]//a', document, null, XPathResult.ANY_TYPE, null);
-    var thisTag = text.iterateNext();
+league = {}
+teams = {}
+textSamples = []
+p = 0
 
-    league = {}
-    teams = {}
-    textSamples = []
+while (p < paragraph.length-1) {
+    //console.log("league: ", league);
+    //textSamples.push(thisTag.textContent);
     
-    while (thisTag) {
-        console.log("league: ", league);
-        //textSamples.push(thisTag.textContent);
-        teamName = thisTag.textContent;
-        league[teamName] = []
-        thisTag = text.iterateNext();
-        isTeam = false;
-        while (!isTeam && thisTag){
-            console.log("teamName: ", teamName);
-            t = thisTag.textContent;
-            if (t.toLowerCase().includes('layer note')){
-                console.log("player found: ", t);
-                thisTag = text.iterateNext();
-                t = thisTag.textContent;
-                console.log("player name: ", t);
-                league[teamName].push(t);
-                thisTag = text.iterateNext();
-            } else if ((t.includes('W') || t.includes('L')) && (t.includes('vs') || t.includes('@'))){ //improve with regex
-                console.log("game log found: ", t);
-                thisTag = text.iterateNext();
-            } else {
-                console.log("new team found: ", t);
-                isTeam = true;
-            }
-        }
-        //thisTag = text.iterateNext();
+    if (paragraph[p+1].includes('PosPlayer')){
+        teamName = paragraph[p];
+        console.log("new team found: ", teamName);
+        league[teamName] = {}
+        league[teamName]['players'] = [];
+        league[teamName]['url'] = "https://www.fantasywizard.site/getplayers/?players=";
+        p++;
+    } else if (paragraph[p].toLowerCase().includes('layer note')){
+        console.log("player note found: ", paragraph[p]);
+        p++;
+        player = paragraph[p];
+        console.log("player name: ", player);
+        player = player.split(' - ')[0];
+        player = player.split(' ');
+        firstName = player[0][0];
+        player.shift();
+        player = firstName + player.join("");
+        league[teamName]['players'].push(player);
+        league[teamName]['url'] = league[teamName]['url'] + player + ",";
     }
-
+    p++;
 }
-

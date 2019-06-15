@@ -19,6 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.urlpatterns import format_suffix_patterns
 from wizard import views
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('', views.Home.as_view()),
@@ -35,7 +36,14 @@ urlpatterns = [
     path('getplayers/', views.GetPlayerStats.as_view()),
     path('getweek/', views.GetWeekFromDate.as_view()),
     path('privacypolicy/', views.PrivacyPolicy.as_view()),
-    path('contact/', views.Contact.as_view())
+    path('contact/', views.Contact.as_view()),
+    path('register/', views.Register.as_view()),
+    # path('logout/'),
+    path('login/', auth_views.LoginView.as_view()), 
+    #path('nbafantasydashboard/'),
+    #path('/nbaplayerstats'),
+    #path('/nbaplayerstock'),
+
 ]
 static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns = format_suffix_patterns(urlpatterns)

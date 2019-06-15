@@ -255,6 +255,10 @@ class Home(TemplateView):
     def get(self, request):
         return render(request, template_name='wizard/index.html')
 
+class NBAFantasyDashboard(TemplateView):
+    def get(self, request):
+        
+        return render(request, template_name='wizard/nbafantasydashboard.html')
 
 class Register(TemplateView):
     def get(self, request):

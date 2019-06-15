@@ -12,6 +12,7 @@ from .utils.dataUtil import DataLoader
 from .models import *
 from .serializers import *
 from decimal import *
+from .custom.forms import RegistrationForm
 
 # ---------------------- API VIEWS -----------------------------
 
@@ -240,7 +241,6 @@ class GetWeekFromDate(APIView):
 
 # -------------- Template Views --------------------------------
 
-
 class PrivacyPolicy(TemplateView):
     def get(self, request):
         return render(request, template_name='wizard/privacyPolicy.html')
@@ -254,6 +254,21 @@ class Contact(TemplateView):
 class Home(TemplateView):
     def get(self, request):
         return render(request, template_name='wizard/index.html')
+
+
+class Register(TemplateView):
+    def get(self, request):
+        form = RegistrationForm()
+        args = {'form':form}
+        return render(request, template_name='wizard/register.html', context=args)
+    def post(self, request):
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/admin')
+        else:
+            print("NOT VALID")
+            return redirect('/register')
 
 
 # -------------- Data loading methods --------------------------

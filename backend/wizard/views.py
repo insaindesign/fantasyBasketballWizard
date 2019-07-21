@@ -271,8 +271,8 @@ class Register(TemplateView):
             form.save()
             return redirect('/admin')
         else:
-            print("NOT VALID")
-            return redirect('/register')
+            form = RegistrationForm()
+            return render(request, 'wizard/register.html', {'form': form})
 
 
 # -------------- Data loading methods --------------------------

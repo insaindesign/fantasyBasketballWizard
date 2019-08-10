@@ -130,3 +130,6 @@ STATIC_URL = '/static/'
 #added by us
 CORS_ORIGIN_ALLOW_ALL = True
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 1230
+
+LOGIN_REDIRECT_URL = "/privacypolicy"
+LOGIN_URL = "/login"

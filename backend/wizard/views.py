@@ -269,7 +269,7 @@ class Register(TemplateView):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('/admin')
+            return redirect('/home')
         else:
             return render(request, 'wizard/register.html', {'form': form})
 

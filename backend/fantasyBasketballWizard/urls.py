@@ -39,7 +39,7 @@ urlpatterns = [
     path('privacypolicy/', views.PrivacyPolicy.as_view()),
     path('contact/', views.Contact.as_view()),
     path('register/', views.Register.as_view()),
-    path('logout/', auth_views.LogoutView.as_view()),
+    path('logout/', views.Logout.as_view()),
     path('login/', auth_views.LoginView.as_view()),
     path('home/', views.Home.as_view())
     #path('nbafantasydashboard/'),

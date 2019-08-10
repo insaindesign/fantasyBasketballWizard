@@ -3,6 +3,7 @@
 import datetime
 import pytz
 from django.shortcuts import render, redirect
+from django.contrib.auth import logout
 from django.db.models import Q
 from rest_framework.views import APIView
 from django.views.generic import TemplateView
@@ -272,6 +273,12 @@ class Register(TemplateView):
             return redirect('/home')
         else:
             return render(request, 'wizard/register.html', {'form': form})
+
+class Logout(TemplateView):
+    def get(self, request):
+        logout(request)
+        return render(request, template_name="wizard/logout.html")
+        
 
 
 # -------------- Data loading methods --------------------------

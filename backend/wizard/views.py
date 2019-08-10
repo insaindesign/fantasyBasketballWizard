@@ -258,9 +258,14 @@ class Home(TemplateView):
 
 class NBAFantasyDashboard(TemplateView):
     def get(self, request):
-        
         return render(request, template_name='wizard/nbafantasydashboard.html')
 
+class Profile(TemplateView):
+    def get(self, request):
+        return render(request, template_name='wizard/profile.html')
+
+
+# -------------- Auth Views --------------------------
 class Register(TemplateView):
     def get(self, request):
         form = RegistrationForm()
@@ -278,11 +283,14 @@ class Logout(TemplateView):
     def get(self, request):
         logout(request)
         return render(request, template_name="wizard/logout.html")
+
+class YahooAuth(TemplateView):
+    def get(self, request):
+        return redirect("https://api.login.yahoo.com/oauth2/request_auth?client_id=dj0yJmk9MVBNZHdWVW5yRGpjJnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTlk&redirect_uri=https://www.fantasywizard.site&response_type=code&language=en-us")
         
 
 
 # -------------- Data loading methods --------------------------
-
 
 class LoadTeams(APIView):
     """loads all hard coded teams into database - /loadteams"""

@@ -41,11 +41,12 @@ urlpatterns = [
     path('register/', views.Register.as_view()),
     path('logout/', views.Logout.as_view()),
     path('login/', auth_views.LoginView.as_view()),
-    path('home/', views.Home.as_view())
+    path('home/', views.Home.as_view()),
+    path('profile', login_required(views.Profile.as_view())),
+    path('yahooauth', login_required(views.YahooAuth.as_view()))
     #path('nbafantasydashboard/'),
     #path('/nbaplayerstats'),
     #path('/nbaplayerstock'),
-
 ]
 static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns = format_suffix_patterns(urlpatterns)

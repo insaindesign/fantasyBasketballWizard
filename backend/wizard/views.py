@@ -332,13 +332,12 @@ class AuthorizeUser(TemplateView):
         expiresIn = response_json['expires_in']
         response_json['token_type']
         
-        authTokenInfo = YahooAuth()
-        authTokenInfo.accessToken = accessToken
-        authTokenInfo.refreshToken = refreshToken
-        authTokenInfo.user = request.user
-        authTokenInfo.save()
-
-        
+        authTokenInfo = YahooAuth(
+            accessToken=accessToken,
+            refreshToken=refreshToken,
+            user=request.user
+        ).save()
+      
 
         return render(request, template_name="wizard/authSuccess.html", context=context)
 

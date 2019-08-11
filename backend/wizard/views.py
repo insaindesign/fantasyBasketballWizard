@@ -2,6 +2,8 @@
 # est. 2017
 import datetime
 import pytz
+import requests 
+import base64
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout
 from django.db.models import Q
@@ -129,7 +131,7 @@ class GamesRemaining(APIView):
         return Game.objects.filter(Q(homeTeam=requestTeam) | Q(roadTeam=requestTeam), week=requestWeek).count()
 
     def getNumberOfRemainingGames(self, teamAcronym, requestWeek, requestDate):
-        return Game.objects.filter(Q(homeTeam=requestTeam) | Q(roadTeam=requestTeam), week=requestWeek, date__gte=requestDate).count()
+        return Game.objects.filter(Q(homeTeam=teamAcronym) | Q(roadTeam=teamAcronym), week=requestWeek, date__gte=requestDate).count()
 
 
 class AllTeams(APIView):
@@ -282,12 +284,38 @@ class Register(TemplateView):
 class Logout(TemplateView):
     def get(self, request):
         logout(request)
-        return render(request, template_name="wizard/logout.html")
+        return render(request, template_name='wizard/logout.html')
 
 class YahooAuth(TemplateView):
     def get(self, request):
-        return redirect("https://api.login.yahoo.com/oauth2/request_auth?client_id=dj0yJmk9MVBNZHdWVW5yRGpjJnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTlk&redirect_uri=https://www.fantasywizard.site&response_type=code&language=en-us")
+        return redirect("https://api.login.yahoo.com/oauth2/request_auth?client_id=dj0yJmk9MVBNZHdWVW5yRGpjJnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTlk&redirect_uri=https://https://www.fantasywizard.site/authorizeuser&response_type=code&language=en-us")
         
+class AuthorizeUser(TemplateView):
+    def get(self, request):
+        code = request.GET['code']
+        clientID = "dj0yJmk9MVBNZHdWVW5yRGpjJnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTlk"
+        clientSecret = "a3aaacc100a84efd8e771fa0869e7230fdcaf9fe"
+        redirectURI = "https://www.fantasywizard.site/home"
+        grantType = "authorization_code"
+        endpoint = "https://api.login.yahoo.com/oauth2/get_token"
+        header = base64.encodestring(clientID+":"+clientSecret)
+        
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Basic' + '\n' + header
+        }
+        data = {
+            'client_id':clientID,
+            'client_secret':clientSecret,
+            'redirect_uri': redirectURI,
+            'code':code,
+            'grant_type':grantType 
+        }
+        
+        response = requests.post(url=endpoint, data=data, headers=headers)
+        return response
+
+
 
 
 # -------------- Data loading methods --------------------------

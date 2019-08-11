@@ -303,7 +303,7 @@ class AuthorizeUser(TemplateView):
         print("step1")
         try:            
             headers = {
-                'Authorization': "ZGoweUptazlNVkJOWkhkV1ZXNXlSR3BqSm5NOVkyOXVjM1Z0WlhKelpXTnlaWFFtYzNZOU1DWjRQVGxrOmEzYWFhY2MxMDBhODRlZmQ4ZTc3MWZhMDg2OWU3MjMwZmRjYWY5ZmU=",
+                'Authorization': "Basic ZGoweUptazlNVkJOWkhkV1ZXNXlSR3BqSm5NOVkyOXVjM1Z0WlhKelpXTnlaWFFtYzNZOU1DWjRQVGxrOmEzYWFhY2MxMDBhODRlZmQ4ZTc3MWZhMDg2OWU3MjMwZmRjYWY5ZmU=",
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         except:

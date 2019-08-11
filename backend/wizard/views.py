@@ -299,7 +299,7 @@ class AuthorizeUser(TemplateView):
         grantType = "authorization_code"
         endpoint = "https://api.login.yahoo.com/oauth2/get_token"
         header = base64.encodestring(clientID+":"+clientSecret)
-        
+        print("step1")
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Basic' + '\n' + header
@@ -311,9 +311,12 @@ class AuthorizeUser(TemplateView):
             'code':code,
             'grant_type':grantType 
         }
-        
+        print("Step2")
         response = requests.post(url=endpoint, data=data, headers=headers)
-        return response
+        context = {
+            'response':response
+        }
+        return render(request, template_name="wizard/authSuccess.html", context=context)
 
 
 

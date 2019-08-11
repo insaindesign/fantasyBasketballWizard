@@ -296,7 +296,7 @@ class AuthorizeUser(TemplateView):
         code = request.GET['code']
         clientID = "dj0yJmk9d3E4N3l3bWZUQ1U5JmQ9WVdrOVFYTkphRXBETjJjbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTQz"
         clientSecret = "55f0af69880a7a0a766683d22d01d6f950e3f875"
-        redirectURI = "https://www.fantasywizard.site/home"
+        redirectURI = "https://www.fantasywizard.site/authorizeuser"
         grantType = "authorization_code"
         endpoint = "https://api.login.yahoo.com/oauth2/get_token"
         print("step1")

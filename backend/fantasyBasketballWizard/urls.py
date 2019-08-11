@@ -43,7 +43,8 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view()),
     path('home/', views.Home.as_view()),
     path('profile', login_required(views.Profile.as_view())),
-    path('yahooauth', login_required(views.YahooAuth.as_view()))
+    path('yahooauth', login_required(views.YahooAuth.as_view())),
+    path('authorizeuser', login_required(views.AuthorizeUser.as_view()))
     #path('nbafantasydashboard/'),
     #path('/nbaplayerstats'),
     #path('/nbaplayerstock'),

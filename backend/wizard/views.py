@@ -287,7 +287,7 @@ class Logout(TemplateView):
         logout(request)
         return render(request, template_name='wizard/logout.html')
 
-class YahooAuth(TemplateView):
+class YahooAuthView(TemplateView):
     def get(self, request):
         return redirect("https://api.login.yahoo.com/oauth2/request_auth?client_id=dj0yJmk9d3E4N3l3bWZUQ1U5JmQ9WVdrOVFYTkphRXBETjJjbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTQz&redirect_uri=https://www.fantasywizard.site/authorizeuser&response_type=code&language=en-us")
         

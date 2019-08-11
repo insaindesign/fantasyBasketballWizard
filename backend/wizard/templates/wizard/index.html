@@ -2,6 +2,8 @@
 
 {% if user.is_authenticated %}
 <div>welcome {{ user.username }}</div>
+<a href="/profile">Profile</a>
+
 <a href="/logout">Log out</a>
 {% else %}
 <a href="/register">Sign up</a>

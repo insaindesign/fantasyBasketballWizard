@@ -298,7 +298,8 @@ class AuthorizeUser(TemplateView):
         redirectURI = "https://www.fantasywizard.site/home"
         grantType = "authorization_code"
         endpoint = "https://api.login.yahoo.com/oauth2/get_token"
-        header = base64.encodestring(clientID+":"+clientSecret)
+        strToEncode = b'dj0yJmk9MVBNZHdWVW5yRGpjJnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTlk:a3aaacc100a84efd8e771fa0869e7230fdcaf9fe'
+        header = base64.encodestring(strToEncode)
         print("step1")
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',

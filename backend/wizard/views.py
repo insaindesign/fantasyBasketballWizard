@@ -22,7 +22,7 @@ from .custom.forms import RegistrationForm
 
 class GamesRemaining(APIView):
     """
-        Returns all gamesRemaining/GamesThisWeek for the given team and date. 
+        Returns all gamesRemaining/GamesThisWeek for the given team and date.
         /?pageName=javascriptPage&teams=LAL,OKC,GSW,BOS,&date=2019-1-1&format=json
     """
 
@@ -36,7 +36,7 @@ class GamesRemaining(APIView):
         date = request.GET.get("date")
         queryString = request.META.get("QUERY_STRING")
         leagueID = request.GET.get("leagueID")
-        
+
         print("Request: Games Remaining as of " + date)
         print(requestTeams)
         requestDate = DataLoader.stringDateToDateObject(date)  # yyyy-m-d
@@ -110,11 +110,11 @@ class GamesRemaining(APIView):
         print("ENDTime")
         print(gameEndTime)
         print(gameEndTime < now)
-        
+
         # date1 < date2
-        # date1 is considered less than date2 when date1 precedes date2 in time. 
+        # date1 is considered less than date2 when date1 precedes date2 in time.
         return gameEndTime < now
-        
+
 
     def getCleanedTeamsString(self, teamsString):
         # remove last character (comma in this case)
@@ -171,7 +171,7 @@ class GetPlayerStats(APIView):
         return Response(serializer.data)
 
 class AddPlayer(APIView):
-    """  
+    """
         Adds a player to the database
         ?id=JHardenHou&team=HOU&ppg=22.1&rpg=7.4&apg=4.9&spg=2.0&bpg=1.5
         &topg=2.2&ftmpg=7.4&ftapg=8.7&ftpct=85&fgapg=17.8&fgmpg=11.2
@@ -202,7 +202,7 @@ class AddPlayer(APIView):
 
 class GamesThisWeek(APIView):
     """
-        Returns all games for the given week and team - 
+        Returns all games for the given week and team -
         /?teams=LAL,OKC,GSW,BOS,&weekNum=3
     """
 
@@ -232,7 +232,7 @@ class GamesThisWeek(APIView):
 
 
 class GetWeekFromDate(APIView):
-    """ 
+    """
         Returns the week object for the requested date -
         /getweek/?date=2019-1-1
     """

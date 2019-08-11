@@ -87,4 +87,4 @@ class YahooAuth(models.Model):
         return expiration
 
     def __str__(self):
-        return str("RefreshToken", refreshToken)
+        return str("RefreshToken", self.refreshToken)

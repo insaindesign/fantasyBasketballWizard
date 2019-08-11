@@ -327,10 +327,10 @@ class AuthorizeUser(TemplateView):
             'response':response
         }
         response_json = response.json()
-        accessToken = response['access_token']
-        refreshToken = response['refresh_token']
-        expiresIn = response['expires_in']
-        response['token_type']
+        accessToken = response_json['access_token']
+        refreshToken = response_json['refresh_token']
+        expiresIn = response_json['expires_in']
+        response_json['token_type']
         
         authTokenInfo = YahooAuth()
         authTokenInfo.accessToken = accessToken

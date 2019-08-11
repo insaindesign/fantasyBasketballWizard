@@ -77,9 +77,9 @@ class Use(models.Model):
         return str(self.useType) + " " + str(self.timeStamp.astimezone(pytz.timezone('US/Pacific')))
 
 class YahooAuth(models.Model):
-    refreshToken = models.CharField(max_length=100)
-    accessToken = models.CharField(max_length=100)
-    tokenType = models.CharField(max_length=10)
+    refreshToken = models.CharField(max_length=100, default="refreshToken")
+    accessToken = models.CharField(max_length=100, default="accessToken")
+    tokenType = models.CharField(max_length=10, default="tokenType")
     expiration = models.DateTimeField(default = timezone.now)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 

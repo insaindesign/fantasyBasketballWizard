@@ -306,6 +306,7 @@ class AuthorizeUser(TemplateView):
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         except:
+            #get's the current exception
             e = sys.exc_info()[0]
             print(e)  
         data = {
@@ -325,6 +326,20 @@ class AuthorizeUser(TemplateView):
         context = {
             'response':response
         }
+        response_json = response.json()
+        accessToken = response['access_token']
+        refreshToken = response['refresh_token']
+        expiresIn = response['expires_in']
+        response['token_type']
+        
+        authTokenInfo = YahooAuth()
+        authTokenInfo.accessToken = accessToken
+        authTokenInfo.refreshToken = refreshToken
+        AuthorizeUser = request.user
+        authTokenInfo.save()
+
+        
+
         return render(request, template_name="wizard/authSuccess.html", context=context)
 
 

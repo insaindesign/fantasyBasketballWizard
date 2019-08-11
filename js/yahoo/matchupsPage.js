@@ -1,10 +1,29 @@
 Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"];
 
+week_to_date = {
+    '9': '2018-12-10',
+    '10': '2018-12-17',
+    '11': '2018-12-24',
+    '12': '2018-12-31',
+    '13': '2019-1-7',
+    '14': '2019-1-14',
+    '15': '2019-1-21',
+    '16': '2019-1-28',
+    '17': '2019-2-4',
+    '18': '2019-2-11',
+    '19': '2019-2-25',
+    '20': '2019-3-4',
+    '21': '2019-3-11',
+    '22': '2019-3-18',
+    '23': '2019-3-25',
+    '23': '2019-4-1'
+}
+
 Schedule = {};
 
 teams = Teams.join(",") + ",";
 
-console.log("teams: ", teams);
+//console.log("teams: ", teams);
 
 var leftName;
 var rightName;
@@ -21,9 +40,9 @@ table = document.getElementById("statTable3");
 if (table == null){
     setTimeout(function(){
         var matchup = document.getElementById("matchup");
-        console.log("first table null");
+        //console.log("first table null");
         table = matchup.childNodes[0];
-        console.log("new table: ", table);
+        //console.log("new table: ", table);
     }, 1000);
     
 }
@@ -31,9 +50,13 @@ if (table == null){
 //find stats headers
 header = table.rows[0].innerText.split("\n");
 categories = header.slice(1, (header.length/2)-1);
+categories = categories.join('').split('\t').join(' ').trim().split(' ')
+
 
 function getProjectionsColor(ratio){
-    if (ratio <= .1){
+    if (ratio == 0){
+        return "white";
+    } else if (ratio <= .1){
         return '#ff3b3b';
     } if (ratio <= .2){
         return '#ff4e4e';
@@ -75,6 +98,8 @@ function getProjectionsColor(ratio){
         return '#3bff3b';
     } if (ratio <= 2.1){
         return '#3bff3b';
+    } if (ratio <= 4.5){
+        return '#18f204';
     } else return '#dee8f7';
 }
 
@@ -84,7 +109,7 @@ function getFormattedDate() {
 }
 
 function getDateFromURL(url){
-    url = url.split("date=")[1]
+    url = url.split("week=")[1]
     date = url.split("&")[0]
     return date
 }
@@ -104,20 +129,23 @@ function getGamesRemaining(team){
     var dateString;
     var leagueIDString = 'leagueID=' + getLeagueID();
     url = window.location.href;
-    if (url.includes("date=") && !url.includes("date=totals")){
+    if (url.includes("week=") && !url.includes("date=totals")){
         dateString = getDateFromURL(url);
+        dateString = week_to_date[dateString];
     } else {
         dateString = getFormattedDate();
     }
     
-    console.log("dateString: ", dateString);
+    //console.log("initialized dateString");
+    
+    //console.log("dateString: ", dateString);
     
     var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yMatchupsPage&teams='+team+'&format=json&date='+dateString+'&'+leagueIDString;
     //console.log("url: ", url);
     fetch(url)
         .then(function(response){
         if (response.status !== 200) {
-            console.log('Called to backend failed: ' + response.status);
+            //console.log('Called to backend failed: ' + response.status);
             return;
         }
 
@@ -131,16 +159,16 @@ function getGamesRemaining(team){
             getPlayers();
         });
     }).catch(function(err) {
-        console.log('Fetch Error :-S', err);
+        //console.log('Fetch Error :-S', err);
     });
 }
 
 function initTable(){
 
-    teamNames = document.getElementById("matchup-header").innerText.split('\n')
+    teamNames = document.evaluate('//a[@class="F-link"]', document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
     //console.log("teams: ", );
-    nameLeft = teamNames[1];
-    nameRight = teamNames[teamNames.length-4];
+    nameLeft = teamNames.snapshotItem(0).innerHTML;
+    nameRight = teamNames.snapshotItem(1).innerHTML;
 
     matchup = document.getElementById("matchup-wall-header");
     pTable = document.createElement("table");
@@ -154,21 +182,25 @@ function initTable(){
     
     //insert left team name
     var cell = document.createElement("td");
+  
     cell.innerHTML = nameLeft;
-    cell.style.color = "#0f6800";
+    cell.style.color = "#black";
+  
     cell.style.fontWeight = "bold";
     rowLeft.appendChild(cell);
 
     //insert right team name
     var cell = document.createElement("td");
+
     cell.innerHTML = nameRight;
-    cell.style.color = "#6d0505";
+    cell.style.color = "#black";
+
     cell.style.fontWeight = "bold";
     rowRight.appendChild(cell);
     
     //insert "projections" cell
     var cell = document.createElement("td");
-    cell.innerHTML = "Wizard Projections";
+    cell.innerText = "Wizard Projections";
     cell.style.color = "#8a0491";
     cell.style.fontWeight = "bold";
     rowHeader.appendChild(cell);
@@ -176,19 +208,19 @@ function initTable(){
     for (var cat = 0; cat < categories.length; cat++){
         //add cells to header
         var cell = document.createElement("th");
-        cell.innerHTML = categories[cat];
+        cell.innerText = categories[cat];
         cell.style.fontWeight = "bold";
         rowHeader.appendChild(cell);
         
         //add cells to top row
         var cell = document.createElement("td");
-        cell.innerHTML = " "
+        cell.innerText = " "
         
         rowLeft.appendChild(cell);
         
         //add cells to bottom row
         var cell = document.createElement("td");
-        cell.innerHTML = " "
+        cell.innerText = " "
         rowRight.appendChild(cell);
     }
 
@@ -222,7 +254,7 @@ function getGamesToday() {
     fetch(url)
         .then(function(response){
         if (response.status !== 200) {
-            console.log('Called to backend failed: ' + response.status);
+            //console.log('Called to backend failed: ' + response.status);
             return;
         }
 
@@ -230,7 +262,7 @@ function getGamesToday() {
             displayGamesToday(data);
         });
     }).catch(function(err) {
-        console.log('Fetch Error :-S', err);
+        //console.log('Fetch Error :-S', err);
     });
 }
 
@@ -261,6 +293,10 @@ function getPlayers(){
     for (var i = 1; i < num_rows; i++){
         row = table.rows[i].innerText.split('\n')
         
+        if (row.includes("--") || row.includes("IL")){
+            continue;
+        }
+        
         //console.log("row: ", row);
 
         noteIndex = getNoteIndex(row.slice(0, row.length/2 - 1));
@@ -284,11 +320,11 @@ function getPlayers(){
     }
     
     leftString = playersLeft.join(",") + ",";
-    console.log("leftString: ", leftString);
+    //console.log("leftString: ", leftString);
     getProjections(leftString, "left");
     
     rightString = playersRight.join(",") + ",";
-    console.log("rightString: ", rightString);
+    //console.log("rightString: ", rightString);
     getProjections(rightString, "right");
     
 }
@@ -299,7 +335,7 @@ function getProjections(playersString, side){
     fetch(url)
         .then(function (response) {
             if (response.status !== 200) {
-                console.log('Called to backend failed: ' + response.status);
+                //console.log('Called to backend failed: ' + response.status);
                 return;
             }
 
@@ -308,14 +344,14 @@ function getProjections(playersString, side){
                 //console.log(data);
             });
         }).catch(function (err) {
-            console.log('Fetch Error :-S', err);
+            //console.log('Fetch Error :-S', err);
         });
     
 }
 
 function showProjections(data, side){
     
-    console.log("showProjections -- ", side, ": ", data);
+    //console.log("showProjections -- ", side, ": ", data);
     
     //add text
     for (cat = 0; cat < categories.length; cat++){
@@ -438,12 +474,20 @@ function displayGamesToday(data) {
     parentDiv.appendChild(div);
 }
 
-if (categories.toString() == "FG%,FT%,3PTM,PTS,REB,AST,ST,BLK,TO"){
+if (categories.toString().replace(/\s/g, "").replace(/,/g, "") == "FG%FT%3PTMPTSREBASTSTBLKTO"){
     initTable();
+    //console.log("9cat league");
     getGamesRemaining(teams);
     
 }
 
-getGamesToday();
+try {
+    getGamesToday();
+}
+catch(err) {
+    //console.log("error displaying games today");
+}
+
+
 
 

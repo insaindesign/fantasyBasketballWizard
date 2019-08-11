@@ -4,35 +4,62 @@
         <title></title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" type="text/css" href="popup.css">
-        <script type="text/javascript" src="frontend/options.js"></script>
-        <script type="text/javascript" src="frontend/jquery-3.3.1.min.js"></script>
+        <script type="text/javascript" src="jquery-3.3.1.min.js"></script>
+
     </head>
     <body tabindex="1">
-        <div class="fbw-header">
-            <h1>Fantasy Basketball Wizard</h1>
+        <div class="fbw-header center">
+            <h3>Fantasy Basketball Wizard</h3>
         </div>
-
-        <h1 class="yahoo-header">Yahoo</h1>
 
         <div class="yahoo-text">
-            <p class="feature-text">Games remaining for the week & Total games tonight and for the week</p>
-            <p class="detail-text"> > Team pages, Research menu</p>
-            <p class="feature-text">Sum of average stats & FBW projected stats for the week</p>
-            <p class="detail-text"> > Team page, Average Stats menu</p>
-            <p class="feature-text">Projected matchup stats</p>
-            <p class="detail-text"> > Matchups page</p>
+            <p>
+                <font color="#5f42f4"><center><b>Yahoo!</b></center></font>
+                <b>My Team</b>
+                <br>
+                > Games Remaining/Total Games for the week
+                <br>
+                > Average Stats (sub-tab): calculated average stats
+                <br>
+                <b>Matchups</b>
+                <br>
+                > Projected Matchup Calculations (Non-Live) (Standard 9Cat only)
+                <br>
+                > # of NBA Games (Non-Live)
+                <br>
+                <b>Research</b>
+                <br>
+                > Games Remaining/Total Games for the week
+                <br>
+                > Transaction Trends (sub-tab): Games Remaining/Total Games for the week
+            </p>
         </div>
         
-        <h1 class="espn-header">ESPN</h1>
-
         <div class="espn-text">
-            <p class="feature-text">
-            Games remaining for the week & Total games tonight and for the week</p>
-            <p class="detail-text"> > Team pages, Players / Free Agents page, Most Added / Dropped players, FantasyCast page, Boxscore page</p>
-            <p class="feature-text">Average & Projected matchup stats</p>
-            <p class="detail-text"> > COMING SOON! </p>  
+            <p>
+                <font color="#f44141"><center><b>ESPN</b></center></font>
+                <br>
+                <b>Team Page</b>
+                <br>
+                > Games Remaining/Total Games for the week
+                <br>
+                <b>Boxscores</b>
+                <br>
+                > Projected Matchup Calculations (Non-Live) (Standard 9Cat only)
+                <br>
+                > Games Remaining/Total Games for the week
+                <br>
+                <b>Players / Free Agents & Most Added / Dropped</b>
+                <br>
+                > Games Remaining/Total Games for the week
+            </p>
         </div>
-        <strong>Version 3.1</strong>
+
+        <div class="help footer help-footer"><p class="footer-text">Help</p></div>
+        <div class="footer bug-footer"><p class="footer-text">Report a bug</p></div>
+        <div class="footer feature-footer"><p class="footer-text">Request a new feature</p></div>
+        <div class="footer patreon-footer"><p class="footer-text">Support us on Patreon</p></div>
+
         <div class="links">
             <a href="https://chrome.google.com/webstore/detail/fantasy-basketball-wizard/bmojbnihkmbdandkddobjnilkegcooll/reviews" target="_blank">Review</a>
             &nbsp;
@@ -42,9 +69,8 @@
             &nbsp;
             <a href="https://paypal.me/pools/c/7ZUO3Mxjnf" target="_blank">Donations :)</a>
         </div>
-
-        <div id="options">Options</div>
-        <button id="go-to-options">Go to options</button>
     </body>
+
+    <script type="text/javascript" src="frontend.js"></script>
 
 </html>

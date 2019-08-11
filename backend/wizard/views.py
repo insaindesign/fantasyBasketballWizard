@@ -3,6 +3,7 @@
 import datetime
 import pytz
 from django.shortcuts import render, redirect
+from django.contrib.auth import logout
 from django.db.models import Q
 from rest_framework.views import APIView
 from django.views.generic import TemplateView
@@ -12,6 +13,7 @@ from .utils.dataUtil import DataLoader
 from .models import *
 from .serializers import *
 from decimal import *
+from .custom.forms import RegistrationForm
 
 # ---------------------- API VIEWS -----------------------------
 
@@ -37,14 +39,6 @@ class GamesRemaining(APIView):
         print(requestTeams)
         requestDate = DataLoader.stringDateToDateObject(date)  # yyyy-m-d
 
-        # preseaosn dates should always return 0/0 because there is no week associated with preseason
-        if dayBeforeSeasonStartDate > requestDate and pageName != "weekSelect":
-            print("pre season - no games")
-            for teamAcronym in requestTeams:
-                gameCountList.append("0/0")
-            print("Response for Games Remaining")
-            print(gameCountList)
-            return Response(gameCountList)
 
         # if no week in the request, get the corresponding week
         if requestWeek == None:
@@ -80,12 +74,16 @@ class GamesRemaining(APIView):
                 - if one of these games is today
                     -is it currently 3 hours after this game start time?
             requestDate - date that the request came in on
+
+            if there is a game today AND it is over - True
+            else - False
         """
         # get nowtime
         now = datetime.datetime.now().astimezone(pytz.timezone('US/Eastern'))
         # get todays game
         todaysGameQuery = gamesRemaining.filter(date=requestDate)
 
+        # no game today
         if todaysGameQuery.count() < 1:
             return False
 
@@ -103,6 +101,16 @@ class GamesRemaining(APIView):
         threeHours = datetime.timedelta(hours=3)
         gameEndTime = gameDateTime + threeHours
 
+        print("START")
+        print(gameDateTime)
+        print("NOW")
+        print(now)
+        print("ENDTime")
+        print(gameEndTime)
+        print(gameEndTime < now)
+
+        # date1 < date2
+        # date1 is considered less than date2 when date1 precedes date2 in time.
         return gameEndTime < now
 
 
@@ -234,7 +242,6 @@ class GetWeekFromDate(APIView):
 
 # -------------- Template Views --------------------------------
 
-
 class PrivacyPolicy(TemplateView):
     def get(self, request):
         return render(request, template_name='wizard/privacyPolicy.html')
@@ -249,9 +256,41 @@ class Home(TemplateView):
     def get(self, request):
         return render(request, template_name='wizard/index.html')
 
+class NBAFantasyDashboard(TemplateView):
+    def get(self, request):
+        return render(request, template_name='wizard/nbafantasydashboard.html')
+
+class Profile(TemplateView):
+    def get(self, request):
+        return render(request, template_name='wizard/profile.html')
+
+
+# -------------- Auth Views --------------------------
+class Register(TemplateView):
+    def get(self, request):
+        form = RegistrationForm()
+        args = {'form':form}
+        return render(request, template_name='wizard/register.html', context=args)
+    def post(self, request):
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/home')
+        else:
+            return render(request, 'wizard/register.html', {'form': form})
+
+class Logout(TemplateView):
+    def get(self, request):
+        logout(request)
+        return render(request, template_name="wizard/logout.html")
+
+class YahooAuth(TemplateView):
+    def get(self, request):
+        return redirect("https://api.login.yahoo.com/oauth2/request_auth?client_id=dj0yJmk9MVBNZHdWVW5yRGpjJnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTlk&redirect_uri=https://www.fantasywizard.site&response_type=code&language=en-us")
+
+
 
 # -------------- Data loading methods --------------------------
-
 
 class LoadTeams(APIView):
     """loads all hard coded teams into database - /loadteams"""

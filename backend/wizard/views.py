@@ -335,7 +335,7 @@ class AuthorizeUser(TemplateView):
         authTokenInfo = YahooAuth()
         authTokenInfo.accessToken = accessToken
         authTokenInfo.refreshToken = refreshToken
-        AuthorizeUser = request.user
+        authTokenInfo.user = request.user
         authTokenInfo.save()
 
         

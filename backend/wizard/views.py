@@ -288,7 +288,7 @@ class Logout(TemplateView):
 
 class YahooAuth(TemplateView):
     def get(self, request):
-        return redirect("https://api.login.yahoo.com/oauth2/request_auth?client_id=dj0yJmk9MVBNZHdWVW5yRGpjJnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTlk&redirect_uri=https://https://www.fantasywizard.site/authorizeuser&response_type=code&language=en-us")
+        return redirect("https://api.login.yahoo.com/oauth2/request_auth?client_id=dj0yJmk9MVBNZHdWVW5yRGpjJnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTlk&redirect_uri=https://www.fantasywizard.site/authorizeuser&response_type=code&language=en-us")
         
 class AuthorizeUser(TemplateView):
     def get(self, request):

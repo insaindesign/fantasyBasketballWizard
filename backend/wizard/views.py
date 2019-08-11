@@ -326,7 +326,7 @@ class AuthorizeUser(TemplateView):
         context = {
             'response':response
         }
-        """ response_json = response.json()
+        response_json = response.json()
         accessToken = response_json['access_token']
         refreshToken = response_json['refresh_token']
         expiresIn = response_json['expires_in']
@@ -336,7 +336,7 @@ class AuthorizeUser(TemplateView):
         authTokenInfo.accessToken = accessToken
         authTokenInfo.refreshToken = refreshToken
         AuthorizeUser = request.user
-        authTokenInfo.save() """
+        authTokenInfo.save()
 
         
 

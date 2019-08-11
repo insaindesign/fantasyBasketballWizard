@@ -289,21 +289,20 @@ class Logout(TemplateView):
 
 class YahooAuth(TemplateView):
     def get(self, request):
-        return redirect("https://api.login.yahoo.com/oauth2/request_auth?client_id=dj0yJmk9MVBNZHdWVW5yRGpjJnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTlk&redirect_uri=https://www.fantasywizard.site/authorizeuser&response_type=code&language=en-us")
+        return redirect("https://api.login.yahoo.com/oauth2/request_auth?client_id=dj0yJmk9d3E4N3l3bWZUQ1U5JmQ9WVdrOVFYTkphRXBETjJjbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTQz&redirect_uri=https://www.fantasywizard.site/authorizeuser&response_type=code&language=en-us")
         
 class AuthorizeUser(TemplateView):
     def get(self, request):
         code = request.GET['code']
-        clientID = "dj0yJmk9MVBNZHdWVW5yRGpjJnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTlk"
-        clientSecret = "a3aaacc100a84efd8e771fa0869e7230fdcaf9fe"
+        clientID = "dj0yJmk9d3E4N3l3bWZUQ1U5JmQ9WVdrOVFYTkphRXBETjJjbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTQz"
+        clientSecret = "55f0af69880a7a0a766683d22d01d6f950e3f875"
         redirectURI = "https://www.fantasywizard.site/home"
         grantType = "authorization_code"
         endpoint = "https://api.login.yahoo.com/oauth2/get_token"
-        strToEncode = b'dj0yJmk9MVBNZHdWVW5yRGpjJnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTlk:a3aaacc100a84efd8e771fa0869e7230fdcaf9fe'
         print("step1")
         try:            
             headers = {
-                'Authorization': "Basic ZGoweUptazlNVkJOWkhkV1ZXNXlSR3BqSm5NOVkyOXVjM1Z0WlhKelpXTnlaWFFtYzNZOU1DWjRQVGxrOmEzYWFhY2MxMDBhODRlZmQ4ZTc3MWZhMDg2OWU3MjMwZmRjYWY5ZmU=",
+                'Authorization': "Basic ZGoweUptazlkM0U0TjNsM2JXWlVRMVU1Sm1ROVdWZHJPVkZZVGtwaFJYQkVUakpqYldOSGJ6bE5RUzB0Sm5NOVkyOXVjM1Z0WlhKelpXTnlaWFFtYzNZOU1DWjRQVFF6OjU1ZjBhZjY5ODgwYTdhMGE3NjY2ODNkMjJkMDFkNmY5NTBlM2Y4NzU=",
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         except:

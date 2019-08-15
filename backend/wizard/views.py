@@ -2,7 +2,11 @@
 # est. 2017
 import datetime
 import pytz
+import requests 
+import base64
+import sys
 from django.shortcuts import render, redirect
+from django.contrib.auth import logout
 from django.db.models import Q
 from rest_framework.views import APIView
 from django.views.generic import TemplateView
@@ -12,13 +16,14 @@ from .utils.dataUtil import DataLoader
 from .models import *
 from .serializers import *
 from decimal import *
+from .custom.forms import RegistrationForm
 
 # ---------------------- API VIEWS -----------------------------
 
 
 class GamesRemaining(APIView):
     """
-        Returns all gamesRemaining/GamesThisWeek for the given team and date. 
+        Returns all gamesRemaining/GamesThisWeek for the given team and date.
         /?pageName=javascriptPage&teams=LAL,OKC,GSW,BOS,&date=2019-1-1&format=json
     """
 
@@ -32,7 +37,7 @@ class GamesRemaining(APIView):
         date = request.GET.get("date")
         queryString = request.META.get("QUERY_STRING")
         leagueID = request.GET.get("leagueID")
-        
+
         print("Request: Games Remaining as of " + date)
         print(requestTeams)
         requestDate = DataLoader.stringDateToDateObject(date)  # yyyy-m-d
@@ -106,11 +111,11 @@ class GamesRemaining(APIView):
         print("ENDTime")
         print(gameEndTime)
         print(gameEndTime < now)
-        
+
         # date1 < date2
-        # date1 is considered less than date2 when date1 precedes date2 in time. 
+        # date1 is considered less than date2 when date1 precedes date2 in time.
         return gameEndTime < now
-        
+
 
     def getCleanedTeamsString(self, teamsString):
         # remove last character (comma in this case)
@@ -127,7 +132,7 @@ class GamesRemaining(APIView):
         return Game.objects.filter(Q(homeTeam=requestTeam) | Q(roadTeam=requestTeam), week=requestWeek).count()
 
     def getNumberOfRemainingGames(self, teamAcronym, requestWeek, requestDate):
-        return Game.objects.filter(Q(homeTeam=requestTeam) | Q(roadTeam=requestTeam), week=requestWeek, date__gte=requestDate).count()
+        return Game.objects.filter(Q(homeTeam=teamAcronym) | Q(roadTeam=teamAcronym), week=requestWeek, date__gte=requestDate).count()
 
 
 class AllTeams(APIView):
@@ -167,7 +172,7 @@ class GetPlayerStats(APIView):
         return Response(serializer.data)
 
 class AddPlayer(APIView):
-    """  
+    """
         Adds a player to the database
         ?id=JHardenHou&team=HOU&ppg=22.1&rpg=7.4&apg=4.9&spg=2.0&bpg=1.5
         &topg=2.2&ftmpg=7.4&ftapg=8.7&ftpct=85&fgapg=17.8&fgmpg=11.2
@@ -198,7 +203,7 @@ class AddPlayer(APIView):
 
 class GamesThisWeek(APIView):
     """
-        Returns all games for the given week and team - 
+        Returns all games for the given week and team -
         /?teams=LAL,OKC,GSW,BOS,&weekNum=3
     """
 
@@ -228,7 +233,7 @@ class GamesThisWeek(APIView):
 
 
 class GetWeekFromDate(APIView):
-    """ 
+    """
         Returns the week object for the requested date -
         /getweek/?date=2019-1-1
     """
@@ -239,7 +244,6 @@ class GetWeekFromDate(APIView):
         return Response(serializer.data)
 
 # -------------- Template Views --------------------------------
-
 
 class PrivacyPolicy(TemplateView):
     def get(self, request):
@@ -255,9 +259,93 @@ class Home(TemplateView):
     def get(self, request):
         return render(request, template_name='wizard/index.html')
 
+class NBAFantasyDashboard(TemplateView):
+    def get(self, request):
+        return render(request, template_name='wizard/nbafantasydashboard.html')
+
+class Profile(TemplateView):
+    def get(self, request):
+        return render(request, template_name='wizard/profile.html')
+
+
+# -------------- Auth Views --------------------------
+class Register(TemplateView):
+    def get(self, request):
+        form = RegistrationForm()
+        args = {'form':form}
+        return render(request, template_name='wizard/register.html', context=args)
+    def post(self, request):
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/home')
+        else:
+            return render(request, 'wizard/register.html', {'form': form})
+
+class Logout(TemplateView):
+    def get(self, request):
+        logout(request)
+        return render(request, template_name='wizard/logout.html')
+
+class YahooAuthView(TemplateView):
+    def get(self, request):
+        return redirect("https://api.login.yahoo.com/oauth2/request_auth?client_id=dj0yJmk9d3E4N3l3bWZUQ1U5JmQ9WVdrOVFYTkphRXBETjJjbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTQz&redirect_uri=https://www.fantasywizard.site/authorizeuser&response_type=code&language=en-us")
+        
+class AuthorizeUser(TemplateView):
+    def get(self, request):
+        code = request.GET['code']
+        clientID = "dj0yJmk9d3E4N3l3bWZUQ1U5JmQ9WVdrOVFYTkphRXBETjJjbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTQz"
+        clientSecret = "55f0af69880a7a0a766683d22d01d6f950e3f875"
+        redirectURI = "https://www.fantasywizard.site/authorizeuser"
+        grantType = "authorization_code"
+        endpoint = "https://api.login.yahoo.com/oauth2/get_token"
+        print("step1")
+        try:            
+            headers = {
+                'Authorization': "Basic ZGoweUptazlkM0U0TjNsM2JXWlVRMVU1Sm1ROVdWZHJPVkZZVGtwaFJYQkVUakpqYldOSGJ6bE5RUzB0Sm5NOVkyOXVjM1Z0WlhKelpXTnlaWFFtYzNZOU1DWjRQVFF6OjU1ZjBhZjY5ODgwYTdhMGE3NjY2ODNkMjJkMDFkNmY5NTBlM2Y4NzU=",
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        except:
+            #get's the current exception
+            e = sys.exc_info()[0]
+            print(e)  
+        data = {
+            'client_id':clientID,
+            'client_secret':clientSecret,
+            'redirect_uri': redirectURI,
+            'code':code,
+            'grant_type':grantType 
+        }
+        print("Step2")
+        try:
+            response = requests.post(url=endpoint, data=data, headers=headers)
+        except:
+            e = sys.exc_info()[0]
+            print(e)
+            print("didn't work")
+        context = {
+            'response':response
+        }
+        response_json = response.json()
+        accessToken = response_json['access_token']
+        refreshToken = response_json['refresh_token']
+        expiresIn = response_json['expires_in']
+        tokenType = response_json['token_type']
+        
+        authTokenInfo = YahooAuth(
+            accessToken=accessToken,
+            refreshToken=refreshToken,
+            tokenType=tokenType,
+            user=request.user
+        ).save()
+      
+
+        return render(request, template_name="wizard/authSuccess.html", context=context)
+
+
+
 
 # -------------- Data loading methods --------------------------
-
 
 class LoadTeams(APIView):
     """loads all hard coded teams into database - /loadteams"""

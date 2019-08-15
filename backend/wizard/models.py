@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 import datetime
 import pytz
 
@@ -74,3 +75,13 @@ class Use(models.Model):
 
     def __str__(self):
         return str(self.useType) + " " + str(self.timeStamp.astimezone(pytz.timezone('US/Pacific')))
+
+class YahooAuth(models.Model):
+    refreshToken = models.CharField(max_length=100, default="refreshToken")
+    accessToken = models.CharField(max_length=100, default="accessToken")
+    tokenType = models.CharField(max_length=10, default="tokenType")
+    expiration = models.DateTimeField(default = timezone.now)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def getExpiration():
+        return expiration

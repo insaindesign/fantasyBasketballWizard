@@ -3,3 +3,4 @@ backend/db.sqlite3
 *.pyc
 backend/wizard/migrations
 .vscode/settings.json
+backend/.vscode/settings.json

@@ -316,7 +316,7 @@ renderGames = function(from_view) {
                     break;
                 }
             }
-            console.log("games: ", games);
+            //console.log("games: ", games);
             if (games == null){
                 return;
             }
@@ -532,13 +532,13 @@ countStats = function() {
 
                 //console.log(avg);
                 if (isNaN(weekly_avg)){
-                    console.log("null weekly_avg");
+                    //console.log("null weekly_avg");
                     weekly_avg = ".000";
                 }
                 stats_all.cells[write].innerText = avg;
                 stats_week.cells[write].innerText = weekly_avg;
-                console.log("avg: ", avg);
-                console.log("weekly_avg: ", weekly_avg);
+                //console.log("avg: ", avg);
+                //console.log("weekly_avg: ", weekly_avg);
                 col++;
             }
 

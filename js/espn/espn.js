@@ -810,7 +810,7 @@ async function requestHeaderFromServer( addOrUpdate )
 
     if( ( dateRequestString != "date=" ) && ( typeof dateRequestString !== 'undefined' ) )
     {
-        var url = "http://www.fantasywizard.site/getweek/?" + pageNameRequestString + "&format=json&" + dateRequestString + "&" + leagueIdRequestString;
+        var url = "http://www.sportswzrd.com/getweek/?" + pageNameRequestString + "&format=json&" + dateRequestString + "&" + leagueIdRequestString;
         // console.log( url );
         fetch( url )
             .then( function( response ){
@@ -932,7 +932,7 @@ async function requestGameDataFromServer( addOrUpdate )
         var pageNameRequestString = buildPageNameRequestString();
         if( ( dateRequestString != "date=" ) && (teamsRequestString != "teams=" ) && ( typeof dateRequestString !== 'undefined' ) )
         {
-            var url = "https://www.fantasywizard.site/gamesremaining/?" + pageNameRequestString + "&" + teamsRequestString + "&format=json&" + dateRequestString + "&" + leagueIdRequestString;
+            var url = "https://www.sportswzrd.com/gamesremaining/?" + pageNameRequestString + "&" + teamsRequestString + "&format=json&" + dateRequestString + "&" + leagueIdRequestString;
             // console.log( url );
 
             fetch( url )
@@ -2099,7 +2099,7 @@ function requestProjectionsFromServer()
 
     for( var i = 0; i < playersRequestStrings.length; i++ )
     {
-        var url = "https://www.fantasywizard.site/getplayers/?" + playersRequestStrings[i];
+        var url = "https://www.sportswzrd.com/getplayers/?" + playersRequestStrings[i];
         // console.log( url );
         fetch( url )
             .then( function( response )

@@ -71,7 +71,7 @@ function getGames() {
     //server call (should only run on first page load)
     var dateString = getFormattedDate();
     var leagueIDString = "leagueID="+getLeagueID();
-    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=test&' + teamsString + '&format=json&date=' + dateString + '&' + leagueIDString;
+    var url = 'https://www.sportswzrd.com/gamesremaining/?pageName=test&' + teamsString + '&format=json&date=' + dateString + '&' + leagueIDString;
     fetch(url).then(function (response) {
         if (response.status !== 200) {
             //console.log('Called to backend failed: ' + response.status);

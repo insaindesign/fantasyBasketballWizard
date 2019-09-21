@@ -68,7 +68,7 @@ function loadFromAPI(teams){
     
     //console.log("dateString: ", dateString);
     
-    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yTeamPage&teams='+teams+'&format=json&date='+dateString+'&'+leagueIDString;
+    var url = 'https://www.sportswzrd.com/gamesremaining/?pageName=yTeamPage&teams='+teams+'&format=json&date='+dateString+'&'+leagueIDString;
     fetch(url)
         .then(function(response){
         if (response.status !== 200) {
@@ -100,7 +100,7 @@ function getGames(team){
         dateString = getFormattedDate();
     }
     
-    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yTeamPage&teams='+team+'&format=json&date='+dateString+'&'+leagueIDString;
+    var url = 'https://www.sportswzrd.com/gamesremaining/?pageName=yTeamPage&teams='+team+'&format=json&date='+dateString+'&'+leagueIDString;
     //console.log("url: ", url);
     //console.log("url: ", dateString);
     var req = new XMLHttpRequest();
@@ -316,6 +316,10 @@ renderGames = function(from_view) {
                     break;
                 }
             }
+            console.log("games: ", games);
+            if (games == null){
+                return;
+            }
             table.rows[row].cells[fantasy_col].innerText = games;
             table.rows[row].cells[fantasy_col].style.backgroundColor = getColor(games)
             totalGamesNum += parseFloat(games.split("/")[0]);
@@ -527,8 +531,14 @@ countStats = function() {
                 //console.log("shooting % detected");
 
                 //console.log(avg);
+                if (isNaN(weekly_avg)){
+                    console.log("null weekly_avg");
+                    weekly_avg = ".000";
+                }
                 stats_all.cells[write].innerText = avg;
                 stats_week.cells[write].innerText = weekly_avg;
+                console.log("avg: ", avg);
+                console.log("weekly_avg: ", weekly_avg);
                 col++;
             }
 

@@ -140,7 +140,7 @@ function getGamesRemaining(team){
     
     //console.log("dateString: ", dateString);
     
-    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yMatchupsPage&teams='+team+'&format=json&date='+dateString+'&'+leagueIDString;
+    var url = 'https://www.sportswzrd.com/gamesremaining/?pageName=yMatchupsPage&teams='+team+'&format=json&date='+dateString+'&'+leagueIDString;
     //console.log("url: ", url);
     fetch(url)
         .then(function(response){
@@ -250,7 +250,7 @@ function getFormattedQueryFromURL() {
 
 function getGamesToday() {
     var query = getFormattedQueryFromURL();
-    var url = 'https://www.fantasywizard.site/gamestoday/?'+'&format=json&'+query;
+    var url = 'https://www.sportswzrd.com/gamestoday/?'+'&format=json&'+query;
     fetch(url)
         .then(function(response){
         if (response.status !== 200) {
@@ -331,7 +331,7 @@ function getPlayers(){
 
 function getProjections(playersString, side){
     
-    var url = 'https://www.fantasywizard.site/getplayers/?players=' + playersString;
+    var url = 'https://www.sportswzrd.com/getplayers/?players=' + playersString;
     fetch(url)
         .then(function (response) {
             if (response.status !== 200) {

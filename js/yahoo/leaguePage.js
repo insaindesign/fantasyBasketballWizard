@@ -20,7 +20,7 @@ while (p < paragraph.length-1) {
         console.log("new team found: ", teamName);
         league[teamName] = {}
         league[teamName]['players'] = [];
-        league[teamName]['url'] = "https://www.fantasywizard.site/getplayers/?players=";
+        league[teamName]['url'] = "https://www.sportswzrd.com/getplayers/?players=";
         p++;
     } else if (paragraph[p].toLowerCase().includes('layer note')){
         console.log("player note found: ", paragraph[p]);

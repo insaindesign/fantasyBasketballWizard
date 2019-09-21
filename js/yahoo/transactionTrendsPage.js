@@ -94,7 +94,7 @@ function resetGames(weekNum) {
     var dateString = "date=" + getFormattedDate();
     var leagueIDString = 'leagueID=' + getLeagueID();
     //console.log("dateString = " + dateString);
-    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=weekSelect&' + teamsString + '&format=json' + '&weekNum=' + weekNum + '&' + dateString + '&' + leagueIDString;
+    var url = 'https://www.sportswzrd.com/gamesremaining/?pageName=weekSelect&' + teamsString + '&format=json' + '&weekNum=' + weekNum + '&' + dateString + '&' + leagueIDString;
     //remove weekNum if retrieving games for today
     if(weekNum == 0) {
         url = url.replace("weekNum="+weekNum,"");
@@ -146,7 +146,7 @@ function renderGames() {
     var dateString = getFormattedDate();
     var leagueIDString = 'leagueID=' + getLeagueID();
     //console.log("dateString = " + dateString);
-    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=transactionTrends&' + teamsString + '&format=json&date=' + dateString + '&' + leagueIDString;
+    var url = 'https://www.sportswzrd.com/gamesremaining/?pageName=transactionTrends&' + teamsString + '&format=json&date=' + dateString + '&' + leagueIDString;
     //console.log("before request");
     fetch(url)
         .then(function (response) {

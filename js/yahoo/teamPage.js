@@ -68,7 +68,7 @@ function loadFromAPI(teams){
     
     //console.log("dateString: ", dateString);
     
-    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yTeamPage&teams='+teams+'&format=json&date='+dateString+'&'+leagueIDString;
+    var url = 'https://www.sportswzrd.com/gamesremaining/?pageName=yTeamPage&teams='+teams+'&format=json&date='+dateString+'&'+leagueIDString;
     fetch(url)
         .then(function(response){
         if (response.status !== 200) {
@@ -100,7 +100,7 @@ function getGames(team){
         dateString = getFormattedDate();
     }
     
-    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=yTeamPage&teams='+team+'&format=json&date='+dateString+'&'+leagueIDString;
+    var url = 'https://www.sportswzrd.com/gamesremaining/?pageName=yTeamPage&teams='+team+'&format=json&date='+dateString+'&'+leagueIDString;
     //console.log("url: ", url);
     //console.log("url: ", dateString);
     var req = new XMLHttpRequest();

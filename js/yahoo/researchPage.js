@@ -63,7 +63,7 @@ function renderGames() {
     var dateString = getFormattedDate();
     var leagueIDString = 'leagueID=' + getLeagueID();
     //console.log('dateString = ' + dateString);
-    var url = 'https://www.fantasywizard.site/gamesremaining/?pageName=research&' + teamsString + '&format=json&date=' + dateString + '&' + leagueIDString;
+    var url = 'https://www.sportswzrd.com/gamesremaining/?pageName=research&' + teamsString + '&format=json&date=' + dateString + '&' + leagueIDString;
     //console.log("before request");
     fetch(url)
         .then(function (response) {

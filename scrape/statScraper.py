@@ -10,7 +10,7 @@ import os
 import time
 
 #delete players
-requests.get("https://www.fantasywizard.site/sreyalpllaeteled")
+requests.get("https://www.sportswzrd.com/sreyalpllaeteled")
 
 login_url = "https://login.yahoo.com/config/login?.src=fantasy&specId=usernameRegWithName&.intl=us&.lang=en-US&.done=https://basketball.fantasysports.yahoo.com/nba"
 
@@ -87,7 +87,7 @@ def get_url(p):
     if ftpct == "100.0":
         ftpct = ".999"
     p['team'] = p['team'].upper()
-    return "https://www.fantasywizard.site/addplayer/?id=" + id + "&team=" + p['team'] + "&ppg=" + p['ppg'] + "&rpg=" + p['rpg'] + "&apg=" + p['apg'] + "&spg=" + p['spg'] + "&bpg=" + p['bpg'] + "&topg=" + p['topg'] + "&ftmpg=" + p['ftm'] + "&ftapg=" + p['fta'] + "&ftpct=" + ftpct + "&fgmpg=" + p['fgm'] + "&fgapg=" + p['fga'] + "&fgpct=" + fgpct + "&threepg=" + p['threepg'] + "&format=json"
+    return "https://www.sportswzrd.com/addplayer/?id=" + id + "&team=" + p['team'] + "&ppg=" + p['ppg'] + "&rpg=" + p['rpg'] + "&apg=" + p['apg'] + "&spg=" + p['spg'] + "&bpg=" + p['bpg'] + "&topg=" + p['topg'] + "&ftmpg=" + p['ftm'] + "&ftapg=" + p['fta'] + "&ftpct=" + ftpct + "&fgmpg=" + p['fgm'] + "&fgapg=" + p['fga'] + "&fgpct=" + fgpct + "&threepg=" + p['threepg'] + "&format=json"
 
 
 def extract_stats(players):

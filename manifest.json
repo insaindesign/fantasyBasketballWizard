@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Fantasy Basketball Wizard",
-  "version": "3.4.1",
+  "version": "3.5.1",
   "description": "Fantasy Basketball Wizard gives ESPN & Yahoo Fantasy Basketball players extra tools to help them succeed.",
   "browser_action": {
     "default_icon": "frontend/icon.png",
@@ -34,7 +34,6 @@
     }
   ],
   "permissions": [
-    "activeTab",
     "*://www.sportswzrd.com/*"
   ]
 }

@@ -811,47 +811,34 @@ async function requestHeaderFromServer( addOrUpdate )
     if( ( dateRequestString != "date=" ) && ( typeof dateRequestString !== 'undefined' ) )
     {
         var url = "https://www.sportswzrd.com/getweek/?" + pageNameRequestString + "&format=json&" + dateRequestString + "&" + leagueIdRequestString;
-        fetch( url )
-            .then( function( response ){
-            if ( response.status !== 200 )
-            {
-                console.log( 'Called to backend failed: ' + response.status );
-                return;
-            }
-            response.json().then( function( data )
-            {
-                // console.log( "requestHeaderFromServer - addOrUpdate: " + addOrUpdate + ", currentPageType: " + currentPageType );
-                var weekNum = data.weekNum;
+
+        //Pass url to background script and get back response data
+        chrome.runtime.sendMessage({ url: url }, function(response) {
                 if( addOrUpdate == "Add" )
                 {
                     if( currentPageType == PAGE_TYPE_PLAYERS )
                     {
-                        addWeekGamesHeadersPlayers( data );
+                        addWeekGamesHeadersPlayers( response.data );
                     }
                     else if( currentPageType == PAGE_TYPE_ADDED_DROPPED )
                     {
-                        addWeekGamesHeadersAddedDroppedPage( data );
+                        addWeekGamesHeadersAddedDroppedPage( response.data );
                     }
                     else if( currentPageType == PAGE_TYPE_BOXSCORE )
                     {
-                        addWeekGamesHeadersBoxscorePage( data );
+                        addWeekGamesHeadersBoxscorePage( response.data );
                     }
                     else
                     {
-                        addWeekGamesHeaders( data );
+                        addWeekGamesHeaders( response.data );
                     }
                 }
                 else if( addOrUpdate == "Update" )
                 {
-                    updateWeekNumberHeader( data );
+                    updateWeekNumberHeader( response.data );
                 }
+          });
 
-            }).catch( function( err ) {
-                console.log( 'Fetch Error :-S', err );
-            }); 
-        }).catch( function( err ) {
-            console.log( 'Fetch Error :-S', err );
-        });
     }
 }
 
@@ -934,52 +921,38 @@ async function requestGameDataFromServer( addOrUpdate )
         if( ( dateRequestString != "date=" ) && (teamsRequestString != "teams=" ) && ( typeof dateRequestString !== 'undefined' ) )
         {
             var url = "https://www.sportswzrd.com/gamesremaining/?" + pageNameRequestString + "&" + teamsRequestString + "&format=json&" + dateRequestString + "&" + leagueIdRequestString;
-            // console.log( url );
-
-            fetch( url )
-                .then( function( response ){
-                if ( response.status !== 200 )
+            //Pass url to background script and get back response data
+            chrome.runtime.sendMessage({ url: url }, function(response) {
+                addGamesDataToLocalDictionary( response.data, teamsRequestString );
+                if( addOrUpdate == "Add" )
                 {
-                    console.log( 'Called to backend failed: ' + response.status );
-                    return;
+                    // console.log( "currentPageType=" + currentPageType );
+                    if( currentPageType == PAGE_TYPE_PLAYERS )
+                    {
+                        addGamesPlayersPage();
+                    }
+                    else if( currentPageType == PAGE_TYPE_ADDED_DROPPED )
+                    {
+                        addGamesAddedDroppedPage();
+                    }
+                    else if( currentPageType == PAGE_TYPE_BOXSCORE )
+                    {
+                        addGamesBoxscorePage();
+                    }
+                    else if( currentPageType == PAGE_TYPE_FANTASY_CAST_POINTS )
+                    {
+                        addGamesFantasyCastPagePoints();
+                    }
+                    else
+                    {
+                        addGamesTeamPage(); 
+                    }
                 }
-                response.json().then( function( data )
+                else if( addOrUpdate == "Update" )
                 {
-                    addGamesDataToLocalDictionary( data, teamsRequestString );
-                    if( addOrUpdate == "Add" )
-                    {
-                        // console.log( "currentPageType=" + currentPageType );
-                        if( currentPageType == PAGE_TYPE_PLAYERS )
-                        {
-                            addGamesPlayersPage();
-                        }
-                        else if( currentPageType == PAGE_TYPE_ADDED_DROPPED )
-                        {
-                            addGamesAddedDroppedPage();
-                        }
-                        else if( currentPageType == PAGE_TYPE_BOXSCORE )
-                        {
-                            addGamesBoxscorePage();
-                        }
-                        else if( currentPageType == PAGE_TYPE_FANTASY_CAST_POINTS )
-                        {
-                            addGamesFantasyCastPagePoints();
-                        }
-                        else
-                        {
-                            addGamesTeamPage(); 
-                        }
-                    }
-                    else if( addOrUpdate == "Update" )
-                    {
-                        updateGameData();
-                    }
-                }).catch( function( err ) {
-                    console.log( 'Fetch Error :-S', err );
-                }); 
-            }).catch( function( err ) {
-                console.log( 'Fetch Error :-S', err );
-            }); 
+                    updateGameData();
+                }
+            });
         }
 
     }
@@ -2103,30 +2076,16 @@ function requestProjectionsFromServer()
     for( var i = 0; i < playersRequestStrings.length; i++ )
     {
         var url = "https://www.sportswzrd.com/getplayers/?" + playersRequestStrings[i];
-        // console.log( url );
-        fetch( url )
-            .then( function( response )
+        //Pass url to background script and get back response data
+        chrome.runtime.sendMessage({ url: url }, function(response) {
+            var projection = calculateProjections( response.data, categories );
+            projections.push( projection );
+            if( projections.length == 2 )
             {
-                if ( response.status !== 200 )
-                {
-                    //console.log('Called to backend failed: ' + response.status);
-                    return;
-                }
-
-                response.json().then( function( data )
-                {
-                    var projection = calculateProjections( data, categories );
-                    projections.push( projection );
-                    if( projections.length == 2 )
-                    {
-                        addProjectionsTable( categories, projections );
-                        addProjectionsBackgroundColor( categories );
-                    }
-                });
-            }).catch( function( err )
-            {
-                console.log('Fetch Error :-S', err);
-            });
+                addProjectionsTable( categories, projections );
+                addProjectionsBackgroundColor( categories );
+            }
+          });
     }
 
 

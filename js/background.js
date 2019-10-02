@@ -1,10 +1,8 @@
-/* ------------------------------------------------------------------------------------------------------------------------------------------
+/* -----------------
+Background Script
+-------------------- */
 
-                                                        Background Script - ESPN
-                                                        
------------------------------------------------------------------------------------------------------------------------------------------- */
-
-// Accepts a message from a content script in espn.js then fetches and returns the response
+// Accepts a message from any of our content scripts then fetches and returns the response data back
 console.log("running");
 chrome.runtime.onMessage.addListener(function(
   request,

@@ -163,11 +163,11 @@ function buildTodayDateRequestString()
     // console.log( "buildTodayDateRequestString" );
     var resultDateRequestString = "date="
     var todaysDate = new Date();
-    var firstDayOfSeason = new Date( "2018-10-16" );
+    var firstDayOfSeason = new Date( "2019-10-22" );
     // Getting today's date before regular season starts
     if( todaysDate <= firstDayOfSeason ) 
     {
-        resultDateRequestString = resultDateRequestString.concat( "2018-10-16" );
+        resultDateRequestString = resultDateRequestString.concat( "2019-10-22" );
     }
     else
     {
@@ -195,7 +195,7 @@ function buildDateRequestStringFantasyCast()
     var formattedDate = formatDateString( month, date );
     resultDateRequestString = resultDateRequestString.concat( formattedDate );
 
-    console.log( resultDateRequestString );
+    //console.log( resultDateRequestString );
     return resultDateRequestString;
 }
 
@@ -402,31 +402,31 @@ function formatDateString( month, date )
 
     if( month == "Oct" || month == "10" )
     {
-        dateString = ( "2018-10-" + date );
+        dateString = ( "2019-10-" + date );
     }
     else if( month == "Nov" || month == "11" )
     {
-        dateString = ( "2018-11-" + date );
+        dateString = ( "2019-11-" + date );
     }
     else if( month == "Dec" || month == "12" )
     {
-        dateString = ( "2018-12-" + date );
+        dateString = ( "2019-12-" + date );
     }
     else if( month == "Jan" || month == "1" || month == "01" )
     {
-        dateString = ( "2019-01-" + date );
+        dateString = ( "2020-01-" + date );
     }
     else if( month == "Feb" || month == "2" )
     {
-        dateString = ( "2019-02-" + date );
+        dateString = ( "2020-02-" + date );
     }
     else if( month == "Mar" || month == "3" )
     {
-        dateString = ( "2019-03-" + date );
+        dateString = ( "2020-03-" + date );
     }
     else if( month == "Apr" || month == "4" )
     {
-        dateString = ( "2019-04-" + date );
+        dateString = ( "2020-04-" + date );
     }
     // console.log( "dateString=" + dateString );
     return dateString;
@@ -810,8 +810,7 @@ async function requestHeaderFromServer( addOrUpdate )
 
     if( ( dateRequestString != "date=" ) && ( typeof dateRequestString !== 'undefined' ) )
     {
-        var url = "http://www.sportswzrd.com/getweek/?" + pageNameRequestString + "&format=json&" + dateRequestString + "&" + leagueIdRequestString;
-        // console.log( url );
+        var url = "https://www.sportswzrd.com/getweek/?" + pageNameRequestString + "&format=json&" + dateRequestString + "&" + leagueIdRequestString;
         fetch( url )
             .then( function( response ){
             if ( response.status !== 200 )
@@ -847,7 +846,9 @@ async function requestHeaderFromServer( addOrUpdate )
                     updateWeekNumberHeader( data );
                 }
 
-            });
+            }).catch( function( err ) {
+                console.log( 'Fetch Error :-S', err );
+            }); 
         }).catch( function( err ) {
             console.log( 'Fetch Error :-S', err );
         });
@@ -973,7 +974,9 @@ async function requestGameDataFromServer( addOrUpdate )
                     {
                         updateGameData();
                     }
-                });
+                }).catch( function( err ) {
+                    console.log( 'Fetch Error :-S', err );
+                }); 
             }).catch( function( err ) {
                 console.log( 'Fetch Error :-S', err );
             }); 
@@ -2122,7 +2125,7 @@ function requestProjectionsFromServer()
                 });
             }).catch( function( err )
             {
-                //console.log('Fetch Error :-S', err);
+                console.log('Fetch Error :-S', err);
             });
     }
 

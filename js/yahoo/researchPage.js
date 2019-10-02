@@ -155,12 +155,3 @@ function addGames(data) {
 renderGames();
 
 console.log("sending: ");
-
-document
-  .getElementById("playersearchtext")
-  .addEventListener("click", function() {
-    chrome.runtime.sendMessage({ message: "hello" }, function(response) {
-      console.log("response: ");
-      console.log(response);
-    });
-  });

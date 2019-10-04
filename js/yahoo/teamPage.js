@@ -215,13 +215,13 @@ function initGlobals() {
   games_id = "games";
   avg_stats_id = "avg";
 
-  week = new Date().getWeek();
+  /*week = new Date().getWeek();
   elements = document.getElementsByClassName(
     "Block Mbot-xs Fz-xxs F-shade Uppercase"
   );
   versusString = elements[0].innerText;
   arr = versusString.split(" ");
-  fantasyWeek = arr[1] - 1;
+  fantasyWeek = arr[1] - 1;*/
 
   week_row_name = "Projected Week Totals";
 

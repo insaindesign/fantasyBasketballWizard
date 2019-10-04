@@ -150,25 +150,6 @@ function resetGames(weekNum) {
       gameColumn[i].style.backgroundColor = getColor(data[i]);
     }
   });
-  /*fetch(url)
-    .then(function(response) {
-      if (response.status !== 200) {
-        //console.log('Called to backend failed: ' + response.status);
-        return;
-      }
-
-      response.json().then(function(data) {
-        var gameColumn = document.getElementsByClassName("gameColumn");
-        //console.log(data)
-        for (var i = 0; i < rows.length - 1; i++) {
-          gameColumn[i].innerText = data[i];
-          gameColumn[i].style.backgroundColor = getColor(data[i]);
-        }
-      });
-    })
-    .catch(function(err) {
-      //console.log('Fetch Error :-S', err);
-    });*/
 }
 
 function getFormattedDate() {
@@ -206,20 +187,9 @@ function renderGames() {
     "&" +
     leagueIDString;
   //console.log("before request");
-  fetch(url)
-    .then(function(response) {
-      if (response.status !== 200) {
-        //console.log('Called to backend failed: ' + response.status);
-        return;
-      }
-
-      response.json().then(function(data) {
-        addGames(data);
-      });
-    })
-    .catch(function(err) {
-      //console.log('Fetch Error :-S', err);
-    });
+  chrome.runtime.sendMessage({ url: url }, function(response) {
+    addGames(response.data);
+  });
 }
 
 function addGames(data) {

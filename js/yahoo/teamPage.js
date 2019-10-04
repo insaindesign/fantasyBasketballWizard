@@ -104,50 +104,15 @@ function loadFromAPI(teams) {
     dateString +
     "&" +
     leagueIDString;
-  fetch(url)
-    .then(function(response) {
-      if (response.status !== 200) {
-        //console.log('Called to backend failed: ' + response.status);
-        return;
-      }
-
-      response.json().then(function(data) {
-        for (var t = 0; t < Teams.length; t++) {
-          team = Teams[t];
-          Schedule[team] = data[t];
-        }
-        renderGames();
-        countStats();
-      });
-    })
-    .catch(function(err) {
-      //console.log('Fetch Error :-S', err);
-    });
-}
-
-function getGames(team) {
-  var dateString;
-  var leagueIDString = "leagueID=" + getLeagueID();
-  url = window.location.href;
-  if (url.includes("date=")) {
-    dateString = getDateFromURL(url);
-  } else {
-    dateString = getFormattedDate();
-  }
-
-  var url =
-    "https://www.sportswzrd.com/gamesremaining/?pageName=yTeamPage&teams=" +
-    team +
-    "&format=json&date=" +
-    dateString +
-    "&" +
-    leagueIDString;
-  //console.log("url: ", url);
-  //console.log("url: ", dateString);
-  var req = new XMLHttpRequest();
-  req.open("GET", url, false);
-  req.send(null);
-  return req.responseText;
+  chrome.runtime.sendMessage({ url: url }, function(response) {
+    let data = response.data;
+    for (var t = 0; t < Teams.length; t++) {
+      team = Teams[t];
+      Schedule[team] = data[t];
+    }
+    renderGames();
+    countStats();
+  });
 }
 
 //get week of year

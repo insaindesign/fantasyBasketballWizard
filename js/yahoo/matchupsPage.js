@@ -1,22 +1,44 @@
 Teams = ["Atl", "Bos", "Bkn", "Cha", "Chi", "Cle", "Dal", "Den", "Det", "GS", "Hou", "Ind", "LAC", "LAL", "Mem", "Mia", "Mil", "Min", "NO", "NY", "OKC", "Orl", "Phi", "Pho", "Por", "Sac", "SA", "Tor", "Uta", "Was"];
 
+season_start = '2019-10-21'
+
+//get today's unformatted date
+var today = new Date();
+var dd = String(today.getDate()).padStart(2, '0');
+var mm = String(today.getMonth() + 1).padStart(2, '0');
+var yyyy = today.getFullYear();
+
+today = yyyy + '-' + mm + '-' + dd;
+
+
 week_to_date = {
-    '9': '2018-12-10',
-    '10': '2018-12-17',
-    '11': '2018-12-24',
-    '12': '2018-12-31',
-    '13': '2019-1-7',
-    '14': '2019-1-14',
-    '15': '2019-1-21',
-    '16': '2019-1-28',
-    '17': '2019-2-4',
-    '18': '2019-2-11',
-    '19': '2019-2-25',
-    '20': '2019-3-4',
-    '21': '2019-3-11',
-    '22': '2019-3-18',
-    '23': '2019-3-25',
-    '23': '2019-4-1'
+    '1': '2019-10-21',
+    '2': '2019-10-28',
+    '3': '2019-11-4',
+    '4': '2019-11-11',
+    '5': '2019-11-18',
+    '6': '2019-11-25',
+    '7': '2019-12-2',
+    '8': '2019-12-9',
+    '9': '2019-12-16',
+    '10': '2019-12-23',
+    '11': '2019-12-30',
+    '12': '2020-1-6',
+    '13': '2020-1-13',
+    '14': '2020-1-20',
+    '15': '2020-1-27',
+    '16': '2020-2-3',
+    '17': '2020-2-10',
+    '18': '2020-2-24',
+    '19': '2020-3-2',
+    '20': '2020-3-9',
+    '21': '2020-3-16',
+    '22': '2020-3-23',
+    '23': '2020-3-30',
+    '24': '2020-4-6',
+    '25': '2020-4-13',
+    '26': '2020-4-20',
+    '27': '2020-4-27'
 }
 
 Schedule = {};
@@ -132,13 +154,16 @@ function getGamesRemaining(team){
     if (url.includes("week=") && !url.includes("date=totals")){
         dateString = getDateFromURL(url);
         dateString = week_to_date[dateString];
-    } else {
+    } else if (today < season_start) {
+        dateString = season_start;
+    }
+    else {
         dateString = getFormattedDate();
     }
     
     //console.log("initialized dateString");
     
-    //console.log("dateString: ", dateString);
+    console.log("dateString: ", dateString);
     
     var url = 'https://www.sportswzrd.com/gamesremaining/?pageName=yMatchupsPage&teams='+team+'&format=json&date='+dateString+'&'+leagueIDString;
     //console.log("url: ", url);

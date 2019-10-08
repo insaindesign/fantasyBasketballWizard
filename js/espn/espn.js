@@ -2026,10 +2026,8 @@ function requestProjectionsFromServer()
             //Used to determine teamOne or teamTwo
             if(response.data[0].playerID == teamChecker){
                 projection.push( 'TeamOne' );
-                teamTracked = true
             }else{
                 projection.push( 'TeamTwo' );
-                teamTracked = true
             }
 
             projections.push( projection );

@@ -1525,32 +1525,43 @@ function addGamesBoxscorePage()
     */
 
     var tableRowElements = document.getElementsByClassName( "Table2__tr--sm" );
+
     var totalGamesRemaining = tableRowElements[0];
     var teamOneRow = tableRowElements[1];
     var teamTwoRow = tableRowElements[2];
+
     var newTdTotal = document.createElement( "td" );
     var newDivTotal = document.createElement( "div" );
+
     var newTdTeamOne = document.createElement( "td" );
     var newDivTeamOne = document.createElement( "div" );
+
     var newTdTeamTwo = document.createElement( "td" );
     var newDivTeamTwo = document.createElement( "div" );
 
     newTdTotal.appendChild( newDivTotal );
     newTdTeamOne.appendChild( newDivTeamOne );
     newTdTeamTwo.appendChild( newDivTeamTwo );
+
     totalGamesRemaining.appendChild(newTdTotal);
     teamOneRow.appendChild( newTdTeamOne );
     teamTwoRow.appendChild( newTdTeamTwo );
     
+    newTdTotal.className = "pl2 fw-bold Table2__td fbw-new-element"
     newTdTeamOne.className = "pl2 fw-bold Table2__td fbw-new-element";
     newTdTeamTwo.className = "pl2 fw-bold Table2__td fbw-new-element";
+
+    newDivTotal.className = "jsx-2810852873 table--cell pl2 fw-bold fbw-new-element";
     newDivTeamOne.className = "jsx-2810852873 table--cell pl2 fw-bold fbw-new-element";
     newDivTeamTwo.className = "jsx-2810852873 table--cell pl2 fw-bold fbw-new-element";
+    
     newDivTeamOne.textContent = teamOneTotalGamesRemaining.toString() + "/" + teamOneTotalGamesForWeek.toString();
     newDivTeamTwo.textContent = teamTwoTotalGamesRemaining.toString() + "/" + teamTwoTotalGamesForWeek.toString();
+    newDivTotal.textContent = 'Gr/G';
+
+
     newDivTeamTwo.style.textAlign = "center";
     newDivTeamOne.style.textAlign = "center";
-    newDivTotal.textContent = 'Gr/G';
     newDivTotal.style.color = "rgb(21, 22, 23)";
     newDivTotal.style.fontSize = "11px";
     newDivTotal.style.textTransform = "uppercase";

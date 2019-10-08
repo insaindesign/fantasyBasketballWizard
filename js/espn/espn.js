@@ -53,7 +53,7 @@ acronymEspnToYahoo["Mem"]  =  "Mem";
 acronymEspnToYahoo["Mia"]  =  "Mia";
 acronymEspnToYahoo["Mil"]  =  "Mil";
 acronymEspnToYahoo["Min"]  =  "Min";
-acronymEspnToYahoo["No"]   =  "NO";
+acronymEspnToYahoo["NO"]   =  "NO";
 acronymEspnToYahoo["NY"]   =  "NY";
 acronymEspnToYahoo["OKC"]  =  "OKC";
 acronymEspnToYahoo["Orl"]  =  "Orl";
@@ -324,18 +324,8 @@ function buildPlayerProjectionsStrings()
     var teamOneTable;
     var teamTwoTable;
     var tableElements = document.getElementsByClassName( "Table2__table-fixed" );
-    
-    for( var i = 0; i < tableElements.length; i++ )
-    {
-        if( i == 0 )
-        {
-            teamOneTable = tableElements[i];
-        }
-        else
-        {
-            teamTwoTable = tableElements[i];
-        }
-    }
+    teamOneTable = tableElements[0];
+    teamTwoTable = tableElements[2];
 
     for( var i = 0; i < playerNameElements.length; i++ )
     {
@@ -361,7 +351,6 @@ function buildPlayerProjectionsStrings()
             teamTwoPlayerNamesArray.push( formattedPlayerName );
         }
     }
-
     var teamNameIndex = 0;
 
     for( var i = 0; i < teamOnePlayerNamesArray.length; i++ )
@@ -387,7 +376,6 @@ function buildPlayerProjectionsStrings()
 
     resultPlayersStrings.push( teamOnePlayersString );
     resultPlayersStrings.push( teamTwoPlayersString );
-
     return resultPlayersStrings;
 }
 
@@ -1417,7 +1405,8 @@ function addGamesBoxscorePage()
     for( var i = 0; i < listOfElements.length; i++ )
     {
         var listOfElementsTr = listOfElements[i];
-        if( listOfElementsTr.children.length == 4 )
+        //console.log(listOfElementsTr)
+        if( listOfElementsTr.children.length == 4 || listOfElementsTr.children.length == 3) 
         {
             if( isTable == true )
             {
@@ -1430,17 +1419,18 @@ function addGamesBoxscorePage()
             }
             var newGamesTd = document.createElement( "td" );
             var newGamesDiv = document.createElement( "div" );
-            newGamesTd.className = "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
+            newGamesTd.className = "Table2__td Table2__td fbw-games-remaining-td fbw-new-element";
             newGamesDiv.className = "jsx-2810852873 table--cell fbw-games-remaining-div fbw-new-element";
+            newGamesTd.width = "10%"
             newGamesDiv.style.textAlign = "center";
 
             var isInjured = false;
-            // 'O'ut, injured player
+            // Out, injured player
             if( listOfElementsTr.innerHTML.indexOf( "injury-status_medium\">O" ) != -1 )
             {
                 isInjured = true;
             }
-            // TOTALS row
+            // TOTALS rows
             if( listOfElementsTr.innerHTML.indexOf( ">TOTALS</div>" ) != -1 )
             {
                 var parentTable = listOfElementsTr.closest( "tbody" );
@@ -1503,6 +1493,7 @@ function addGamesBoxscorePage()
     teamOneTotal[0].textContent = teamOneTotalGamesRemaining.toString() + "/" + teamOneTotalGamesForWeek.toString();
     teamTwoTotal[0].textContent = teamTwoTotalGamesRemaining.toString() + "/" + teamTwoTotalGamesForWeek.toString();
 
+    /*
     // Add total games to the top table
     var tableTableElements = document.getElementsByClassName( "Table2__header-row" );
     var topTable = tableTableElements[0];
@@ -1516,8 +1507,9 @@ function addGamesBoxscorePage()
     newDiv.appendChild( newSpan );
     newHeader.appendChild( newDiv );
     topTable.appendChild( newHeader );
+    */
 
-    var tableRowElements = document.getElementsByClassName( "Table2__tr--md" );
+    var tableRowElements = document.getElementsByClassName( "Table2__tr--sm" );
     var teamOneRow = tableRowElements[0];
     var teamTwoRow = tableRowElements[1];
     var newTdTeamOne = document.createElement( "td" );
@@ -1649,7 +1641,7 @@ acronymFromPlayerProjections["MEM"]  =  "Mem";
 acronymFromPlayerProjections["MIA"]  =  "Mia";
 acronymFromPlayerProjections["MIL"]  =  "Mil";
 acronymFromPlayerProjections["MIN"]  =  "Min";
-acronymFromPlayerProjections["NO"]   =  "No";
+acronymFromPlayerProjections["NO"]   =  "NO";
 acronymFromPlayerProjections["NY"]   =  "NY";
 acronymFromPlayerProjections["OKC"]  =  "OKC";
 acronymFromPlayerProjections["ORL"]  =  "Orl";
@@ -1757,11 +1749,11 @@ function getCategoriesBoxscorePage()
 {
     // console.log( "getCategoriesBoxscorePage" );
     var tableElements = document.getElementsByClassName( "Table2__shadow-scroller" );
-    var firstTable = tableElements[0];
+    var firstTable = tableElements[1];
     var thElements = firstTable.getElementsByClassName( "Table2__th" );
     var categories = [];
 
-    for( var i = 0; i < thElements.length; i++ )
+    for( var i = 1; i < thElements.length; i++ )
     {
         var headerHTML = thElements[i].children[0].children[0].innerHTML;
         if( headerHTML != "team" && headerHTML != "score" && headerHTML != "GR/G" )
@@ -1769,7 +1761,6 @@ function getCategoriesBoxscorePage()
             categories.push( thElements[i].children[0].children[0].innerHTML );
         }
     }
-    // console.log( categories );
     return categories;
 }
 
@@ -2026,8 +2017,64 @@ function calculateProjections( data, categories )
             }
             projections.push( parseFloat( totalPts ).toFixed( 1 ) );
         }
+        else if( categories[i] == "MIN" )
+        {
+            var totalMins = 0;
+            projections.push( '-' );  
+        }
+        else if( categories[i] == "FGM" )
+        {
+            var totalFgm = 0;
+            for( var j = 0; j < data.length; j++ )
+            {
+
+                var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+                var gamesForWeek = localGamesDataDict[teamAcronym].split( "/" )[1];
+
+                totalFgm += ( parseFloat( data[j]["fgmpg"] ) * gamesForWeek );
+            }
+            projections.push( parseFloat( totalFgm).toFixed( 1 ) );  
+        }
+        else if( categories[i] == "FGA" )
+        {
+            var totalFga = 0;
+
+            for( var j = 0; j < data.length; j++ )
+            {
+                var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+                var gamesForWeek = localGamesDataDict[teamAcronym].split( "/" )[1];
+
+                totalFga += ( parseFloat( data[j]["fgapg"] ) * gamesForWeek );
+            }
+            projections.push( parseFloat( totalFga).toFixed( 1 ) );    
+        }
+        else if( categories[i] == "FTM" )
+        {
+            var totalFtm = 0;
+
+            for( var j = 0; j < data.length; j++ )
+            {
+                var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+                var gamesForWeek = localGamesDataDict[teamAcronym].split( "/" )[1];
+
+                totalFtm += ( parseFloat( data[j]["ftmpg"] ) * gamesForWeek );
+            }
+            projections.push( parseFloat( totalFtm).toFixed( 1 ) );        
+        }
+        else if( categories[i] == "FTA" )
+        {
+            var totalFta = 0;
+
+            for( var j = 0; j < data.length; j++ )
+            {
+                var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+                var gamesForWeek = localGamesDataDict[teamAcronym].split( "/" )[1];
+
+                totalFta += ( parseFloat( data[j]["ftapg"] ) * gamesForWeek );
+            }
+            projections.push( parseFloat( totalFta ).toFixed( 1 ) );
+        }
     }
-    // console.log( projections );
     return projections;
 }
 
@@ -2038,6 +2085,7 @@ function addProjectionsBackgroundColor( categories )
 
     for( var i = 0; i < categories.length; i++ )
     {
+        //console.log(teamOneProjections[i])
         var numerator = parseFloat( teamOneProjections[i].innerHTML );
         var denominator = parseFloat( teamTwoProjections[i].innerHTML );
         if( categories[i] == "TO" )
@@ -2069,26 +2117,48 @@ function requestProjectionsFromServer()
 {
     // console.log( "requestProjectionsFromServer" );
     var playersRequestStrings = buildPlayerProjectionsStrings();
-
     var categories = getCategoriesBoxscorePage();
     var projections = [];
+    var url = "https://www.sportswzrd.com/getplayers/?" + playersRequestStrings[0];
+    fetch(url)
+    .then(function (response) {
+        if (response.status !== 200) {
+            //console.log('Called to backend failed: ' + response.status);
+            return;
+        }
 
-    for( var i = 0; i < playersRequestStrings.length; i++ )
-    {
-        var url = "https://www.sportswzrd.com/getplayers/?" + playersRequestStrings[i];
-        //Pass url to background script and get back response data
-        chrome.runtime.sendMessage({ url: url }, function(response) {
-            var projection = calculateProjections( response.data, categories );
+        response.json().then(function (data) {
+            var projection = calculateProjections( data, categories );
             projections.push( projection );
-            if( projections.length == 2 )
-            {
-                addProjectionsTable( categories, projections );
-                addProjectionsBackgroundColor( categories );
-            }
-          });
-    }
 
+            var url2 = "https://www.sportswzrd.com/getplayers/?" + playersRequestStrings[1];
+            fetch(url2)
+            .then(function (response) {
+                if (response.status !== 200) {
+                    //console.log('Called to backend failed: ' + response.status);
+                    return;
+                }
+        
+                response.json().then(function (data) {
+                    var projection = calculateProjections( data, categories );
+                    projections.push( projection );
+                    if( projections.length == 2 )
+                    {
+                        addProjectionsTable( categories, projections );
+                        addProjectionsBackgroundColor( categories );
+                    }
+                }).catch(function (err) {
+                    //console.log('Fetch Error :-S', err);
+                });
+        }).catch(function (err) {
+            //console.log('Fetch Error :-S', err);
+        });
 
+    }).catch(function (err) {
+        //console.log('Fetch Error :-S', err);
+    });
+    
+    });
 }
 
 /* ------------------------------------------------------------------------------------------------------------------------------------------

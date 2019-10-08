@@ -673,13 +673,14 @@ function addWeekGamesHeaders( data )
 */
 function addWeekGamesHeadersPlayers( data )
 {
-    // console.log( "addWeekGamesHeaders" );
+    //console.log( "addWeekGamesHeaders" );
     var weekNum = data.weekNum;
     var listOfElements = document.getElementsByClassName( "Table2__header-row" );
 
     for( var i = 0; i < listOfElements.length; i++ )
     {
-        if( listOfElements[i].innerHTML.indexOf( "PLAYERS" ) != -1 )
+        console.log(listOfElements[i].innerHTML)
+        if( listOfElements[i].innerHTML.indexOf( "Players" ) != -1 )
         {
             var newGamesHeader = document.createElement( "th" );
             newGamesHeader.title = "Week number " + weekNum.toString() + " of fantasy basketball";

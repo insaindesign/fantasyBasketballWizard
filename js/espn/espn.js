@@ -1153,6 +1153,10 @@ function addGamesFantasyCastPagePoints()
             newRightGamesDiv.className += " fbw-right-total";
             newLeftGamesDiv.textContent = leftTotalGamesString;
             newRightGamesDiv.textContent = rightTotalGamesString;
+
+            listOfElementsChildren[0].appendChild( newLeftGamesDiv );
+            listOfElementsChildren[2].appendChild( newRightGamesDiv );
+            break;
         }
         // Player Row
         else
@@ -1228,6 +1232,7 @@ function addGamesFantasyCastPagePoints()
                 }
             }
         }
+
         playerColumnLeftScore.appendChild( newLeftGamesDiv );
         playerColumnRightScore.appendChild( newRightGamesDiv );
     }
@@ -1246,15 +1251,24 @@ function addGamesFantasyCastPagePoints()
     // Make the greater number of total games font color green
     if( leftTotalGamesRemaining > rightTotalGamesRemaining )
     {
+        leftTotalElements[0].style.fontSize = '15px'
+        rightTotalElements[0].style.fontSize = '15px'
         leftTotalElements[0].style.color = "#acd888";
+
     }
     else if( rightTotalGamesRemaining > leftTotalGamesRemaining )
     {
+        leftTotalElements[0].style.fontSize = '15px'
+        rightTotalElements[0].style.fontSize = '15px'
         rightTotalElements[0].style.color = "#acd888";
+
     }
     else if( leftTotalGamesRemaining == rightTotalGamesRemaining )
     { 
         // Do nothing in a tie 
+        leftTotalElements[0].style.fontSize = '15px'
+        rightTotalElements[0].style.fontSize = '15px'
+
     }
 }
 

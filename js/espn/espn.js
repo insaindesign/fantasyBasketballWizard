@@ -313,8 +313,15 @@ function buildPlayerProjectionsStrings() {
   var teamOneTable;
   var teamTwoTable;
   var tableElements = document.getElementsByClassName("Table2__table-fixed");
+
   teamOneTable = tableElements[0];
-  teamTwoTable = tableElements[2];
+
+  //Used to differiate points and categories 
+  if(tableElements[2]){
+  	teamTwoTable = tableElements[2];
+  }else{
+  	teamTwoTable = tableElements[1];
+  }
 
   for (var i = 0; i < playerNameElements.length; i++) {
     var fullPlayerName =
@@ -365,6 +372,8 @@ function buildPlayerProjectionsStrings() {
     }
     teamNameIndex++;
   }
+
+  //console.log(teamTwoPlayersString)
 
   resultPlayersStrings.push(teamOnePlayersString);
   resultPlayersStrings.push(teamTwoPlayersString);
@@ -1433,12 +1442,19 @@ function addGamesBoxscorePage() {
     newHeader.appendChild( newDiv );
     topTable.appendChild( newHeader );
     */
-
-  var tableRowElements = document.getElementsByClassName("Table2__tr--sm");
+  /*
+  var tableRowElements;
+  if(document.getElementsByClassName("Table2__tr--sm")){
+  	tableRowElements = document.getElementsByClassName("Table2__tr--sm");
+  }
+  else if(document.getElementsByClassName("Table2__tr--md")){
+  	tableRowElements = document.getElementsByClassName("Table2__tr--md");
+  }
 
   var totalGamesRemaining = tableRowElements[0];
   var teamOneRow = tableRowElements[1];
   var teamTwoRow = tableRowElements[2];
+  console.log(tableRowElements)
 
   var newTdTotal = document.createElement("td");
   var newDivTotal = document.createElement("div");
@@ -1493,7 +1509,7 @@ function addGamesBoxscorePage() {
   } else if (teamTwoTotalGamesRemaining == teamOneTotalGamesRemaining) {
     // Do nothing
   }
-
+*/
   requestProjectionsFromServer();
 }
 
@@ -1685,16 +1701,19 @@ function getProjectionsColor(ratio) {
 
 function getCategoriesBoxscorePage() {
   // console.log( "getCategoriesBoxscorePage" );
-  var tableElements = document.getElementsByClassName(
-    "Table2__shadow-scroller"
-  );
+  var tableElements = document.getElementsByClassName("Table2__shadow-scroller");
   var firstTable = tableElements[1];
   var thElements = firstTable.getElementsByClassName("Table2__th");
   var categories = [];
 
+  //Used to hide fgm/fga and ftm/fta
+  var fgma = '<span data-statid="13" data-defaultsortasc="false" title="Field Goals Made">FGM</span><span style="margin: 0px 3px; text-decoration: none;">/</span><span data-statid="14" data-defaultsortasc="false" title="Field Goals Attempted">FGA</span>';
+  var ftma = '<span data-statid="15" data-defaultsortasc="false" title="Free Throws Made">FTM</span><span style="margin: 0px 3px; text-decoration: none;">/</span><span data-statid="16" data-defaultsortasc="false" title="Free Throws Attempted">FTA</span>';
+  var threema = '<span data-statid="17" data-defaultsortasc="false" title="Three Pointers Made">3PM</span><span style="margin: 0px 3px; text-decoration: none;">/</span><span data-statid="18" data-defaultsortasc="false" title="Three Pointers Attempted">3PA</span>';
+
   for (var i = 1; i < thElements.length; i++) {
     var headerHTML = thElements[i].children[0].children[0].innerHTML;
-    if (headerHTML != "team" && headerHTML != "score" && headerHTML != "GR/G") {
+    if (headerHTML != "team" && headerHTML != "score" && headerHTML != "GR/G" && headerHTML != fgma && headerHTML != ftma && headerHTML != threema) {
       categories.push(thElements[i].children[0].children[0].innerHTML);
     }
   }
@@ -1715,7 +1734,6 @@ function getTeamNames() {
 function addProjectionsTable( categories, projections )
 {
     // console.log( "addProjectionsTable" );
-
     var teamNames = getTeamNames();
     var tableElements = document.getElementsByClassName( "Table2__shadow-scroller" );
     var firstTable = tableElements[0];
@@ -1932,7 +1950,7 @@ function calculateProjections(data, categories) {
       }
       projections.push(parseFloat(totalPts).toFixed(1));
     } else if (categories[i] == "MIN") {
-      var totalMins = 0;
+      //var totalMins = 0;
       projections.push("-");
     } else if (categories[i] == "FGM") {
       var totalFgm = 0;
@@ -1973,7 +1991,94 @@ function calculateProjections(data, categories) {
         totalFta += parseFloat(data[j]["ftapg"]) * gamesForWeek;
       }
       projections.push(parseFloat(totalFta).toFixed(1));
+    } else if (categories[i] == "3PMI") {
+      	projections.push("-");
+    } else if (categories[i] == "3P%") {
+        projections.push("-");
+    } else if (categories[i] == "OREB") {
+        projections.push("-");
+    } else if (categories[i] == "DREB") {
+        projections.push("-");
+    } else if (categories[i] == "A/TO") {
+      //A
+      var totalAst = 0;
+
+      for (var j = 0; j < data.length; j++) {
+        var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+        var gamesForWeek = localGamesDataDict[teamAcronym].split("/")[1];
+
+        totalAst += parseFloat(data[j]["apg"]) * gamesForWeek;
+      }
+
+      //TO
+      var totalTO = 0;
+
+      for (var j = 0; j < data.length; j++) {
+        var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+        var gamesForWeek = localGamesDataDict[teamAcronym].split("/")[1];
+
+        totalTO += parseFloat(data[j]["topg"]) * gamesForWeek;
+      }
+
+      var totalATO = totalAst/totalTO;
+
+    projections.push(parseFloat(totalATO).toFixed(1));
+
+    } else if (categories[i] == "STR") {
+        //Steals
+      var totalStl = 0.0;
+      for (var j = 0; j < data.length; j++) {
+        var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+        var gamesForWeek = localGamesDataDict[teamAcronym].split("/")[1];
+
+        totalStl += parseFloat(data[j]["spg"]) * gamesForWeek;
+      }
+      //TO
+      var totalTO = 0;
+
+      for (var j = 0; j < data.length; j++) {
+        var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+        var gamesForWeek = localGamesDataDict[teamAcronym].split("/")[1];
+
+        totalTO += parseFloat(data[j]["topg"]) * gamesForWeek;
+      }
+
+      var totalSTO = totalStl/totalTO;
+
+      projections.push(parseFloat(totalSTO).toFixed(1));
+
+    } else if (categories[i] == "EJ") {
+        projections.push("-");
+    } else if (categories[i] == "FF") {
+        projections.push("-");
+    } else if (categories[i] == "PF") {
+        projections.push("-");
+    } else if (categories[i] == "TF") {
+        projections.push("-");
+    } else if (categories[i] == "DQ") {
+        projections.push("-");
+    } else if (categories[i] == "DD") {
+        projections.push("-");
+    } else if (categories[i] == "TD") {
+        projections.push("-");
+    } else if (categories[i] == "QD") {
+        projections.push("-");
+    } else if (categories[i] == "PPM") {
+        projections.push("-");
+    } else if (categories[i] == "TW") {
+        projections.push("-");
+    } else if (categories[i] == "GP") {
+        projections.push("-");
+    } else if (categories[i] == "GS") {
+        projections.push("-");
+    } else if (categories[i] == "FGMI") {
+        projections.push("-");
+    } else if (categories[i] == "AFG%") {
+        projections.push("-");
+    } else if (categories[i] == "FTMI") {
+        projections.push("-");
     }
+
   }
   return projections;
 }
@@ -1987,7 +2092,6 @@ function addProjectionsBackgroundColor(categories) {
   );
 
   for (var i = 0; i < categories.length; i++) {
-    //console.log(teamOneProjections[i])
     var numerator = parseFloat(teamOneProjections[i].innerHTML);
     var denominator = parseFloat(teamTwoProjections[i].innerHTML);
     if (categories[i] == "TO") {

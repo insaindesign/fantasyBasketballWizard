@@ -36,7 +36,7 @@ Teams = [
 //determine color based on number of games
 function getColor(games) {
   if (games == "0/0") {
-    return "#56d2ff";
+    return "#f3f3f3";
   }
   games = parseInt(games.split("/")[0]);
   if (games == 5) {

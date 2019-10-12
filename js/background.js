@@ -10,9 +10,21 @@ chrome.runtime.onMessage.addListener(function(
   sendResponse,
   callback
 ) {
-  let { endpoint, date, week, teams, pageName, leagueID } = request;
+  let { endpoint, date, teams, pageName, leagueID, query, players } = request;
   let domain = "https://www.sportswzrd.com";
-  let url = `${domain}/${endpoint}?format=json&teams=${teams}&date=${date}&pageName=${pageName}&leagueID=${leagueID}`;
+  let queryString = "format=json&";
+  switch (endpoint) {
+    case "gamesremaining": {
+      queryString += `teams=${teams}&date=${date}&pageName=${pageName}&leagueID=${leagueID}`;
+    }
+    case "getplayers": {
+      queryString += `players=${players}`;
+    }
+    case "gamestoday": {
+      queryString += `${query}`;
+    }
+  }
+  let url = `${domain}/${endpoint}/?${queryString}`;
   console.log(url);
   fetch(url)
     .then(function(response) {

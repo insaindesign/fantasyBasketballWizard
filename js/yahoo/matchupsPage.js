@@ -224,26 +224,16 @@ function getGamesRemaining(team) {
     "&" +
     leagueIDString;
   //console.log("url: ", url);
-  fetch(url)
-    .then(function(response) {
-      if (response.status !== 200) {
-        //console.log('Called to backend failed: ' + response.status);
-        return;
-      }
-
-      response.json().then(function(data) {
-        //console.log("data: ", data);
-        //console.log("games: ", games);
-        for (var t = 0; t < Teams.length; t++) {
-          team = Teams[t];
-          Schedule[team.toUpperCase()] = data[t];
-        }
-        getPlayers();
-      });
-    })
-    .catch(function(err) {
-      //console.log('Fetch Error :-S', err);
-    });
+  chrome.runtime.sendMessage({ url: url }, function(response) {
+    //console.log("data: ", data);
+    //console.log("games: ", games);
+    var data = response.data;
+    for (var t = 0; t < Teams.length; t++) {
+      team = Teams[t];
+      Schedule[team.toUpperCase()] = data[t];
+    }
+    getPlayers();
+  });
 }
 
 function initTable() {
@@ -343,20 +333,9 @@ function getFormattedQueryFromURL() {
 function getGamesToday() {
   var query = getFormattedQueryFromURL();
   var url = "https://www.sportswzrd.com/gamestoday/?" + "&format=json&" + query;
-  fetch(url)
-    .then(function(response) {
-      if (response.status !== 200) {
-        //console.log('Called to backend failed: ' + response.status);
-        return;
-      }
-
-      response.json().then(function(data) {
-        displayGamesToday(data);
-      });
-    })
-    .catch(function(err) {
-      //console.log('Fetch Error :-S', err);
-    });
+  chrome.runtime.sendMessage({ url: url }, function(response) {
+    displayGamesToday(response.data);
+  });
 }
 
 function serializePlayer(p) {
@@ -432,21 +411,9 @@ function getPlayers() {
 
 function getProjections(playersString, side) {
   var url = "https://www.sportswzrd.com/getplayers/?players=" + playersString;
-  fetch(url)
-    .then(function(response) {
-      if (response.status !== 200) {
-        //console.log('Called to backend failed: ' + response.status);
-        return;
-      }
-
-      response.json().then(function(data) {
-        showProjections(data, side);
-        //console.log(data);
-      });
-    })
-    .catch(function(err) {
-      //console.log('Fetch Error :-S', err);
-    });
+  chrome.runtime.sendMessage({ url: url }, function(response) {
+    showProjections(response.data, side);
+  });
 }
 
 function showProjections(data, side) {

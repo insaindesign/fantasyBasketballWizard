@@ -15,13 +15,17 @@ function displayGamesToday(data) {
 }
 
 function getFormattedQueryFromURL() {
-  if (isMatchupTotals) {
-    var weekNum = "weekNum=";
+  if (isMatchupTotals()) {
+    let weekNum = "weekNum=";
     weekNum += document
       .getElementsByClassName("flyout-title")[0]
       .innerText.split(" ")[1];
     return weekNum;
   }
+  var url = window.location.href;
+  var start = url.indexOf("date");
+  var end = url.indexOf("&", start);
+  var str = url.substring(start + 5, end);
   return "date=" + str;
 }
 
@@ -36,9 +40,12 @@ function getGamesToday() {
 }
 
 function isMatchupTotals() {
+  let weekNumberElement = document.getElementsByClassName(
+    "Navitem Ta-c No-py Fz-xs Selected"
+  )[0].firstElementChild.innerText;
   return (
-    document.getElementsByClassName("Navitem Ta-c No-py Fz-xs Selected")[0]
-      .firstElementChild.innerText === "Matchup Totals"
+    weekNumberElement == "Matchup Totals" ||
+    weekNumberElement == "Matchup\nTotals"
   );
 }
 

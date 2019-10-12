@@ -34,7 +34,7 @@ var Teams = [
   "Was"
 ];
 var teamsString =
-  "teams=Atl,Bos,Bkn,Cha,Chi,Cle,Dal,Den,Det,GS,Hou,Ind,LAC,LAL,Mem,Mia,Mil,Min,NO,NY,OKC,Orl,Phi,Pho,Por,Sac,SA,Tor,Uta,Was,";
+  "Atl,Bos,Bkn,Cha,Chi,Cle,Dal,Den,Det,GS,Hou,Ind,LAC,LAL,Mem,Mia,Mil,Min,NO,NY,OKC,Orl,Phi,Pho,Por,Sac,SA,Tor,Uta,Was,";
 var gamesDictionary = {};
 var gamesCached = false;
 //determine color based on number of games
@@ -113,16 +113,25 @@ function getGames() {
     dateString +
     "&" +
     leagueIDString;
-  chrome.runtime.sendMessage({ url: url }, function(response) {
-    let data = response.data;
-    for (var i = 0; i < data.length; i++) {
-      gamesDictionary[Teams[i]] = data[i];
+  chrome.runtime.sendMessage(
+    {
+      endpoint: "gamesremaining",
+      date: dateString,
+      leagueID: getLeagueID(),
+      teams: teamsString,
+      pageName: "yPlayersPage"
+    },
+    function(response) {
+      let data = response.data;
+      for (var i = 0; i < data.length; i++) {
+        gamesDictionary[Teams[i]] = data[i];
+      }
+      //console.log(data);
+      //console.log(gamesDictionary);
+      renderGames(data);
+      gamesCached = true;
     }
-    //console.log(data);
-    //console.log(gamesDictionary);
-    renderGames(data);
-    gamesCached = true;
-  });
+  );
   //console.log(gamesDictionary);
 }
 

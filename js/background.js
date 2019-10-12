@@ -20,7 +20,7 @@ chrome.runtime.onMessage.addListener(function(
     players,
     week
   } = request;
-  let domain = "http://localhost:8000";
+  let domain = "https://sportswzrd.com";
   let queryString = "format=json&";
   switch (endpoint) {
     case "gamesremaining": {

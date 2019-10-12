@@ -73,7 +73,7 @@ function renderGames() {
   var players = [];
   var rows = table.rows;
   var playerInfo;
-  var teamsString = "teams=";
+  var teamsString = "";
 
   for (var i = 1; i < rows.length; i++) {
     playerInfo = rows[i].cells[1].innerText.split(" ");
@@ -93,17 +93,20 @@ function renderGames() {
   var dateString = getFormattedDate();
   var leagueIDString = "leagueID=" + getLeagueID();
   //console.log('dateString = ' + dateString);
-  var url =
-    "https://www.sportswzrd.com/gamesremaining/?pageName=research&" +
-    teamsString +
-    "&format=json&date=" +
-    dateString +
-    "&" +
-    leagueIDString;
+
   //console.log("before request");
-  chrome.runtime.sendMessage({ url: url }, function(response) {
-    addGames(response.data);
-  });
+  chrome.runtime.sendMessage(
+    {
+      endpoint: "gamesremaining",
+      date: dateString,
+      leagueID: getLeagueID(),
+      teams: teamsString,
+      pageName: "research"
+    },
+    function(response) {
+      addGames(response.data);
+    }
+  );
 }
 
 function addGames(data) {

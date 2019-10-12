@@ -15,16 +15,11 @@ function displayGamesToday(data) {
 }
 
 function getFormattedQueryFromURL() {
-  var url = window.location.href;
-  var start = url.indexOf("date");
-  var end = url.indexOf("&", start);
-  var str = url.substring(start + 5, end);
-  if (str == "totals" || start == -1) {
+  if (isMatchupTotals) {
     var weekNum = "weekNum=";
     weekNum += document
       .getElementsByClassName("flyout-title")[0]
       .innerText.split(" ")[1];
-    //console.log(weekNum);
     return weekNum;
   }
   return "date=" + str;
@@ -41,11 +36,10 @@ function getGamesToday() {
 }
 
 function isMatchupTotals() {
-  var url = window.location.href;
-  var start = url.indexOf("date");
-  var end = url.indexOf("&", start);
-  var str = url.substring(start + 5, end);
-  return str == "totals" || start == -1;
+  return (
+    document.getElementsByClassName("Navitem Ta-c No-py Fz-xs Selected")[0]
+      .firstElementChild.innerText === "Matchup Totals"
+  );
 }
 
 getGamesToday();

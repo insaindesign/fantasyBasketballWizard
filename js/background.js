@@ -10,18 +10,34 @@ chrome.runtime.onMessage.addListener(function(
   sendResponse,
   callback
 ) {
-  let { endpoint, date, teams, pageName, leagueID, query, players } = request;
-  let domain = "https://www.sportswzrd.com";
+  let {
+    endpoint,
+    date,
+    teams,
+    pageName,
+    leagueID,
+    query,
+    players,
+    week
+  } = request;
+  let domain = "http://localhost:8000";
   let queryString = "format=json&";
   switch (endpoint) {
     case "gamesremaining": {
       queryString += `teams=${teams}&date=${date}&pageName=${pageName}&leagueID=${leagueID}`;
+      queryString += week ? "&week=" + week : "";
+      /*if (week) {
+        queryString += "&week=" + week;
+      }*/
+      break;
     }
     case "getplayers": {
       queryString += `players=${players}`;
+      break;
     }
     case "gamestoday": {
       queryString += `${query}`;
+      break;
     }
   }
   let url = `${domain}/${endpoint}/?${queryString}`;

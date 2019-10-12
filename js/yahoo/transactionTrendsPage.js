@@ -32,7 +32,7 @@ Teams = [
   "Uta",
   "Was"
 ];
-var teamsString = "teams=";
+var teamsString = "";
 
 //main function that initializes everything.
 function init() {
@@ -123,33 +123,34 @@ function resetGames(weekNum) {
   var playerInfo;
 
   //console.log(teamsString)
-  var dateString = "date=" + "2019-10-22";
+  var dateString = "2019-10-22";
   var leagueIDString = "leagueID=" + getLeagueID();
   //console.log("dateString = " + dateString);
-  var url =
-    "https://www.sportswzrd.com/gamesremaining/?pageName=weekSelect&" +
-    teamsString +
-    "&format=json" +
-    "&weekNum=" +
-    weekNum +
-    "&" +
-    dateString +
-    "&" +
-    leagueIDString;
+
   //remove weekNum if retrieving games for today
   if (weekNum == 0) {
     url = url.replace("weekNum=" + weekNum, "");
   }
   //console.log("weekNum=" + weekNum);
-  chrome.runtime.sendMessage({ url: url }, function(response) {
-    var data = response.data;
-    var gameColumn = document.getElementsByClassName("gameColumn");
-    //console.log(data)
-    for (var i = 0; i < rows.length - 1; i++) {
-      gameColumn[i].innerText = data[i];
-      gameColumn[i].style.backgroundColor = getColor(data[i]);
+  chrome.runtime.sendMessage(
+    {
+      endpoint: "gamesremaining",
+      date: dateString,
+      leagueID: getLeagueID(),
+      teams: teamsString,
+      pageName: "yTransactionTrendsWeekSelect",
+      week: weekNum
+    },
+    function(response) {
+      var data = response.data;
+      var gameColumn = document.getElementsByClassName("gameColumn");
+      //console.log(data)
+      for (var i = 0; i < rows.length - 1; i++) {
+        gameColumn[i].innerText = data[i];
+        gameColumn[i].style.backgroundColor = getColor(data[i]);
+      }
     }
-  });
+  );
 }
 
 function getFormattedDate() {
@@ -187,9 +188,18 @@ function renderGames() {
     "&" +
     leagueIDString;
   //console.log("before request");
-  chrome.runtime.sendMessage({ url: url }, function(response) {
-    addGames(response.data);
-  });
+  chrome.runtime.sendMessage(
+    {
+      endpoint: "gamesremaining",
+      date: dateString,
+      leagueID: getLeagueID(),
+      teams: teamsString,
+      pageName: "yTransactionTrends"
+    },
+    function(response) {
+      addGames(response.data);
+    }
+  );
 }
 
 function addGames(data) {

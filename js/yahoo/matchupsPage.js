@@ -201,7 +201,6 @@ function getLeagueID() {
 
 function getGamesRemaining(team) {
   var dateString;
-  var leagueIDString = "leagueID=" + getLeagueID();
   url = window.location.href;
   if (url.includes("week=") && !url.includes("date=totals")) {
     dateString = getDateFromURL(url);
@@ -216,24 +215,26 @@ function getGamesRemaining(team) {
 
   console.log("dateString: ", dateString);
 
-  var url =
-    "https://www.sportswzrd.com/gamesremaining/?pageName=yMatchupsPage&teams=" +
-    team +
-    "&format=json&date=" +
-    dateString +
-    "&" +
-    leagueIDString;
   //console.log("url: ", url);
-  chrome.runtime.sendMessage({ url: url }, function(response) {
-    //console.log("data: ", data);
-    //console.log("games: ", games);
-    var data = response.data;
-    for (var t = 0; t < Teams.length; t++) {
-      team = Teams[t];
-      Schedule[team.toUpperCase()] = data[t];
+  chrome.runtime.sendMessage(
+    {
+      endpoint: "gamesremaining",
+      pageName: "yMatchupsPage",
+      teams: team,
+      leagueID: getLeagueID(),
+      date: dateString
+    },
+    function(response) {
+      //console.log("data: ", data);
+      //console.log("games: ", games);
+      var data = response.data;
+      for (var t = 0; t < Teams.length; t++) {
+        team = Teams[t];
+        Schedule[team.toUpperCase()] = data[t];
+      }
+      getPlayers();
     }
-    getPlayers();
-  });
+  );
 }
 
 function initTable() {
@@ -333,7 +334,9 @@ function getFormattedQueryFromURL() {
 function getGamesToday() {
   var query = getFormattedQueryFromURL();
   var url = "https://www.sportswzrd.com/gamestoday/?" + "&format=json&" + query;
-  chrome.runtime.sendMessage({ url: url }, function(response) {
+  chrome.runtime.sendMessage({ endpoint: "gamestoday", query: query }, function(
+    response
+  ) {
     var data = response.data;
     displayGamesToday(data);
   });
@@ -412,10 +415,13 @@ function getPlayers() {
 
 function getProjections(playersString, side) {
   var url = "https://www.sportswzrd.com/getplayers/?players=" + playersString;
-  chrome.runtime.sendMessage({ url: url }, function(response) {
-    var data = response.data;
-    showProjections(data, side);
-  });
+  chrome.runtime.sendMessage(
+    { endpoint: "getplayers", players: playersString },
+    function(response) {
+      var data = response.data;
+      showProjections(data, side);
+    }
+  );
 }
 
 function showProjections(data, side) {
@@ -425,11 +431,17 @@ function showProjections(data, side) {
   for (cat = 0; cat < categories.length; cat++) {
     if (side == "left") {
       stat = calculateStats(data, categories[cat]);
+      if (stat === "NaN") {
+        stat = "0.0";
+      }
       pTable.rows[1].cells[cat + 1].innerText = stat;
       statsLeft.push(stat);
     }
     if (side == "right") {
       stat = calculateStats(data, categories[cat]);
+      if (stat === "NaN") {
+        stat = "0.0";
+      }
       pTable.rows[2].cells[cat + 1].innerText = stat;
       statsRight.push(stat);
     }

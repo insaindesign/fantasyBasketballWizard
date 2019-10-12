@@ -104,15 +104,24 @@ function loadFromAPI(teams) {
     dateString +
     "&" +
     leagueIDString;
-  chrome.runtime.sendMessage({ url: url }, function(response) {
-    let data = response.data;
-    for (var t = 0; t < Teams.length; t++) {
-      team = Teams[t];
-      Schedule[team] = data[t];
+  chrome.runtime.sendMessage(
+    {
+      endpoint: "gamesremaining",
+      pageName: "yTeamPage",
+      teams: teams,
+      leagueID: getLeagueID(),
+      date: dateString
+    },
+    function(response) {
+      let data = response.data;
+      for (var t = 0; t < Teams.length; t++) {
+        team = Teams[t];
+        Schedule[team] = data[t];
+      }
+      renderGames();
+      countStats();
     }
-    renderGames();
-    countStats();
-  });
+  );
 }
 
 //get week of year

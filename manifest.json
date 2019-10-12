@@ -29,7 +29,7 @@
     },
     {
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/matchup*"],
-      "js": ["js/yahoo/matchupsPage.js"]
+      "js": ["js/yahoo/matchupsPage.js", "js/yahoo/matchupsGamesToday.js"]
     },
     {
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/players*"],

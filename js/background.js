@@ -25,7 +25,7 @@ chrome.runtime.onMessage.addListener(function(
   switch (endpoint) {
     case "gamesremaining": {
       queryString += `teams=${teams}&date=${date}&pageName=${pageName}&leagueID=${leagueID}`;
-      queryString += week ? "&week=" + week : "";
+      queryString += week ? "&weekNum=" + week : "";
       /*if (week) {
         queryString += "&week=" + week;
       }*/

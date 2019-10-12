@@ -86,7 +86,8 @@ li .nav-header:hover {
 
 /* Next & previous buttons */
 
-.prev, .next {
+.prev,
+.next {
   cursor: pointer;
   position: absolute;
   top: 50%;
@@ -109,14 +110,15 @@ li .nav-header:hover {
 
 /* On hover, add a black background color with a little bit see-through */
 
-.prev:hover, .next:hover {
+.prev:hover,
+.next:hover {
   background-color: rgba(0, 0, 0, 0.8);
 }
 
 /* Caption text */
 
 .text {
-  color: #black;
+  color: "black";
   font-size: 15px;
   padding: 8px 12px;
   position: absolute;
@@ -148,7 +150,8 @@ li .nav-header:hover {
   transition: background-color 0.6s ease;
 }
 
-.active, .dot:hover {
+.active,
+.dot:hover {
   background-color: #717171;
 }
 
@@ -165,6 +168,7 @@ li .nav-header:hover {
   from {
     opacity: .4
   }
+
   to {
     opacity: 1
   }
@@ -174,6 +178,7 @@ li .nav-header:hover {
   from {
     opacity: .4
   }
+
   to {
     opacity: 1
   }

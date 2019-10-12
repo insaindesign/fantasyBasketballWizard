@@ -333,7 +333,6 @@ function getFormattedQueryFromURL() {
 
 function getGamesToday() {
   var query = getFormattedQueryFromURL();
-  var url = "https://www.sportswzrd.com/gamestoday/?" + "&format=json&" + query;
   chrome.runtime.sendMessage({ endpoint: "gamestoday", query: query }, function(
     response
   ) {
@@ -414,7 +413,6 @@ function getPlayers() {
 }
 
 function getProjections(playersString, side) {
-  var url = "https://www.sportswzrd.com/getplayers/?players=" + playersString;
   chrome.runtime.sendMessage(
     { endpoint: "getplayers", players: playersString },
     function(response) {

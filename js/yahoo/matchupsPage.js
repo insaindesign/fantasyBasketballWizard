@@ -334,7 +334,8 @@ function getGamesToday() {
   var query = getFormattedQueryFromURL();
   var url = "https://www.sportswzrd.com/gamestoday/?" + "&format=json&" + query;
   chrome.runtime.sendMessage({ url: url }, function(response) {
-    displayGamesToday(response.data);
+    var data = response.data;
+    displayGamesToday(data);
   });
 }
 
@@ -412,7 +413,8 @@ function getPlayers() {
 function getProjections(playersString, side) {
   var url = "https://www.sportswzrd.com/getplayers/?players=" + playersString;
   chrome.runtime.sendMessage({ url: url }, function(response) {
-    showProjections(response.data, side);
+    var data = response.data;
+    showProjections(data, side);
   });
 }
 

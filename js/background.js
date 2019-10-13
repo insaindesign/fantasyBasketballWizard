@@ -38,7 +38,6 @@ chrome.runtime.onMessage.addListener(function(
     }
   }
   let url = `${domain}/${endpoint}/?${queryString}`;
-  console.log(url);
   fetch(url)
     .then(function(response) {
       if (response.status !== 200) {

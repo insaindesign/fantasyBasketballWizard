@@ -25,7 +25,7 @@
     },
     {
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/buzzindex*"],
-      "js": ["js/yahoo/transactionTrendsPage.js"]
+      "js": ["js/yahoo/transactionTrendsPage.js", "js/yahoo/playerNote.js"]
     },
     {
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/matchup*"],
@@ -33,7 +33,7 @@
     },
     {
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/players*"],
-      "js": ["js/yahoo/playersPage.js"]
+      "js": ["js/yahoo/playersPage.js", "js/yahoo/playerNote.js"]
     }
   ],
   "permissions": [

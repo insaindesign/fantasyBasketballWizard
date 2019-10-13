@@ -402,7 +402,7 @@ function showProjections(data, side) {
     if (side == "left") {
       stat = calculateStats(data, categories[cat]);
       if (stat === "NaN") {
-        stat = "0.0";
+        stat = "0.00";
       }
       pTable.rows[1].cells[cat + 1].innerText = stat;
       statsLeft.push(stat);
@@ -410,7 +410,7 @@ function showProjections(data, side) {
     if (side == "right") {
       stat = calculateStats(data, categories[cat]);
       if (stat === "NaN") {
-        stat = "0.0";
+        stat = "0.00";
       }
       pTable.rows[2].cells[cat + 1].innerText = stat;
       statsRight.push(stat);

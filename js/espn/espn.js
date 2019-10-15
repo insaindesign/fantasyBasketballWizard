@@ -827,7 +827,10 @@ async function requestGameDataFromServer(addOrUpdate) {
       typeof dateRequestString !== "undefined"
     ) {
       //Pass url to background script and get back response data
-      var newTeams = teamsRequestString.slice(teamsRequestString.indexOf('=') + 1 , teamsRequestString.length)
+      var newTeams = teamsRequestString.slice(
+        teamsRequestString.indexOf("=") + 1,
+        teamsRequestString.length
+      );
       chrome.runtime.sendMessage(
         {
           endpoint: "gamesremaining",
@@ -1902,7 +1905,7 @@ function calculateProjections(data, categories) {
         var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
         var gamesForWeek = localGamesDataDict[teamAcronym].split("/")[1];
 
-        totalThrees += parseFloat(data[j]["threepg"]) * gamesForWeek;
+        totalThrees += parseFloat(data[j]["threepm"]) * gamesForWeek;
       }
       projections.push(parseFloat(totalThrees).toFixed(1));
     } else if (categories[i] == "REB") {
@@ -2034,8 +2037,6 @@ function calculateProjections(data, categories) {
         total3pta += parseFloat(data[j]["threepa"]) * gamesForWeek;
       }
       projections.push(parseFloat(total3ptm / total3pta).toFixed(3));
-
-
     } else if (categories[i] == "OREB") {
       var oRebs = 0;
 

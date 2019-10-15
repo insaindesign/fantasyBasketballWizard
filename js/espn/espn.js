@@ -901,6 +901,7 @@ function addGamesTeamPage() {
         isInjured = true;
       }
       // TOTALS row
+      console.log(listOfElementsTr)
       if (listOfElementsTr.innerHTML.indexOf(">TOTALS</div>") != -1) {
         var totalGamesString =
           totalGamesRemainingStarters.toString() +
@@ -945,12 +946,14 @@ function addGamesTeamPage() {
         var totalElements = document.getElementsByClassName(
           "fbw-games-total-div"
         );
-        var totalGamesString =
-          totalGamesRemainingStarters.toString() +
-          "/" +
-          totalGamesForWeekStarters.toString();
-        totalElements[0].title = "Total team";
-        totalElements[0].textContent = "T: " + totalGamesString;
+        if(totalElements[0]){
+          var totalGamesString =
+            totalGamesRemainingStarters.toString() +
+            "/" +
+            totalGamesForWeekStarters.toString();
+          totalElements[0].title = "Total team";
+          totalElements[0].textContent = "T: " + totalGamesString;
+        }
       }
       newGamesTd.appendChild(newGamesDiv);
       listOfElementsTr.appendChild(newGamesTd);

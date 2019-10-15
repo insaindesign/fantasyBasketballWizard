@@ -535,7 +535,7 @@ function calculateStats(data, cat) {
     var threes = 0;
     for (var i = 0; i < data.length; i++) {
       threes +=
-        parseFloat(data[i]["threepg"]) *
+        parseFloat(data[i]["threepm"]) *
         parseFloat(Schedule[data[i]["team"]].split("/")[1]);
     }
     return parseFloat(threes).toFixed(1);

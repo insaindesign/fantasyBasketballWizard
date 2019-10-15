@@ -1965,8 +1965,15 @@ function calculateProjections(data, categories) {
       }
       projections.push(parseFloat(totalPts).toFixed(1));
     } else if (categories[i] == "MIN") {
-      //var totalMins = 0;
-      projections.push("-");
+      var totalMins = 0;
+
+      for (var j = 0; j < data.length; j++) {
+        var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+        var gamesForWeek = localGamesDataDict[teamAcronym].split("/")[1];
+
+        totalMins += parseFloat(data[j]["mpg"]) * gamesForWeek;
+      }
+      projections.push(parseFloat(totalMins).toFixed(1));
     } else if (categories[i] == "FGM") {
       var totalFgm = 0;
       for (var j = 0; j < data.length; j++) {
@@ -2009,35 +2016,56 @@ function calculateProjections(data, categories) {
     } else if (categories[i] == "3PMI") {
       projections.push("-");
     } else if (categories[i] == "3P%") {
-      projections.push("-");
+      var total3ptm = 0;
+
+      for (var j = 0; j < data.length; j++) {
+        var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+        var gamesForWeek = localGamesDataDict[teamAcronym].split("/")[1];
+
+        total3ptm += parseFloat(data[j]["threepm"]) * gamesForWeek;
+      }
+
+      var total3pta = 0;
+
+      for (var j = 0; j < data.length; j++) {
+        var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+        var gamesForWeek = localGamesDataDict[teamAcronym].split("/")[1];
+
+        total3pta += parseFloat(data[j]["threepa"]) * gamesForWeek;
+      }
+      projections.push(parseFloat(total3ptm / total3pta).toFixed(3));
+
+
     } else if (categories[i] == "OREB") {
-      projections.push("-");
+      var oRebs = 0;
+
+      for (var j = 0; j < data.length; j++) {
+        var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+        var gamesForWeek = localGamesDataDict[teamAcronym].split("/")[1];
+
+        oRebs += parseFloat(data[j]["orpg"]) * gamesForWeek;
+      }
+      projections.push(parseFloat(oRebs).toFixed(1));
     } else if (categories[i] == "DREB") {
-      projections.push("-");
+      var dRebs = 0;
+
+      for (var j = 0; j < data.length; j++) {
+        var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+        var gamesForWeek = localGamesDataDict[teamAcronym].split("/")[1];
+
+        dRebs += parseFloat(data[j]["drpg"]) * gamesForWeek;
+      }
+      projections.push(parseFloat(dRebs).toFixed(1));
     } else if (categories[i] == "A/TO") {
-      //A
-      var totalAst = 0;
+      var ATO = 0;
 
       for (var j = 0; j < data.length; j++) {
         var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
         var gamesForWeek = localGamesDataDict[teamAcronym].split("/")[1];
 
-        totalAst += parseFloat(data[j]["apg"]) * gamesForWeek;
+        ATO += parseFloat(data[j]["ato"]) * gamesForWeek;
       }
-
-      //TO
-      var totalTO = 0;
-
-      for (var j = 0; j < data.length; j++) {
-        var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
-        var gamesForWeek = localGamesDataDict[teamAcronym].split("/")[1];
-
-        totalTO += parseFloat(data[j]["topg"]) * gamesForWeek;
-      }
-
-      var totalATO = totalAst / totalTO;
-
-      projections.push(parseFloat(totalATO).toFixed(1));
+      projections.push(parseFloat(ATO).toFixed(2));
     } else if (categories[i] == "STR") {
       //Steals
       var totalStl = 0.0;
@@ -2059,7 +2087,7 @@ function calculateProjections(data, categories) {
 
       var totalSTO = totalStl / totalTO;
 
-      projections.push(parseFloat(totalSTO).toFixed(1));
+      projections.push(parseFloat(totalSTO).toFixed(2));
     } else if (categories[i] == "EJ") {
       projections.push("-");
     } else if (categories[i] == "FF") {
@@ -2071,9 +2099,25 @@ function calculateProjections(data, categories) {
     } else if (categories[i] == "DQ") {
       projections.push("-");
     } else if (categories[i] == "DD") {
-      projections.push("-");
+      var totalDD = 0;
+
+      for (var j = 0; j < data.length; j++) {
+        var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+        var gamesForWeek = localGamesDataDict[teamAcronym].split("/")[1];
+
+        totalDD += parseFloat(data[j]["ddpg"]) * gamesForWeek;
+      }
+      projections.push(parseFloat(totalDD).toFixed(1));
     } else if (categories[i] == "TD") {
-      projections.push("-");
+      var totalTD = 0;
+
+      for (var j = 0; j < data.length; j++) {
+        var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
+        var gamesForWeek = localGamesDataDict[teamAcronym].split("/")[1];
+
+        totalTD += parseFloat(data[j]["tdpg"]) * gamesForWeek;
+      }
+      projections.push(parseFloat(totalTD).toFixed(1));
     } else if (categories[i] == "QD") {
       projections.push("-");
     } else if (categories[i] == "PPM") {

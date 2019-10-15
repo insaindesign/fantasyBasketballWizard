@@ -212,10 +212,7 @@ function buildLeagueIdRequestString() {
   var entireUrl = window.location.href;
   // console.log( url );
   var url = new URL(entireUrl);
-  var leagueId = url.searchParams.get("leagueId");
-  var leagueIdRequestString = "leagueID=" + leagueId;
-
-  return leagueIdRequestString;
+  return url.searchParams.get("leagueId");
 }
 
 /*
@@ -268,7 +265,7 @@ function buildTeamsRequestString() {
 */
 function buildPageNameRequestString() {
   // console.log( "buildPageNameRequestString" );
-  var pageNameResult = "pageName=";
+  var pageNameResult = "";
 
   if (currentPageType == PAGE_TYPE_TEAM) {
     pageNameResult += "espnTeamStats";
@@ -308,19 +305,19 @@ function buildPlayerProjectionsStrings() {
   var teamNameElements = document.getElementsByClassName(
     "playerinfo__playerteam"
   );
-  var teamOnePlayersString = "players=";
-  var teamTwoPlayersString = "players=";
+  var teamOnePlayersString = "";
+  var teamTwoPlayersString = "";
   var teamOneTable;
   var teamTwoTable;
   var tableElements = document.getElementsByClassName("Table2__table-fixed");
 
   teamOneTable = tableElements[0];
 
-  //Used to differiate points and categories 
-  if(tableElements[2]){
-  	teamTwoTable = tableElements[2];
-  }else{
-  	teamTwoTable = tableElements[1];
+  //Used to differiate points and categories
+  if (tableElements[2]) {
+    teamTwoTable = tableElements[2];
+  } else {
+    teamTwoTable = tableElements[1];
   }
 
   for (var i = 0; i < playerNameElements.length; i++) {
@@ -724,34 +721,31 @@ async function requestHeaderFromServer(addOrUpdate) {
 
   var pageNameRequestString = buildPageNameRequestString();
 
-  if (
-    dateRequestString != "date=" &&
-    typeof dateRequestString !== "undefined"
-  ) {
-    var url =
-      "https://www.sportswzrd.com/getweek/?" +
-      pageNameRequestString +
-      "&format=json&" +
-      dateRequestString +
-      "&" +
-      leagueIdRequestString;
-
+  if (dateRequestString != "" && typeof dateRequestString !== "undefined") {
     //Pass url to background script and get back response data
-    chrome.runtime.sendMessage({ url: url }, function(response) {
-      if (addOrUpdate == "Add") {
-        if (currentPageType == PAGE_TYPE_PLAYERS) {
-          addWeekGamesHeadersPlayers(response.data);
-        } else if (currentPageType == PAGE_TYPE_ADDED_DROPPED) {
-          addWeekGamesHeadersAddedDroppedPage(response.data);
-        } else if (currentPageType == PAGE_TYPE_BOXSCORE) {
-          addWeekGamesHeadersBoxscorePage(response.data);
-        } else {
-          addWeekGamesHeaders(response.data);
+    chrome.runtime.sendMessage(
+      {
+        endpoint: "getweek",
+        pageName: pageNameRequestString,
+        date: dateRequestString,
+        leagueID: leagueIdRequestString
+      },
+      function(response) {
+        if (addOrUpdate == "Add") {
+          if (currentPageType == PAGE_TYPE_PLAYERS) {
+            addWeekGamesHeadersPlayers(response.data);
+          } else if (currentPageType == PAGE_TYPE_ADDED_DROPPED) {
+            addWeekGamesHeadersAddedDroppedPage(response.data);
+          } else if (currentPageType == PAGE_TYPE_BOXSCORE) {
+            addWeekGamesHeadersBoxscorePage(response.data);
+          } else {
+            addWeekGamesHeaders(response.data);
+          }
+        } else if (addOrUpdate == "Update") {
+          updateWeekNumberHeader(response.data);
         }
-      } else if (addOrUpdate == "Update") {
-        updateWeekNumberHeader(response.data);
       }
-    });
+    );
   }
 }
 
@@ -828,39 +822,38 @@ async function requestGameDataFromServer(addOrUpdate) {
     var leagueIdRequestString = buildLeagueIdRequestString();
     var pageNameRequestString = buildPageNameRequestString();
     if (
-      dateRequestString != "date=" &&
-      teamsRequestString != "teams=" &&
+      dateRequestString != "" &&
+      teamsRequestString != "" &&
       typeof dateRequestString !== "undefined"
     ) {
-      var url =
-        "https://www.sportswzrd.com/gamesremaining/?" +
-        pageNameRequestString +
-        "&" +
-        teamsRequestString +
-        "&format=json&" +
-        dateRequestString +
-        "&" +
-        leagueIdRequestString;
       //Pass url to background script and get back response data
-      chrome.runtime.sendMessage({ url: url }, function(response) {
-        addGamesDataToLocalDictionary(response.data, teamsRequestString);
-        if (addOrUpdate == "Add") {
-          // console.log( "currentPageType=" + currentPageType );
-          if (currentPageType == PAGE_TYPE_PLAYERS) {
-            addGamesPlayersPage();
-          } else if (currentPageType == PAGE_TYPE_ADDED_DROPPED) {
-            addGamesAddedDroppedPage();
-          } else if (currentPageType == PAGE_TYPE_BOXSCORE) {
-            addGamesBoxscorePage();
-          } else if (currentPageType == PAGE_TYPE_FANTASY_CAST_POINTS) {
-            addGamesFantasyCastPagePoints();
-          } else {
-            addGamesTeamPage();
+      chrome.runtime.sendMessage(
+        {
+          endpoint: "gamesremaining",
+          pageName: pageNameRequestString,
+          leagueID: leagueIdRequestString,
+          date: dateRequestString
+        },
+        function(response) {
+          addGamesDataToLocalDictionary(response.data, teamsRequestString);
+          if (addOrUpdate == "Add") {
+            // console.log( "currentPageType=" + currentPageType );
+            if (currentPageType == PAGE_TYPE_PLAYERS) {
+              addGamesPlayersPage();
+            } else if (currentPageType == PAGE_TYPE_ADDED_DROPPED) {
+              addGamesAddedDroppedPage();
+            } else if (currentPageType == PAGE_TYPE_BOXSCORE) {
+              addGamesBoxscorePage();
+            } else if (currentPageType == PAGE_TYPE_FANTASY_CAST_POINTS) {
+              addGamesFantasyCastPagePoints();
+            } else {
+              addGamesTeamPage();
+            }
+          } else if (addOrUpdate == "Update") {
+            updateGameData();
           }
-        } else if (addOrUpdate == "Update") {
-          updateGameData();
         }
-      });
+      );
     }
   }
 }
@@ -1701,19 +1694,31 @@ function getProjectionsColor(ratio) {
 
 function getCategoriesBoxscorePage() {
   // console.log( "getCategoriesBoxscorePage" );
-  var tableElements = document.getElementsByClassName("Table2__shadow-scroller");
+  var tableElements = document.getElementsByClassName(
+    "Table2__shadow-scroller"
+  );
   var firstTable = tableElements[1];
   var thElements = firstTable.getElementsByClassName("Table2__th");
   var categories = [];
 
   //Used to hide fgm/fga and ftm/fta
-  var fgma = '<span data-statid="13" data-defaultsortasc="false" title="Field Goals Made">FGM</span><span style="margin: 0px 3px; text-decoration: none;">/</span><span data-statid="14" data-defaultsortasc="false" title="Field Goals Attempted">FGA</span>';
-  var ftma = '<span data-statid="15" data-defaultsortasc="false" title="Free Throws Made">FTM</span><span style="margin: 0px 3px; text-decoration: none;">/</span><span data-statid="16" data-defaultsortasc="false" title="Free Throws Attempted">FTA</span>';
-  var threema = '<span data-statid="17" data-defaultsortasc="false" title="Three Pointers Made">3PM</span><span style="margin: 0px 3px; text-decoration: none;">/</span><span data-statid="18" data-defaultsortasc="false" title="Three Pointers Attempted">3PA</span>';
+  var fgma =
+    '<span data-statid="13" data-defaultsortasc="false" title="Field Goals Made">FGM</span><span style="margin: 0px 3px; text-decoration: none;">/</span><span data-statid="14" data-defaultsortasc="false" title="Field Goals Attempted">FGA</span>';
+  var ftma =
+    '<span data-statid="15" data-defaultsortasc="false" title="Free Throws Made">FTM</span><span style="margin: 0px 3px; text-decoration: none;">/</span><span data-statid="16" data-defaultsortasc="false" title="Free Throws Attempted">FTA</span>';
+  var threema =
+    '<span data-statid="17" data-defaultsortasc="false" title="Three Pointers Made">3PM</span><span style="margin: 0px 3px; text-decoration: none;">/</span><span data-statid="18" data-defaultsortasc="false" title="Three Pointers Attempted">3PA</span>';
 
   for (var i = 1; i < thElements.length; i++) {
     var headerHTML = thElements[i].children[0].children[0].innerHTML;
-    if (headerHTML != "team" && headerHTML != "score" && headerHTML != "GR/G" && headerHTML != fgma && headerHTML != ftma && headerHTML != threema) {
+    if (
+      headerHTML != "team" &&
+      headerHTML != "score" &&
+      headerHTML != "GR/G" &&
+      headerHTML != fgma &&
+      headerHTML != ftma &&
+      headerHTML != threema
+    ) {
       categories.push(thElements[i].children[0].children[0].innerHTML);
     }
   }
@@ -1731,125 +1736,133 @@ function getTeamNames() {
   return teamNames;
 }
 
-function addProjectionsTable( categories, projections )
-{
-    // console.log( "addProjectionsTable" );
-    var teamNames = getTeamNames();
-    var tableElements = document.getElementsByClassName( "Table2__shadow-scroller" );
-    var firstTable = tableElements[0];
-    var newTable = document.createElement( "table" );
-    newTable.className = "Table2__table-scroller Table2__table fbw-projections-table fbw-projections-element";
-    newTable.cellPadding = "0";
-    newTable.cellSpacing = "0";
+function addProjectionsTable(categories, projections) {
+  // console.log( "addProjectionsTable" );
+  var teamNames = getTeamNames();
+  var tableElements = document.getElementsByClassName(
+    "Table2__shadow-scroller"
+  );
+  var firstTable = tableElements[0];
+  var newTable = document.createElement("table");
+  newTable.className =
+    "Table2__table-scroller Table2__table fbw-projections-table fbw-projections-element";
+  newTable.cellPadding = "0";
+  newTable.cellSpacing = "0";
 
+  var newThead = document.createElement("thead");
+  newThead.className =
+    "Table2__sub-header Table2__thead fbw-projections-element";
+  var newTrHeader = document.createElement("tr");
+  newTrHeader.className =
+    "Table2__header-row Table2__tr Table2__even fbw-projections-element";
+  newThead.appendChild(newTrHeader);
 
-    var newThead = document.createElement( "thead" );
-    newThead.className = "Table2__sub-header Table2__thead fbw-projections-element";
-    var newTrHeader = document.createElement( "tr" );
-    newTrHeader.className = "Table2__header-row Table2__tr Table2__even fbw-projections-element";
-    newThead.appendChild( newTrHeader );
+  var fbwProjectionsHeaderTh = document.createElement("th");
+  fbwProjectionsHeaderTh.className =
+    "team-abbrev Table2__th fbw-projections-element";
+  var fbwProjectionsHeaderDiv = document.createElement("div");
+  fbwProjectionsHeaderDiv.className =
+    "team-abbrev jsx-2810852873 table--cell header fbw-projections-element";
+  fbwProjectionsHeaderDiv.innerText = "FBW Projections";
+  fbwProjectionsHeaderTh.appendChild(fbwProjectionsHeaderDiv);
+  newTrHeader.appendChild(fbwProjectionsHeaderTh);
 
-    var fbwProjectionsHeaderTh = document.createElement( "th" );
-    fbwProjectionsHeaderTh.className = "team-abbrev Table2__th fbw-projections-element";
-    var fbwProjectionsHeaderDiv = document.createElement( "div" );
-    fbwProjectionsHeaderDiv.className = "team-abbrev jsx-2810852873 table--cell header fbw-projections-element";
-    fbwProjectionsHeaderDiv.innerText = "FBW Projections";
-    fbwProjectionsHeaderTh.appendChild( fbwProjectionsHeaderDiv );
-    newTrHeader.appendChild( fbwProjectionsHeaderTh );
+  for (var i = 0; i < categories.length; i++) {
+    var newThHeader = document.createElement("th");
+    newThHeader.className = "Table2__th fbw-projections-element";
+    var newDiv = document.createElement("div");
+    newDiv.className =
+      "jsx-2810852873 table--cell tar header fbw-projections-element";
+    newDiv.innerText = categories[i];
 
-    for( var i = 0; i < categories.length; i++ )
-    {
-        var newThHeader = document.createElement( "th" );
-        newThHeader.className = "Table2__th fbw-projections-element";
-        var newDiv = document.createElement( "div" );
-        newDiv.className = "jsx-2810852873 table--cell tar header fbw-projections-element";
-        newDiv.innerText = categories[i];
+    newThHeader.appendChild(newDiv);
+    newTrHeader.appendChild(newThHeader);
+  }
 
-        newThHeader.appendChild( newDiv );
-        newTrHeader.appendChild( newThHeader );
-    }
+  // Body of Table
+  var newTbody = document.createElement("tbody");
+  newTbody.className = "Table2__tbody fbw-projections-element";
 
-    // Body of Table
-    var newTbody = document.createElement( "tbody" );
-    newTbody.className = "Table2__tbody fbw-projections-element";
+  var teamOneBodyTr = document.createElement("tr");
+  var teamTwoBodyTr = document.createElement("tr");
 
-    var teamOneBodyTr = document.createElement( "tr" );
-    var teamTwoBodyTr = document.createElement( "tr" );
+  // Team One Name
+  var teamOneBodyNameTd = document.createElement("td");
+  var teamOneBodyNameDiv = document.createElement("div");
+  teamOneBodyNameTd.className =
+    "pl2 away-team-name team-name truncate Table2__td fbw-projections-element";
+  teamOneBodyNameDiv.className =
+    "jsx-2810852873 table--cell pl2 away-team-name team-name truncate fbw-projections-element";
+  teamOneBodyNameDiv.innerText = teamNames[0];
 
-    // Team One Name
-    var teamOneBodyNameTd = document.createElement( "td" );
-    var teamOneBodyNameDiv = document.createElement( "div" );
-    teamOneBodyNameTd.className = "pl2 away-team-name team-name truncate Table2__td fbw-projections-element";
-    teamOneBodyNameDiv.className = "jsx-2810852873 table--cell pl2 away-team-name team-name truncate fbw-projections-element";
-    teamOneBodyNameDiv.innerText = teamNames[0];
+  var teamTwoBodyNameTd = document.createElement("td");
+  var teamTwoBodyNameDiv = document.createElement("div");
+  teamTwoBodyNameTd.className =
+    "pl2 away-team-name team-name truncate Table2__td fbw-projections-element";
+  teamTwoBodyNameDiv.className =
+    "jsx-2810852873 table--cell pl2 away-team-name team-name truncate fbw-projections-element";
+  teamTwoBodyNameDiv.innerText = teamNames[1];
 
-    var teamTwoBodyNameTd = document.createElement( "td" );
-    var teamTwoBodyNameDiv = document.createElement( "div" );
-    teamTwoBodyNameTd.className = "pl2 away-team-name team-name truncate Table2__td fbw-projections-element";
-    teamTwoBodyNameDiv.className = "jsx-2810852873 table--cell pl2 away-team-name team-name truncate fbw-projections-element";
-    teamTwoBodyNameDiv.innerText = teamNames[1];
+  teamOneBodyNameTd.appendChild(teamOneBodyNameDiv);
+  teamOneBodyTr.appendChild(teamOneBodyNameTd);
+  teamTwoBodyNameTd.appendChild(teamTwoBodyNameDiv);
+  teamTwoBodyTr.appendChild(teamTwoBodyNameTd);
+  newTbody.appendChild(teamOneBodyTr);
+  newTbody.appendChild(teamTwoBodyTr);
 
-    teamOneBodyNameTd.appendChild( teamOneBodyNameDiv );
-    teamOneBodyTr.appendChild( teamOneBodyNameTd );
-    teamTwoBodyNameTd.appendChild( teamTwoBodyNameDiv );
-    teamTwoBodyTr.appendChild( teamTwoBodyNameTd );
-    newTbody.appendChild( teamOneBodyTr );
-    newTbody.appendChild( teamTwoBodyTr );
+  // Projected Stats
+  var teamOneProjections;
+  var teamTwoProjections;
+  if (projections[0][projections[0].length - 1] == "TeamOne") {
+    teamOneProjections = projections[0];
+    teamTwoProjections = projections[1];
+  } else {
+    teamTwoProjections = projections[0];
+    teamOneProjections = projections[1];
+  }
 
-    // Projected Stats
-    var teamOneProjections;
-    var teamTwoProjections;
-    if(projections[0][projections[0].length - 1] == 'TeamOne'){
-        teamOneProjections = projections[0]
-        teamTwoProjections = projections[1]
-    }else{
-        teamTwoProjections = projections[0]
-        teamOneProjections = projections[1]
+  for (var i = 0; i < teamOneProjections.length - 1; i++) {
+    var statTd = document.createElement("td");
+    var statDiv = document.createElement("div");
+    statTd.className = "Table2__td fbw-projections-element";
+    statDiv.className =
+      "jsx-2810852873 table--cell pl2 pr3 tar fbw-team-one-projection fbw-projections-element";
+    statDiv.innerText = teamOneProjections[i];
+    statTd.appendChild(statDiv);
+    teamOneBodyTr.appendChild(statTd);
+  }
 
-    }
+  for (var i = 0; i < teamTwoProjections.length - 1; i++) {
+    var statTd = document.createElement("td");
+    var statDiv = document.createElement("div");
+    statTd.className = "Table2__td fbw-projections-element";
+    statDiv.className =
+      "jsx-2810852873 table--cell pl2 pr3 tar fbw-team-two-projection fbw-projections-element";
+    statDiv.innerText = teamTwoProjections[i];
+    statTd.appendChild(statDiv);
+    teamTwoBodyTr.appendChild(statTd);
+  }
 
-    for( var i = 0; i < teamOneProjections.length - 1; i++ )
-    {
-        var statTd = document.createElement( "td" );
-        var statDiv = document.createElement( "div" );
-        statTd.className = "Table2__td fbw-projections-element";
-        statDiv.className = "jsx-2810852873 table--cell pl2 pr3 tar fbw-team-one-projection fbw-projections-element";
-        statDiv.innerText = teamOneProjections[i];
-        statTd.appendChild( statDiv );
-        teamOneBodyTr.appendChild( statTd );
-    }
+  // Colgroups for formatting
+  var colgroup = document.createElement("colgroup");
+  colgroup.span = "1";
+  colgroup.className = "Table2__colgroup fbw-projections-element";
+  var col = document.createElement("col");
+  col.className = "Table2__col fbw-projections-element";
+  colgroup.appendChild(col);
 
-    for( var i = 0; i < teamTwoProjections.length - 1; i++ )
-    {
-        var statTd = document.createElement( "td" );
-        var statDiv = document.createElement( "div" );
-        statTd.className = "Table2__td fbw-projections-element";
-        statDiv.className = "jsx-2810852873 table--cell pl2 pr3 tar fbw-team-two-projection fbw-projections-element";
-        statDiv.innerText = teamTwoProjections[i];
-        statTd.appendChild( statDiv );
-        teamTwoBodyTr.appendChild( statTd );
-    }
+  var colgroup2 = document.createElement("colgroup");
+  colgroup2.span = "9";
+  colgroup2.className = "Table2__colgroup fbw-projections-element";
+  var col2 = document.createElement("col");
+  col2.className = "Table2__col fbw-projections-element";
+  colgroup2.appendChild(col2);
 
-    // Colgroups for formatting
-    var colgroup = document.createElement( "colgroup" );
-    colgroup.span = "1";
-    colgroup.className = "Table2__colgroup fbw-projections-element";
-    var col = document.createElement( "col" );
-    col.className = "Table2__col fbw-projections-element";
-    colgroup.appendChild( col );
-
-    var colgroup2 = document.createElement( "colgroup" );
-    colgroup2.span = "9";
-    colgroup2.className = "Table2__colgroup fbw-projections-element";
-    var col2 = document.createElement( "col" );
-    col2.className = "Table2__col fbw-projections-element";
-    colgroup2.appendChild( col2 );
-
-    newTable.appendChild( colgroup );
-    newTable.appendChild( colgroup2 );
-    newTable.appendChild( newThead );
-    newTable.appendChild( newTbody );
-    firstTable.appendChild( newTable );
+  newTable.appendChild(colgroup);
+  newTable.appendChild(colgroup2);
+  newTable.appendChild(newThead);
+  newTable.appendChild(newTbody);
+  firstTable.appendChild(newTable);
 }
 
 function calculateProjections(data, categories) {
@@ -1992,13 +2005,13 @@ function calculateProjections(data, categories) {
       }
       projections.push(parseFloat(totalFta).toFixed(1));
     } else if (categories[i] == "3PMI") {
-      	projections.push("-");
+      projections.push("-");
     } else if (categories[i] == "3P%") {
-        projections.push("-");
+      projections.push("-");
     } else if (categories[i] == "OREB") {
-        projections.push("-");
+      projections.push("-");
     } else if (categories[i] == "DREB") {
-        projections.push("-");
+      projections.push("-");
     } else if (categories[i] == "A/TO") {
       //A
       var totalAst = 0;
@@ -2020,12 +2033,11 @@ function calculateProjections(data, categories) {
         totalTO += parseFloat(data[j]["topg"]) * gamesForWeek;
       }
 
-      var totalATO = totalAst/totalTO;
+      var totalATO = totalAst / totalTO;
 
-    projections.push(parseFloat(totalATO).toFixed(1));
-
+      projections.push(parseFloat(totalATO).toFixed(1));
     } else if (categories[i] == "STR") {
-        //Steals
+      //Steals
       var totalStl = 0.0;
       for (var j = 0; j < data.length; j++) {
         var teamAcronym = acronymFromPlayerProjections[data[j]["team"]];
@@ -2043,42 +2055,40 @@ function calculateProjections(data, categories) {
         totalTO += parseFloat(data[j]["topg"]) * gamesForWeek;
       }
 
-      var totalSTO = totalStl/totalTO;
+      var totalSTO = totalStl / totalTO;
 
       projections.push(parseFloat(totalSTO).toFixed(1));
-
     } else if (categories[i] == "EJ") {
-        projections.push("-");
+      projections.push("-");
     } else if (categories[i] == "FF") {
-        projections.push("-");
+      projections.push("-");
     } else if (categories[i] == "PF") {
-        projections.push("-");
+      projections.push("-");
     } else if (categories[i] == "TF") {
-        projections.push("-");
+      projections.push("-");
     } else if (categories[i] == "DQ") {
-        projections.push("-");
+      projections.push("-");
     } else if (categories[i] == "DD") {
-        projections.push("-");
+      projections.push("-");
     } else if (categories[i] == "TD") {
-        projections.push("-");
+      projections.push("-");
     } else if (categories[i] == "QD") {
-        projections.push("-");
+      projections.push("-");
     } else if (categories[i] == "PPM") {
-        projections.push("-");
+      projections.push("-");
     } else if (categories[i] == "TW") {
-        projections.push("-");
+      projections.push("-");
     } else if (categories[i] == "GP") {
-        projections.push("-");
+      projections.push("-");
     } else if (categories[i] == "GS") {
-        projections.push("-");
+      projections.push("-");
     } else if (categories[i] == "FGMI") {
-        projections.push("-");
+      projections.push("-");
     } else if (categories[i] == "AFG%") {
-        projections.push("-");
+      projections.push("-");
     } else if (categories[i] == "FTMI") {
-        projections.push("-");
+      projections.push("-");
     }
-
   }
   return projections;
 }
@@ -2113,35 +2123,37 @@ function addProjectionsBackgroundColor(categories) {
   }
 }
 
-function requestProjectionsFromServer()
-{
-    // console.log( "requestProjectionsFromServer" );
-    var playersRequestStrings = buildPlayerProjectionsStrings();
-    var categories = getCategoriesBoxscorePage();
-    var projections = [];
-    //Gets teamOne's first player abbreviation to keep track of teams 
-    var teamChecker = playersRequestStrings[0].slice(playersRequestStrings[0].indexOf('=') + 1, playersRequestStrings[0].indexOf(','))
-    for( var i = 0; i < playersRequestStrings.length; i++ )
-    {
-        var url = "https://www.sportswzrd.com/getplayers/?" + playersRequestStrings[i];
-        //Pass url to background script and get back response data
-        chrome.runtime.sendMessage({ url: url }, function(response) {
-            var projection = calculateProjections( response.data, categories );
-            //Used to determine teamOne or teamTwo
-            if(response.data[0].playerID == teamChecker){
-                projection.push( 'TeamOne' );
-            }else{
-                projection.push( 'TeamTwo' );
-            }
+function requestProjectionsFromServer() {
+  // console.log( "requestProjectionsFromServer" );
+  var playersRequestStrings = buildPlayerProjectionsStrings();
+  var categories = getCategoriesBoxscorePage();
+  var projections = [];
+  //Gets teamOne's first player abbreviation to keep track of teams
+  var teamChecker = playersRequestStrings[0].slice(
+    playersRequestStrings[0].indexOf("=") + 1,
+    playersRequestStrings[0].indexOf(",")
+  );
+  for (var i = 0; i < playersRequestStrings.length; i++) {
+    //Pass url to background script and get back response data
+    chrome.runtime.sendMessage(
+      { endpoint: "getplayers", players: playersRequestStrings[i] },
+      function(response) {
+        var projection = calculateProjections(response.data, categories);
+        //Used to determine teamOne or teamTwo
+        if (response.data[0].playerID == teamChecker) {
+          projection.push("TeamOne");
+        } else {
+          projection.push("TeamTwo");
+        }
 
-            projections.push( projection );
-            if( projections.length == 2 )
-            {
-                addProjectionsTable( categories, projections );
-                addProjectionsBackgroundColor( categories );
-            }
-     });
-    }
+        projections.push(projection);
+        if (projections.length == 2) {
+          addProjectionsTable(categories, projections);
+          addProjectionsBackgroundColor(categories);
+        }
+      }
+    );
+  }
 }
 
 /* ------------------------------------------------------------------------------------------------------------------------------------------

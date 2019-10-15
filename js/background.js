@@ -36,6 +36,9 @@ chrome.runtime.onMessage.addListener(function(
       queryString += `${query}`;
       break;
     }
+    case "getweek": {
+      queryString += `date=${date}&pageName=${pageName}&leagueID=${leagueID}`;
+    }
   }
   let url = `${domain}/${endpoint}/?${queryString}`;
   fetch(url)

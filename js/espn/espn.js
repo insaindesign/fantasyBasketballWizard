@@ -144,7 +144,7 @@ function buildSelectDateRequestString() {
 function buildDropdownSelectDateRequestString() {
   // console.log( "buildDropdownSelectDateRequestString" );
   var currentElements = document.getElementsByClassName("dropdown__select");
-  var resultDateRequestString = "date=";
+  var resultDateRequestString = "";
   var dropdownElement =
     currentElements[0].options[currentElements[0].selectedIndex];
   var selectedDate = dropdownElement.text;
@@ -163,7 +163,7 @@ function buildDropdownSelectDateRequestString() {
 */
 function buildTodayDateRequestString() {
   // console.log( "buildTodayDateRequestString" );
-  var resultDateRequestString = "date=";
+  var resultDateRequestString = "";
   var todaysDate = new Date();
   var firstDayOfSeason = new Date("2019-10-22");
   // Getting today's date before regular season starts
@@ -194,7 +194,7 @@ function buildDateRequestStringFantasyCast() {
   var selectedDateSplit = selectedDate.split(" ");
   var month = selectedDateSplit[0];
   var date = selectedDateSplit[1];
-  var resultDateRequestString = "date=";
+  var resultDateRequestString = "";
   // console.log( "selectedDate=" + selectedDate + ", month=" + month + ", date=" + date );
   var formattedDate = formatDateString(month, date);
   resultDateRequestString = resultDateRequestString.concat(formattedDate);

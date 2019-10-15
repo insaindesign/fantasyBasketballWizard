@@ -78,7 +78,7 @@ acronymEspnToYahoo["Wsh"] = "Was";
 function buildSelectDateRequestString() {
   // console.log( "buildSelectDateRequestString" );
   var currentElements = document.getElementsByClassName("is-current");
-  var resultDateRequestString = "date=";
+  var resultDateRequestString = "";
   // console.log( dailyOrWeekly );
   if (dailyOrWeekly == DAILY_LEAGUE) {
     var currentDateDiv = currentElements[0];

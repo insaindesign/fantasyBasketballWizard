@@ -827,9 +827,11 @@ async function requestGameDataFromServer(addOrUpdate) {
       typeof dateRequestString !== "undefined"
     ) {
       //Pass url to background script and get back response data
+      var newTeams = teamsRequestString.slice(teamsRequestString.indexOf('=') + 1 , teamsRequestString.length)
       chrome.runtime.sendMessage(
         {
           endpoint: "gamesremaining",
+          teams: newTeams,
           pageName: pageNameRequestString,
           leagueID: leagueIdRequestString,
           date: dateRequestString

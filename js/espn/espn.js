@@ -2686,6 +2686,29 @@ $("body").on("click", "li.carousel__slide", function() {
 
 /* ------------------------------------------------------------------------------------------------------------------------------------------
 
+                                                    Fantasy Cast Categories - HTML Object Changes 
+
+------------------------------------------------------------------------------------------------------------------------------------------ */
+
+$("body").on("change", "select.dropdown__select", function() {
+  if (currentPageType == PAGE_TYPE_FANTASY_CAST_MOST_CATEGORIES) {
+    removeEntireColumn();
+    localGamesDataDict = {};
+    requestGameDataFromServer("Add");
+    requestHeaderFromServer("Add");
+  }
+});
+
+$("body").on("click", "button.btn", function() {
+  if (currentPageType == PAGE_TYPE_FANTASY_CAST_MOST_CATEGORIES) {
+    removeEntireColumn();
+    localGamesDataDict = {};
+    requestGameDataFromServer("Add");
+  }
+});
+
+/* ------------------------------------------------------------------------------------------------------------------------------------------
+
                                                     Boxscore - HTML Object Changes 
 
 ------------------------------------------------------------------------------------------------------------------------------------------ */

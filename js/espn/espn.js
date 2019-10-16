@@ -1286,7 +1286,12 @@ function addGamesFantasyCastPageCates() {
         startersGameTotalDiv.style.textAlign = "center";
         startersGameTotalDiv.title = "Starters";
         newGamesTd.appendChild(startersGameTotalDiv);
-        i = numberOfPlayers;
+      }
+      //Bench player
+      else if (
+        listOfElementsTr.innerHTML.indexOf(">Bench</div>") != -1
+      ) {
+          newGamesDiv.textContent = "-/-"
       }
       // Normal player
       else if (

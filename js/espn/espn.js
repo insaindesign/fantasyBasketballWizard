@@ -606,7 +606,6 @@ function addWeekGamesHeadersPlayers(data) {
   //console.log( "addWeekGamesHeaders" );
   var weekNum = data.weekNum;
   var listOfElements = document.getElementsByClassName("Table2__header-row");
-  console.log(listOfElements)
 
   for (var i = 0; i < listOfElements.length; i++) {
     //console.log(listOfElements[i].innerHTML)
@@ -703,7 +702,6 @@ function addWeekGamesHeadersFantasyCastPage(data) {
       newGamesHeader.style.color = "#48494a";
       listOfElements[i].children[0].appendChild(newGamesHeader);
     } else if (listOfElements[i].innerHTML.indexOf("SLOT") != -1) {
-      console.log(listOfElements[i].children[0].children)
       var newGamesHeader = document.createElement("th");
       newGamesHeader.title = "Games Remaining / Games This Week";
       newGamesHeader.colSpan = "1";
@@ -741,7 +739,6 @@ async function requestHeaderFromServer(addOrUpdate) {
   await sleep(4000);
   var dateRequestString = "";
   // console.log( "currentPageType=" + currentPageType );
-  console.log(currentPageType)
   if (
     currentPageType == PAGE_TYPE_PLAYERS ||
     currentPageType == PAGE_TYPE_ADDED_DROPPED ||
@@ -769,8 +766,6 @@ async function requestHeaderFromServer(addOrUpdate) {
         leagueID: leagueIdRequestString
       },
       function(response) {
-          console.log(currentPageType)
-
         if (addOrUpdate == "Add") {
           if (currentPageType == PAGE_TYPE_PLAYERS) {
             addWeekGamesHeadersPlayers(response.data);

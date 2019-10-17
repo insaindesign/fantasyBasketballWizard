@@ -682,6 +682,40 @@ function addWeekGamesHeadersBoxscorePage(data) {
 }
 
 /*
+    addWeekGamesHeadersFantasyCastPage - adds the 'GR/G' header to the HTML of the page.
+*/
+function addWeekGamesHeadersFantasyCastPage(data) {
+  //console.log( "addWeekGamesHeaders" );
+  var weekNum = data.weekNum;
+  var listOfElements = document.getElementsByClassName("Table2__right-aligned Table2__table-fixed Table2__Table--fixed--left Table2__table");
+  listOfElements =  listOfElements[0].children
+  for (var i = 0; i < listOfElements.length; i++) {
+    //console.log(listOfElements[i].innerHTML)
+    if (listOfElements[i].innerHTML.indexOf("STARTERS") != -1) {
+      var newGamesHeader = document.createElement("th");
+      newGamesHeader.title =
+        "Week number " + weekNum.toString() + " of fantasy basketball";
+      newGamesHeader.colSpan = "1";
+      newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header";
+      newGamesHeader.textContent = "WEEK" + weekNum.toString();
+      newGamesHeader.style.fontSize = "11px";
+      newGamesHeader.style.color = "#48494a";
+      listOfElements[i].children[0].appendChild(newGamesHeader);
+    } else if (listOfElements[i].innerHTML.indexOf("SLOT") != -1) {
+      var newGamesHeader = document.createElement("th");
+      newGamesHeader.title = "Games Remaining / Games This Week";
+      newGamesHeader.colSpan = "1";
+      newGamesHeader.className = "tc bg-clr-white Table2__th fbw-header";
+      newGamesHeader.textContent = "GR/G";
+      newGamesHeader.style.fontSize = "11px";
+      newGamesHeader.style.color = "#151617";
+      newGamesHeader.style.fontWeight = "500";
+      listOfElements[i].children[0].appendChild(newGamesHeader);    
+    }
+  }
+}
+
+/*
     updateWeekNumberHeader - updates the 'GAMES' and 'WEEK' headers
 */
 function updateWeekNumberHeader(data) {
@@ -708,7 +742,8 @@ async function requestHeaderFromServer(addOrUpdate) {
   if (
     currentPageType == PAGE_TYPE_PLAYERS ||
     currentPageType == PAGE_TYPE_ADDED_DROPPED ||
-    currentPageType == PAGE_TYPE_BOXSCORE
+    currentPageType == PAGE_TYPE_BOXSCORE ||
+    currentPageType == PAGE_TYPE_FANTASY_CAST_MOST_CATEGORIES
   ) {
     dateRequestString = buildTodayDateRequestString();
   } else {
@@ -738,6 +773,8 @@ async function requestHeaderFromServer(addOrUpdate) {
             addWeekGamesHeadersAddedDroppedPage(response.data);
           } else if (currentPageType == PAGE_TYPE_BOXSCORE) {
             addWeekGamesHeadersBoxscorePage(response.data);
+          } else if (currentPageType == PAGE_TYPE_FANTASY_CAST_MOST_CATEGORIES){
+            addWeekGamesHeadersFantasyCastPage(response.data);
           } else {
             addWeekGamesHeaders(response.data);
           }
@@ -851,6 +888,8 @@ async function requestGameDataFromServer(addOrUpdate) {
               addGamesBoxscorePage();
             } else if (currentPageType == PAGE_TYPE_FANTASY_CAST_POINTS) {
               addGamesFantasyCastPagePoints();
+            }else if (currentPageType == PAGE_TYPE_FANTASY_CAST_MOST_CATEGORIES){
+              addGamesFantasyCastPageCates();
             } else {
               addGamesTeamPage();
             }
@@ -883,6 +922,8 @@ function addGamesTeamPage() {
 
   for (var i = 0; i < listOfElements.length; i++) {
     var listOfElementsTr = listOfElements[i];
+    //console.log(listOfElementsTr)
+
     // console.log( "listOfElementsTr.children.length=" + listOfElementsTr.children.length );
     // console.log( "listOfElements.length=" + listOfElements.length );
     // Initial render for Stats menu
@@ -901,7 +942,6 @@ function addGamesTeamPage() {
         isInjured = true;
       }
       // TOTALS row
-      console.log(listOfElementsTr)
       if (listOfElementsTr.innerHTML.indexOf(">TOTALS</div>") != -1) {
         var totalGamesString =
           totalGamesRemainingStarters.toString() +
@@ -1190,6 +1230,103 @@ function addGamesFantasyCastPagePoints() {
     // Do nothing in a tie
     leftTotalElements[0].style.fontSize = "15px";
     rightTotalElements[0].style.fontSize = "15px";
+  }
+}
+
+/*
+    addGamesFantasyCastPageCates - 
+*/
+function addGamesFantasyCastPageCates() {
+  // console.log( "addGamesFantasyCastPageCates" );
+  var listOfElements = document.getElementsByClassName("Table2__right-aligned Table2__table-fixed Table2__Table--fixed--left Table2__table");
+  listOfElements = listOfElements[0].children[3].children
+  var listOfTeamNameElements = document.getElementsByClassName(
+    "playerinfo__playerteam"
+  );
+  var listOfTeamNameElementsIndex = 0;
+  var numberOfPlayers = getNumberOfPlayersTeamPage();
+  var totalGamesRemainingAll = 0;
+  var totalGamesForWeekAll = 0;
+  var totalGamesRemainingStarters = 0;
+  var totalGamesForWeekStarters = 0;
+
+  for (var i = 0; i < listOfElements.length; i++) {
+    var listOfElementsTr = listOfElements[i];
+    // Initial render for Stats menu
+      var newGamesTd = document.createElement("td");
+      var newGamesDiv = document.createElement("div");
+      newGamesTd.className =
+        "Table2__td Table2__td--fixed-width fbw-games-remaining-td fbw-new-element";
+      newGamesDiv.className =
+        "jsx-2810852873 table--cell fbw-games-remaining-div fbw-new-element";
+      newGamesDiv.style.textAlign = "center";
+
+      var isInjured = false;
+      // 'O'ut, injured player
+      if (listOfElementsTr.innerHTML.indexOf('injury-status_medium">O') != -1) {
+        isInjured = true;
+      }
+      // TOTALS row
+      if (listOfElementsTr.innerHTML.indexOf(">TOTALS</div>") != -1) {
+        var totalGamesString =
+          totalGamesRemainingStarters.toString() +
+          "/" +
+          totalGamesForWeekStarters.toString();
+        newGamesDiv.textContent = totalGamesString;
+        newGamesTd.className += " bg-clr-gray-08 fbw-games-total-td";
+        newGamesDiv.className += " bg-clr-gray-08 fbw-games-total-div";
+
+        var startersGameTotalDiv = document.createElement("div");
+        startersGameTotalDiv.className =
+          "jsx-2810852873 table--cell bg-clr-gray-08 fbw-starters-games-div";
+        startersGameTotalDiv.style.textAlign = "center";
+        startersGameTotalDiv.title = "Starters";
+        newGamesTd.appendChild(startersGameTotalDiv);
+      }
+      //Bench player
+      else if (
+        listOfElementsTr.innerHTML.indexOf(">Bench</div>") != -1
+      ) {
+          newGamesDiv.textContent = "-/-"
+      }
+      // Normal player
+      else if (
+        listOfElementsTr.innerHTML.indexOf("player-column__empty") == -1
+      ) {
+        if (!isInjured) {
+          var teamName =
+            listOfTeamNameElements[listOfTeamNameElementsIndex].innerHTML;
+          newGamesDiv.textContent = localGamesDataDict[teamName];
+          var splitDataIndex = localGamesDataDict[teamName].split("/");
+          totalGamesRemainingStarters += parseInt(splitDataIndex[0]);
+          totalGamesForWeekStarters += parseInt(splitDataIndex[1]);
+          newGamesTd.style.backgroundColor = getBackgroundColor(
+            splitDataIndex[0]
+          );
+        } else {
+          newGamesDiv.textContent = "-/-";
+        }
+        listOfTeamNameElementsIndex++;
+      }
+      // Empty player
+      else {
+        newGamesDiv.textContent = "-/-";
+      }
+      if (i == numberOfPlayers) {
+        var totalElements = document.getElementsByClassName(
+          "fbw-games-total-div"
+        );
+        if(totalElements[0]){
+          var totalGamesString =
+            totalGamesRemainingStarters.toString() +
+            "/" +
+            totalGamesForWeekStarters.toString();
+          totalElements[0].title = "Total team";
+          totalElements[0].textContent = totalGamesString;
+        }
+      }
+      newGamesTd.appendChild(newGamesDiv);
+      listOfElementsTr.appendChild(newGamesTd);
   }
 }
 
@@ -1693,7 +1830,7 @@ function getProjectionsColor(ratio) {
   if (ratio <= 2) {
     return "#3bff3b";
   }
-  if (ratio <= 2.1) {
+  if (ratio <= 2.5) {
     return "#3bff3b";
   } else {
     return "#dee8f7";
@@ -2418,7 +2555,7 @@ $("body").on("click", "a.scoring--period-today", function() {
 /*
     Changing dates with the calendar
 */
-$("body").on("click", "li.monthContainer__day--noEvent", function() {
+$("body").on("click", "button.dateCarousel__MonthTrigger", function() {
   if (
     currentPageType == PAGE_TYPE_TEAM ||
     currentPageType == PAGE_TYPE_TEAM_RESEARCH ||
@@ -2433,6 +2570,24 @@ $("body").on("click", "li.monthContainer__day--noEvent", function() {
     ) {
       renderGamesNoSleep(PAGE_TYPE_TEAM_SWITCH_DATES);
     }
+  }
+});
+
+/*
+    Changing options with Show Stats dropdown
+*/
+$("body").on("change", "select.dropdown__select", function() {
+  if (
+    currentPageType == PAGE_TYPE_TEAM ||
+    currentPageType == PAGE_TYPE_TEAM_RESEARCH ||
+    currentPageType == PAGE_TYPE_TEAM_NEWS ||
+    currentPageType == PAGE_TYPE_TEAM_SCHEDULE ||
+    currentPageType == PAGE_TYPE_TEAM_STATS
+  ) {
+    removeEntireColumn();
+    localGamesDataDict = {};
+    requestGameDataFromServer("Add");
+    requestHeaderFromServer("Add");
   }
 });
 
@@ -2545,6 +2700,29 @@ $("body").on("click", "li.carousel__slide", function() {
 
 /* ------------------------------------------------------------------------------------------------------------------------------------------
 
+                                                    Fantasy Cast Categories - HTML Object Changes 
+
+------------------------------------------------------------------------------------------------------------------------------------------ */
+
+$("body").on("change", "select.dropdown__select", function() {
+  if (currentPageType == PAGE_TYPE_FANTASY_CAST_MOST_CATEGORIES) {
+    removeEntireColumn();
+    localGamesDataDict = {};
+    requestGameDataFromServer("Add");
+    requestHeaderFromServer("Add");
+  }
+});
+
+$("body").on("click", "button.btn", function() {
+  if (currentPageType == PAGE_TYPE_FANTASY_CAST_MOST_CATEGORIES) {
+    removeEntireColumn();
+    localGamesDataDict = {};
+    requestGameDataFromServer("Add");
+  }
+});
+
+/* ------------------------------------------------------------------------------------------------------------------------------------------
+
                                                     Boxscore - HTML Object Changes 
 
 ------------------------------------------------------------------------------------------------------------------------------------------ */
@@ -2605,6 +2783,7 @@ async function renderGamesSleep(type) {
     requestGameDataFromServer("Add");
   } else if (type == PAGE_TYPE_FANTASY_CAST) {
     isFantasyCastMostCatsOrPoints();
+    requestHeaderFromServer("Add");
     requestGameDataFromServer("Add");
   } else if (type == PAGE_TYPE_TEAM_NEWS) {
     isLeagueDailyOrWeekly();

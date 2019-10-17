@@ -922,6 +922,8 @@ function addGamesTeamPage() {
 
   for (var i = 0; i < listOfElements.length; i++) {
     var listOfElementsTr = listOfElements[i];
+    //console.log(listOfElementsTr)
+
     // console.log( "listOfElementsTr.children.length=" + listOfElementsTr.children.length );
     // console.log( "listOfElements.length=" + listOfElements.length );
     // Initial render for Stats menu
@@ -940,7 +942,6 @@ function addGamesTeamPage() {
         isInjured = true;
       }
       // TOTALS row
-      console.log(listOfElementsTr)
       if (listOfElementsTr.innerHTML.indexOf(">TOTALS</div>") != -1) {
         var totalGamesString =
           totalGamesRemainingStarters.toString() +
@@ -1829,7 +1830,7 @@ function getProjectionsColor(ratio) {
   if (ratio <= 2) {
     return "#3bff3b";
   }
-  if (ratio <= 2.1) {
+  if (ratio <= 2.5) {
     return "#3bff3b";
   } else {
     return "#dee8f7";
@@ -2554,7 +2555,7 @@ $("body").on("click", "a.scoring--period-today", function() {
 /*
     Changing dates with the calendar
 */
-$("body").on("click", "li.monthContainer__day--noEvent", function() {
+$("body").on("click", "button.dateCarousel__MonthTrigger", function() {
   if (
     currentPageType == PAGE_TYPE_TEAM ||
     currentPageType == PAGE_TYPE_TEAM_RESEARCH ||
@@ -2569,6 +2570,24 @@ $("body").on("click", "li.monthContainer__day--noEvent", function() {
     ) {
       renderGamesNoSleep(PAGE_TYPE_TEAM_SWITCH_DATES);
     }
+  }
+});
+
+/*
+    Changing options with Show Stats dropdown
+*/
+$("body").on("change", "select.dropdown__select", function() {
+  if (
+    currentPageType == PAGE_TYPE_TEAM ||
+    currentPageType == PAGE_TYPE_TEAM_RESEARCH ||
+    currentPageType == PAGE_TYPE_TEAM_NEWS ||
+    currentPageType == PAGE_TYPE_TEAM_SCHEDULE ||
+    currentPageType == PAGE_TYPE_TEAM_STATS
+  ) {
+    removeEntireColumn();
+    localGamesDataDict = {};
+    requestGameDataFromServer("Add");
+    requestHeaderFromServer("Add");
   }
 });
 

@@ -105,7 +105,8 @@ const makePlayerKey = str => {
   str = str.replace(/\./g, "");
   str = str.replace(/\-/g, "");
   let arr = str.split(" ");
-  let key = arr[0].length > 1 ? `${arr[0][0]}${arr[1]}` : `${arr[0]}${arr[1]}`;
+  //let key = arr[0].length > 1 ? `${arr[0][0]}${arr[1]}` : `${arr[0]}${arr[1]}`;
+  let key = `${arr[0][0]}${arr[1]}`;
   for (let i = 2; i < arr.length; i++) {
     key += arr[i];
     if (Teams.includes(arr[i])) {

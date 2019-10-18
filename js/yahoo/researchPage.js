@@ -156,5 +156,3 @@ function addGames(data) {
   });
 }
 renderGames();
-
-console.log("sending: ");

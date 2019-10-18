@@ -85,48 +85,82 @@ var statsRight = [];
 
 var pTable;
 
+var header;
+
 scoreLeft = 0;
 scoreRight = 0;
 
+numTables = 0;
+var tableSingle;
+var tableLeft;
+var tableRight;
+var tables = [];
+
+function defineLayoutBySearch(){
+    tables = document.querySelectorAll('[id^="statTable"]');
+    numTables = tables.length;
+
+    if (tables.length == 0) {
+        setTimeout(function() {
+            var matchup = document.getElementById("matchup");
+            //console.log("first table null");
+            table = matchup.childNodes[0];
+            //console.log("new table: ", table);
+        }, 1000);
+    }
+}
+
+function defineLayout(){
+    table = document.getElementById('statTable3');
+
+    if (table){
+        numTables = 1;
+        console.log("one table found");
+        return;
+    }
+
+    tableLeft = document.getElementById('statTable0');
+    tableRight = document.getElementById('statTable1');
+
+    if(tableLeft){
+        numTables = 2;
+        console.log("two tables found");
+        return;
+    }
+
+}
+
 function findMatchupsTable() {
-    header = document.getElementById('matchup-wall-header').childNodes;
-    for (h = 0; h < header.length; h++) {
-        if (header[h].localName == 'table') {
-            return header[h];
+    header = document.getElementById('matchup-wall-header');
+    hNodes = header.childNodes;
+    for (h = 0; h < hNodes.length; h++) {
+        if (hNodes[h].localName == 'table') {
+            return hNodes[h];
         }
     }
 }
 
 function initTable() {
+    console.log("copying table...");
+    //find stats headers
     mTable = findMatchupsTable();
+    categories = mTable.tHead.innerText;
+    categories = categories.split('\n');
+    categories = categories.filter(function(str) {
+        return /\S/.test(str);
+    });
+    categories = categories.filter(e => e !== 'Team');
+    categories = categories.filter(e => e !== 'Score');
+
     pTable = mTable.cloneNode(true);
     header = document.getElementById('matchup-wall-header');
 
     header.appendChild(pTable);
-}
 
-//init stats table
-table = document.getElementById("statTable3");
-
-if (table == null) {
-    setTimeout(function() {
-        var matchup = document.getElementById("matchup");
-        //console.log("first table null");
-        table = matchup.childNodes[0];
-        //console.log("new table: ", table);
-    }, 1000);
+    console.log("table copied");
 }
 
 
-//find stats headers
-t = findMatchupsTable();
-categories = t.tHead.innerText;
-categories = categories.split('\n');
-categories = categories.filter(function(str) {
-    return /\S/.test(str);
-});
-categories = categories.filter(e => e !== 'Team');
-categories = categories.filter(e => e !== 'Score');
 
 function getProjectionsColor(ratio) {
     if (ratio == 0) {
@@ -221,6 +255,7 @@ function getLeagueID() {
 }
 
 function getGamesRemaining(team) {
+    console.log("fetching NBA stats...")
     var dateString;
     url = window.location.href;
     if (url.includes("week=") && !url.includes("date=totals")) {
@@ -234,7 +269,7 @@ function getGamesRemaining(team) {
 
     //console.log("initialized dateString");
 
-    console.log("dateString: ", dateString);
+    //console.log("dateString: ", dateString);
 
     //console.log("url: ", url);
     chrome.runtime.sendMessage({
@@ -252,7 +287,13 @@ function getGamesRemaining(team) {
                 team = Teams[t];
                 Schedule[team.toUpperCase()] = data[t];
             }
-            getPlayers();
+            console.log("NBA stats retrieved");
+            if (numTables == 1){
+                getPlayersOneTable();
+            } else {
+                getPlayersTwoTables();
+            }
+            
         }
     );
 }
@@ -276,7 +317,8 @@ function getNoteIndex(row) {
     return noteIndex;
 }
 
-function getPlayers() {
+function getPlayersOneTable() {
+    console.log("loading single table players...");
     num_rows = table.rows.length;
 
     playersLeft = [];
@@ -326,6 +368,64 @@ function getPlayers() {
     rightString = playersRight.join(",") + ",";
     //console.log("rightString: ", rightString);
     getProjections(rightString, "right");
+
+    console.log("single table players loaded");
+}
+
+function getPlayersTwoTables() {
+    console.log("loading two table players...");
+    playersLeft = [];
+    playersRight = [];
+
+    for (i = 1; i < tableLeft.rows.length; i++){
+        row = tableLeft.rows[i].innerText.split("\n");
+        if (row.includes("--") || row.includes("IL")) {
+            continue;
+        }
+
+        noteIndex = getNoteIndex(row.slice(0, row.length / 2 - 1));
+        playerIndex = noteIndex + 1;
+        playerLeft = row[playerIndex].split(" - ")[0];
+        playerLeft = serializePlayer(playerLeft);
+        if (
+            !playerLeft.includes("Empty") &&
+            playerLeft != "O" &&
+            playerLeft.length > 0 &&
+            row[playerIndex + 1] != "INJ"
+        ) {
+            playersLeft.push(playerLeft);
+        }
+    }
+
+    for (i = 1; i < tableRight.rows.length; i++){
+        row = tableRight.rows[i].innerText.split("\n");
+        if (row.includes("--") || row.includes("IL")) {
+            continue;
+        }
+
+        noteIndex = getNoteIndex(row.slice(0, row.length / 2 - 1));
+        playerIndex = noteIndex + 1;
+        playerRight = row[playerIndex].split(" - ")[0];
+        playerRight = serializePlayer(playerRight);
+        if (
+            !playerRight.includes("Empty") &&
+            playerRight != "O" &&
+            playerRight.length > 0 &&
+            row[playerIndex + 1] != "INJ"
+        ) {
+            playersRight.push(playerRight);
+        }
+    }
+
+    leftString = playersLeft.join(",") + ",";
+    //console.log("leftString: ", leftString);
+    getProjections(leftString, "left");
+
+    rightString = playersRight.join(",") + ",";
+    //console.log("rightString: ", rightString);
+    getProjections(rightString, "right");
+
+    console.log("two table players loaded");
 }
 
 function getProjections(playersString, side) {
@@ -362,19 +462,19 @@ function showProjections(data, side) {
     for (cat = 0; cat < categories.length; cat++) {
         if (side == "left") {
             stat = calculateStats(data, categories[cat]);
-            if (stat === "NaN") {
+            if (stat === "NaN" || stat === "undefined") {
                 stat = ".000";
             }
             pTable.rows[1].cells[cat + 1].innerText = stat;
-            statsLeft.push(stat);
+            //statsLeft.push(stat);
         }
         if (side == "right") {
             stat = calculateStats(data, categories[cat]);
-            if (stat === "NaN") {
+            if (stat === "NaN" || stat === "undefined") {
                 stat = ".000";
             }
             pTable.rows[2].cells[cat + 1].innerText = stat;
-            statsRight.push(stat);
+            //statsRight.push(stat);
         }
     }
 
@@ -389,8 +489,7 @@ function showProjections(data, side) {
         } else {
             ratio = num / den;
         }
-        if (categories[cat - 1] == "FGM/A*" ||
-        categories[cat - 1] == "FTM/A*") {
+        if (categories[cat - 1].includes('*')) {
             color = "#f5f8fc";
         }  else {
             color = getProjectionsColor(ratio);
@@ -407,8 +506,7 @@ function showProjections(data, side) {
         } else {
             ratio = num / den;
         }
-        if (categories[cat - 1] == "FGM/A*" ||
-        categories[cat - 1] == "FTM/A*") {
+        if (categories[cat - 1].includes('*')) {
             color = "#f5f8fc";
         }  else {
             color = getProjectionsColor(ratio);
@@ -443,6 +541,15 @@ function calculateStats(data, cat) {
         }
         return parseFloat(fgm / fga).toFixed(3);
     }
+    if (cat == "FGM") {
+        var fgm = 0;
+        for (var i = 0; i < data.length; i++) {
+            fgm +=
+                parseFloat(data[i]["fgmpg"]) *
+                parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        }
+        return parseFloat(fgm).toFixed(1);
+    }
     if (cat == "FGM/A*") {
         var fgm = 0;
         var fga = 0;
@@ -473,6 +580,24 @@ function calculateStats(data, cat) {
         }
         return parseFloat(ftm / fta).toFixed(3);
     }
+    if (cat == "FTM") {
+        var ftm = 0;
+        for (var i = 0; i < data.length; i++) {
+            ftm +=
+                parseFloat(data[i]["ftmpg"]) *
+                parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        }
+        return parseFloat(ftm).toFixed(1);
+    }
+    if (cat == "FTA") {
+        var fta = 0;
+        for (var i = 0; i < data.length; i++) {
+            fta +=
+                parseFloat(data[i]["ftapg"]) *
+                parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        }
+        return parseFloat(fta).toFixed(1);
+    }
     if (cat == "FTM/A*") {
         var ftm = 0;
         var fta = 0;
@@ -498,6 +623,24 @@ function calculateStats(data, cat) {
                 parseFloat(Schedule[data[i]["team"]].split("/")[1]);
         }
         return parseFloat(pts).toFixed(1);
+    }
+    if (cat == "OREB") {
+        var reb = 0;
+        for (var i = 0; i < data.length; i++) {
+            reb +=
+                parseFloat(data[i]["orpg"]) *
+                parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        }
+        return parseFloat(reb).toFixed(1);
+    }
+    if (cat == "DREB") {
+        var reb = 0;
+        for (var i = 0; i < data.length; i++) {
+            reb +=
+                parseFloat(data[i]["drpg"]) *
+                parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        }
+        return parseFloat(reb).toFixed(1);
     }
     if (cat == "REB") {
         var reb = 0;
@@ -544,7 +687,20 @@ function calculateStats(data, cat) {
         }
         return parseFloat(to).toFixed(1);
     }
-    if (cat == "3PTM") {
+    if (cat == "3PT%") {
+        var threepm = 0;
+        var threepa = 0;
+        for (var i = 0; i < data.length; i++) {
+            threepm +=
+                parseFloat(data[i]["threepm"]) *
+                parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+            threepa +=
+                parseFloat(data[i]["threepa"]) *
+                parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        }
+        return parseFloat(threepm / threepa).toFixed(3);
+    }
+    if (cat == "3PTM*" || cat == "3PTM") {
         var threes = 0;
         for (var i = 0; i < data.length; i++) {
             threes +=
@@ -553,9 +709,50 @@ function calculateStats(data, cat) {
         }
         return parseFloat(threes).toFixed(1);
     }
+    if (cat == "3PTA") {
+        var threesa = 0;
+        for (var i = 0; i < data.length; i++) {
+            threesa +=
+                parseFloat(data[i]["threepa"]) *
+                parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        }
+        return parseFloat(threesa).toFixed(1);
+    }
+    if (cat == "DD") {
+        var dd = 0;
+        for (var i = 0; i < data.length; i++) {
+            dd +=
+                parseFloat(data[i]["ddpg"]) *
+                parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        }
+        return parseFloat(dd).toFixed(1);
+    }
+    if (cat == "TD") {
+        var td = 0;
+        for (var i = 0; i < data.length; i++) {
+            td +=
+                parseFloat(data[i]["tdpg"]) *
+                parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        }
+        return parseFloat(td).toFixed(1);
+    }
+    if (cat == "A/T") {
+        var apg = 0;
+        var topg = 0;
+        for (var i = 0; i < data.length; i++) {
+            apg +=
+                parseFloat(data[i]["apg"]) *
+                parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+            topg +=
+                parseFloat(data[i]["topg"]) *
+                parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        }
+        return parseFloat(apg / topg).toFixed(1);
+    }
+
+    return "N/A"
 }
 
-
+defineLayout();
 initTable();
-//console.log("9cat league");
 getGamesRemaining(teams);

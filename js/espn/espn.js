@@ -639,7 +639,17 @@ function addWeekGamesHeaders(data) {
         newGamesHeader.style.borderLeft = "1px solid #dcdddf";
         listOfElements[i].appendChild(newGamesHeader);
         // listOfElements[i].insertAdjacentElement( 'beforeend', newGamesHeader );
-      }
+      } else{
+          var newGamesHeader = document.createElement("th");
+          newGamesHeader.title = "Games Remaining / Games This Week";
+          newGamesHeader.colSpan = "1";
+          newGamesHeader.className =
+            "tc bg-clr-white Table2__th fbw-header fbw-new-element";
+          newGamesHeader.textContent = "GR/G";
+          newGamesHeader.style.borderLeft = "1px solid #dcdddf";
+          listOfElements[i].appendChild(newGamesHeader);
+          // listOfElements[i].insertAdjacentElement( 'beforeend', newGamesHeader );
+          }
     }
   }
 }

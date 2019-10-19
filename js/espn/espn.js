@@ -441,9 +441,11 @@ function getPageTypeFromUrl(url) {
     var activeMenu = getActiveMenu();
     // console.log( "activeMenu=" + activeMenu );
     isLeagueDailyOrWeekly();
+    /*
     if (dailyOrWeekly == WEEKLY_LEAGUE) {
       currentPageType = WEEKLY_LEAGUE;
-    } else if (activeMenu == PAGE_TYPE_TEAM_SCHEDULE) {
+    */
+    if (activeMenu == PAGE_TYPE_TEAM_SCHEDULE) {
       currentPageType = PAGE_TYPE_TEAM_SCHEDULE;
     } else if (activeMenu == PAGE_TYPE_TEAM_NEWS) {
       currentPageType = PAGE_TYPE_TEAM_NEWS;
@@ -629,7 +631,7 @@ function addWeekGamesHeaders(data) {
         newGamesHeader.style.borderLeft = "1px solid #dcdddf";
         listOfElements[i].appendChild(newGamesHeader);
         // listOfElements[i].insertAdjacentElement( 'beforeend', newGamesHeader );
-      } else if (listOfElements[i].innerHTML.indexOf("STATUS") != -1 || listOfElements[i].innerHTML.indexOf("games:") != -1) {
+      } else if (listOfElements[i].innerHTML.indexOf("STATUS") != -1 || listOfElements[i].innerHTML.indexOf("games: ") != -1) {
         var newGamesHeader = document.createElement("th");
         newGamesHeader.title = "Games Remaining / Games This Week";
         newGamesHeader.colSpan = "1";
@@ -639,17 +641,7 @@ function addWeekGamesHeaders(data) {
         newGamesHeader.style.borderLeft = "1px solid #dcdddf";
         listOfElements[i].appendChild(newGamesHeader);
         // listOfElements[i].insertAdjacentElement( 'beforeend', newGamesHeader );
-      } else{
-          var newGamesHeader = document.createElement("th");
-          newGamesHeader.title = "Games Remaining / Games This Week";
-          newGamesHeader.colSpan = "1";
-          newGamesHeader.className =
-            "tc bg-clr-white Table2__th fbw-header fbw-new-element";
-          newGamesHeader.textContent = "GR/G";
-          newGamesHeader.style.borderLeft = "1px solid #dcdddf";
-          listOfElements[i].appendChild(newGamesHeader);
-          // listOfElements[i].insertAdjacentElement( 'beforeend', newGamesHeader );
-          }
+      } 
     }
   }
 }
@@ -868,8 +860,8 @@ function addGamesDataToLocalDictionary(data, teamsRequestString) {
       currentPageType == PAGE_TYPE_TEAM ||
       currentPageType == PAGE_TYPE_TEAM_STATS ||
       currentPageType == PAGE_TYPE_TEAM_TRENDING ||
-      currentPageType == PAGE_TYPE_TEAM_SCHEDULE ||
-      currentPageType == WEEKLY_LEAGUE
+      currentPageType == PAGE_TYPE_TEAM_SCHEDULE 
+      //|| currentPageType == WEEKLY_LEAGUE
     ) {
       localGamesDataDict = {};
     }
@@ -1108,6 +1100,11 @@ function addGamesTeamPage() {
     }
     // News Menu & Trending
     else if (listOfElementsTr.children.length == 13 || listOfElementsTr.children.length == 6) {
+      
+      if(listOfElementsTr.children.length == 13){
+        break;
+      }
+      
       var newCell = listOfElementsTr.insertCell(5);
       // var newGamesTd = document.createElement( "td" );
       var newGamesDiv = document.createElement("div");

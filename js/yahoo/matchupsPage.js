@@ -87,10 +87,10 @@ var pTable;
 
 var header;
 
-scoreLeft = 0;
-scoreRight = 0;
+var scoreLeft = 0;
+var scoreRight = 0;
 
-numTables = 0;
+var numTables = 0;
 var tableSingle;
 var tableLeft;
 var tableRight;

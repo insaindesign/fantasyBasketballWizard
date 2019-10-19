@@ -1100,11 +1100,11 @@ function addGamesTeamPage() {
     }
     // News Menu & Trending
     else if (listOfElementsTr.children.length == 13 || listOfElementsTr.children.length == 6) {
-      /*
+      
       if(listOfElementsTr.children.length == 13){
         break;
       }
-      */
+      
       var newCell = listOfElementsTr.insertCell(5);
       // var newGamesTd = document.createElement( "td" );
       var newGamesDiv = document.createElement("div");

@@ -87,50 +87,27 @@ function buildSelectDateRequestString() {
     var currentMonthDateSplit = currentMonthDate.split(" ");
     var selectedMonth = currentMonthDateSplit[0];
     var selectedDate = currentMonthDateSplit[1];
-
     resultDateRequestString = resultDateRequestString.concat(
       formatDateString(selectedMonth, selectedDate)
     );
   } else if (dailyOrWeekly == WEEKLY_LEAGUE) {
-    var currentDateDiv = currentElements[0];
-    var currentDateChildren = currentDateDiv.children[1];
-    var currentMonthDate = currentDateChildren.innerHTML;
-    var currentMonthDateSplit = currentMonthDate.split(" ");
-    var dateString = "";
-    var selectedMonth = currentMonthDateSplit[0];
-    var selectedDateLowerRange = currentMonthDateSplit[1];
-    var selectedDateEndRange = currentMonthDateSplit[3];
-    var formattedDateLowerRange = formatDateString(
-      selectedMonth,
-      selectedDateLowerRange
-    );
-    var formattedDateEndRange = formatDateString(
-      selectedMonth,
-      selectedDateEndRange
-    );
-    var todaysDate = new Date();
-    // Compare today's date with the lower range, if its less than then use the
-    // lower range date to get the full amount of games
-    if (todaysDate.getTime() <= new Date(formattedDateLowerRange).getTime()) {
-      dateString = formattedDateLowerRange;
-      resultDateRequestString = resultDateRequestString.concat(dateString);
+    //console.log(document.getElementsByClassName("Table2__header-group Table2__thead"))
+    var currentDateDiv = document.getElementsByClassName("Table2__header-group Table2__thead");
+    if(currentDateDiv[0].children[0].children[1].innerHTML.length == 10){
+      var dateArr = currentDateDiv[0].children[0].children[1].innerHTML.split(" ")
+      var selectedMonth = dateArr[0].slice(0,3);
+      var selectedDate = dateArr[1];
+      resultDateRequestString = resultDateRequestString.concat(
+        formatDateString(selectedMonth, selectedDate));
     }
-    // Today's date in between the week ranges then use today's date to get the accurate date
-    else if (
-      todaysDate.getTime() > new Date(formattedDateLowerRange).getTime() &&
-      todaysDate.getTime() < new Date(formattedDateEndRange).getTime()
-    ) {
-      dateString = formatDateString(
-        todaysDate.getMonth() + 1,
-        todaysDate.getDate()
-      );
-      resultDateRequestString = resultDateRequestString.concat(dateString);
-    } else if (
-      todaysDate.getTime() > new Date(formattedDateEndRange).getTime()
-    ) {
-      dateString = formattedDateEndRange;
-      resultDateRequestString = resultDateRequestString.concat(dateString);
-    } else {
+    else{
+      var currentDateDiv = currentDateDiv[0].children[0].children[1].innerHTML;
+      var date = currentDateDiv.slice(6,12);
+      var dateArr = date.split(" ");
+      var selectedMonth = dateArr[0];
+      var selectedDate = dateArr[1];
+      resultDateRequestString = resultDateRequestString.concat(
+        formatDateString(selectedMonth, selectedDate));
     }
   }
   // console.log( "resultDateRequestString=" + resultDateRequestString );
@@ -494,9 +471,7 @@ function getPageTypeFromUrl(url) {
     isLeagueDailyOrWeekly - returns whether the league is daily or weekly
 */
 function isLeagueDailyOrWeekly() {
-  // console.log( "isLeagueDailyOrWeekly" );
   var dateElements = document.getElementsByClassName("is-current");
-
   if (dateElements.length > 0) {
     if (dateElements[0].innerHTML.indexOf("day") != -1) {
       dailyOrWeekly = DAILY_LEAGUE;
@@ -546,8 +521,6 @@ function addWeekGamesHeaders(data) {
   var activeMenu = getActiveMenu();
   var listOfElements = document.getElementsByClassName("Table2__header-row");
   var weekNum = data.weekNum;
-
-
 
   if (activeMenu == PAGE_TYPE_TEAM_NEWS) {
     for (var i = 0; i < listOfElements.length; i++) {
@@ -641,7 +614,7 @@ function addWeekGamesHeaders(data) {
     }
   } else {
     for (var i = 0; i < listOfElements.length; i++) {
-      // console.log(listOfElements[i].innerHTML);
+      //console.log(listOfElements[i].innerHTML);
       if (
         listOfElements[i].innerHTML.indexOf("STARTERS") != -1 ||
         listOfElements[i].innerHTML.indexOf("BENCH") != -1
@@ -656,7 +629,7 @@ function addWeekGamesHeaders(data) {
         newGamesHeader.style.borderLeft = "1px solid #dcdddf";
         listOfElements[i].appendChild(newGamesHeader);
         // listOfElements[i].insertAdjacentElement( 'beforeend', newGamesHeader );
-      } else if (listOfElements[i].innerHTML.indexOf("STATUS") != -1) {
+      } else if (listOfElements[i].innerHTML.indexOf("STATUS") != -1 || listOfElements[i].innerHTML.indexOf("games:") != -1) {
         var newGamesHeader = document.createElement("th");
         newGamesHeader.title = "Games Remaining / Games This Week";
         newGamesHeader.colSpan = "1";
@@ -999,7 +972,7 @@ function addGamesTeamPage() {
   var totalGamesForWeekAll = 0;
   var totalGamesRemainingStarters = 0;
   var totalGamesForWeekStarters = 0;
-
+  
   for (var i = 0; i < listOfElements.length; i++) {
     var listOfElementsTr = listOfElements[i];
     //console.log(listOfElementsTr)
@@ -1008,8 +981,7 @@ function addGamesTeamPage() {
     // console.log( "listOfElements.length=" + listOfElements.length );
     // Initial render for Stats menu
     //console.log(listOfElementsTr.children.length)
-
-    if (listOfElementsTr.children.length == 5) {
+    if (listOfElementsTr.children.length == 5 || listOfElementsTr.children.length == 4) {
       var newGamesTd = document.createElement("td");
       var newGamesDiv = document.createElement("div");
       newGamesTd.className =

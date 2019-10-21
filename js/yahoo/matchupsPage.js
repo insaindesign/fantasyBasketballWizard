@@ -393,14 +393,19 @@ function addToggle(side, cellIndex, table, rowIndex) {
   var playerStr =
     table.rows[rowIndex].cells[cellIndex - 1].children[0].children[0]
       .children[0].children[1].innerText;
+  if (playerStr.includes("Empty")) {
+    return;
+  }
+  var isInjured = table.rows[rowIndex].cells[
+    cellIndex - 1
+  ].children[0].children[0].innerText.includes("INJ");
   var playerKey = makePlayerKey(playerStr);
   var toggleTD = table.rows[rowIndex].insertCell(cellIndex);
   var div = document.createElement("div");
   var input = document.createElement("input");
   input.setAttribute("type", "checkbox");
   input.setAttribute("playerKey", playerKey);
-
-  input.checked = true;
+  input.checked = !isInjured;
   div.appendChild(input);
   toggleTD.appendChild(div);
 

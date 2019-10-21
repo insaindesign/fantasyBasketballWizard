@@ -317,7 +317,7 @@ function getNoteIndex(row) {
 function getPlayersOneTable() {
   console.log("loading single table players...");
   num_rows = table.rows.length;
-  addHeaderToggles(1);
+  addToggleColumnHeader(1);
   playersLeft = [];
   playersRight = [];
   for (var i = 1; i < num_rows; i++) {
@@ -391,7 +391,7 @@ function addToggles(side, index, table, rowIndex) {
   toggleTD.appendChild(div);
 }
 
-function addHeaderToggles(numTables) {
+function addToggleColumnHeader(numTables) {
   if (numTables === 1) {
     var leftToggleTH = table.rows[0].insertCell(2);
     var div = document.createElement("div");

@@ -349,7 +349,7 @@ function getPlayersOneTable() {
     playerIndex = noteIndex + 1;
     playerRight = row[playerIndex].split(" - ")[0];
     playerRight = serializePlayer(playerRight);
-    rightToggleIndex = getRightToggleIndex(table);
+    var rightToggleIndex = getRightToggleIndex(table);
 
     if (
       !playerRight.includes("Empty") &&
@@ -372,6 +372,8 @@ function getPlayersOneTable() {
   console.log("single table players loaded");
 }
 
+//gets index of column of the 2nd occurrence of "player" + 1.
+// call before adding a toggle or it will be misalinged
 function getRightToggleIndex(table) {
   let headerRow = table.rows[0];
   for (let i = 2; i < headerRow.cells.length; i++) {
@@ -408,8 +410,6 @@ function addToggleColumnHeader(numTables) {
     div2.innerText = "prj";
     rightToggleTH.appendChild(div2);
   }
-
-  //console.log(table.rows[0].cells[rightHeaderIndex]);
 }
 function getPlayersTwoTables() {
   console.log("loading two table players...");

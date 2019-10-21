@@ -400,7 +400,7 @@ function addToggle(side, cellIndex, table, rowIndex, empty) {
   if (empty) {
     var toggleTD = table.rows[rowIndex].insertCell(cellIndex + 1);
     var div = document.createElement("div");
-    div.innerText = " ";
+    div.innerText = " - ";
     toggleTD.appendChild(div);
     return;
   }

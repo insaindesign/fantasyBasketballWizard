@@ -317,13 +317,13 @@ function getNoteIndex(row) {
 function getPlayersOneTable() {
   console.log("loading single table players...");
   num_rows = table.rows.length;
-
+  addHeaderToggles(1);
   playersLeft = [];
   playersRight = [];
   for (var i = 1; i < num_rows; i++) {
     row = table.rows[i].innerText.split("\n");
 
-    if (row.includes("--") || row.includes("IL")) {
+    if (row.includes("--")) {
       continue;
     }
 
@@ -333,13 +333,14 @@ function getPlayersOneTable() {
     playerIndex = noteIndex + 1;
     playerLeft = row[playerIndex].split(" - ")[0];
     playerLeft = serializePlayer(playerLeft);
+
     if (
       !playerLeft.includes("Empty") &&
       playerLeft != "O" &&
-      playerLeft.length > 0 &&
-      row[playerIndex + 1] != "INJ"
+      playerLeft.length > 0
     ) {
       playersLeft.push(playerLeft);
+      addToggles("left", playerIndex + 1, table, i);
     }
 
     row = row.slice(noteIndex + 2, row.length);
@@ -348,13 +349,15 @@ function getPlayersOneTable() {
     playerIndex = noteIndex + 1;
     playerRight = row[playerIndex].split(" - ")[0];
     playerRight = serializePlayer(playerRight);
+    rightToggleIndex = getRightToggleIndex(table);
+
     if (
       !playerRight.includes("Empty") &&
       playerRight != "O" &&
-      playerRight.length > 0 &&
-      row[playerIndex + 1] != "INJ"
+      playerRight.length > 0
     ) {
       playersRight.push(playerRight);
+      addToggles("right", rightToggleIndex, table, i);
     }
   }
 
@@ -369,6 +372,41 @@ function getPlayersOneTable() {
   console.log("single table players loaded");
 }
 
+function getRightToggleIndex(table) {
+  let headerRow = table.rows[0];
+  for (let i = 2; i < headerRow.cells.length; i++) {
+    let cell = headerRow.cells[i];
+    if (cell.innerText === "Player") {
+      return i + 1;
+    }
+  }
+}
+function addToggles(side, index, table, rowIndex) {
+  var toggleTD = table.rows[rowIndex].insertCell(index);
+  var div = document.createElement("div");
+  var input = document.createElement("input");
+  input.setAttribute("type", "checkbox");
+  input.setAttribute("checked", true);
+  div.appendChild(input);
+  toggleTD.appendChild(div);
+}
+
+function addHeaderToggles(numTables) {
+  if (numTables === 1) {
+    var toggleTH = table.rows[0].insertCell(2);
+    var div = document.createElement("div");
+    div.innerText = "prj";
+    toggleTH.appendChild(div);
+    rightHeaderIndex = getRightToggleIndex(table);
+
+    toggleTH = table.rows[0].insertCell(rightHeaderIndex);
+    var secondDiv = document.createElement("div");
+    secondDiv.innerText = "prj";
+    toggleTH.appendChild(secondDiv);
+  }
+
+  //console.log(table.rows[0].cells[rightHeaderIndex]);
+}
 function getPlayersTwoTables() {
   console.log("loading two table players...");
   playersLeft = [];
@@ -391,6 +429,7 @@ function getPlayersTwoTables() {
       row[playerIndex + 1] != "INJ"
     ) {
       playersLeft.push(playerLeft);
+      addToggles("left", playerIndex + 1, tableLeft, i);
     }
   }
 

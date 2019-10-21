@@ -400,7 +400,7 @@ function addToggle(side, cellIndex, table, rowIndex, empty) {
   if (empty) {
     var toggleTD = table.rows[rowIndex].insertCell(cellIndex + 1);
     var div = document.createElement("div");
-    div.innerText = "n/a";
+    div.innerText = " ";
     toggleTD.appendChild(div);
     return;
   }
@@ -895,6 +895,20 @@ function calculateStats(data, cat) {
   return "N/A";
 }
 
-defineLayout();
-initTable();
-getGamesRemaining(teams);
+function isDateSelected() {
+  var bar = document.getElementById("yspmaincontent").children[0].children[0]
+    .children[0].children[1].children[0].children[0];
+  for (var i = 1; i < bar.children.length; i++) {
+    if (
+      bar.children[i].getAttribute("class").includes("Selected") &&
+      !bar.children[i].innerText.includes("Matchup Totals")
+    ) {
+      return true;
+    }
+  }
+}
+if (!isDateSelected()) {
+  defineLayout();
+  initTable();
+  getGamesRemaining(teams);
+}

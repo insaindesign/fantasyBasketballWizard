@@ -111,7 +111,7 @@ function defineLayout() {
 
   if (table) {
     numTables = 1;
-    console.log("one table found");
+    //console.log("one table found");
     return;
   }
 
@@ -120,7 +120,7 @@ function defineLayout() {
 
   if (tableLeft) {
     numTables = 2;
-    console.log("two tables found");
+    //console.log("two tables found");
     return;
   }
 }
@@ -152,7 +152,7 @@ function initTable() {
 
   header.appendChild(pTable);
 
-  console.log("table copied");
+  //console.log("table copied");
 }
 
 function getProjectionsColor(ratio) {
@@ -248,7 +248,7 @@ function getLeagueID() {
 }
 
 function getGamesRemaining(team) {
-  console.log("fetching NBA stats...");
+  //console.log("fetching NBA stats...");
   var dateString;
   url = window.location.href;
   if (url.includes("week=") && !url.includes("date=totals")) {
@@ -281,7 +281,7 @@ function getGamesRemaining(team) {
         team = Teams[t];
         Schedule[team.toUpperCase()] = data[t];
       }
-      console.log("NBA stats retrieved");
+      //console.log("NBA stats retrieved");
       if (numTables == 1) {
         getPlayersOneTable();
       } else {
@@ -311,7 +311,7 @@ function getNoteIndex(row) {
 }
 
 function getPlayersOneTable() {
-  console.log("loading single table players...");
+  //console.log("loading single table players...");
   var num_rows = table.rows.length;
   addToggleColumnHeader(1);
   var playersLeft = [];
@@ -380,7 +380,7 @@ function getPlayersOneTable() {
   //console.log("rightString: ", rightString);
   getProjections(rightString, "right", injuredPlayersRight);
 
-  console.log("single table players loaded");
+  //console.log("single table players loaded");
 }
 
 //gets index of column of the 2nd occurrence of "player" + 1.
@@ -492,7 +492,7 @@ function addToggleColumnHeader(numTables) {
   }
 }
 function getPlayersTwoTables() {
-  console.log("loading two table players...");
+  //console.log("loading two table players...");
   playersLeft = [];
   playersRight = [];
 
@@ -544,7 +544,7 @@ function getPlayersTwoTables() {
   //console.log("rightString: ", rightString);
   getProjections(rightString, "right");
 
-  console.log("two table players loaded");
+  //console.log("two table players loaded");
 }
 
 function getProjections(playersString, side, injuredPlayers) {
@@ -558,23 +558,27 @@ function getProjections(playersString, side, injuredPlayers) {
       if (side === "left") {
         leftPlayerList = data;
         leftPlayerFilteredList = data;
-        for (var i = 0; i < injuredPlayers.length; i++) {
-          leftPlayerFilteredList = getFilteredPlayerList(
-            true,
-            side,
-            injuredPlayers[i]
-          );
+        if (injuredPlayers) {
+          for (var i = 0; i < injuredPlayers.length; i++) {
+            leftPlayerFilteredList = getFilteredPlayerList(
+              true,
+              side,
+              injuredPlayers[i]
+            );
+          }
         }
         showProjections(leftPlayerFilteredList, side);
       } else if (side === "right") {
         rightPlayerList = data;
         rightPlayerFilteredList = data;
-        for (var i = 0; i < injuredPlayers.length; i++) {
-          rightPlayerFilteredList = getFilteredPlayerList(
-            true,
-            side,
-            injuredPlayers[i]
-          );
+        if (injuredPlayers) {
+          for (var i = 0; i < injuredPlayers.length; i++) {
+            rightPlayerFilteredList = getFilteredPlayerList(
+              true,
+              side,
+              injuredPlayers[i]
+            );
+          }
         }
         showProjections(rightPlayerFilteredList, side);
       }

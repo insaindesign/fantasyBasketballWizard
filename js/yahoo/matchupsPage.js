@@ -96,6 +96,11 @@ var tableLeft;
 var tableRight;
 var tables = [];
 
+var leftPlayerList = [];
+var leftPlayerFilteredList = [];
+var rightPlayerList = [];
+var rightPlayerFilteredList = [];
+
 function defineLayoutBySearch() {
   tables = document.querySelectorAll('[id^="statTable"]');
   numTables = tables.length;
@@ -390,7 +395,6 @@ function addToggle(side, cellIndex, table, rowIndex) {
     table.rows[rowIndex].cells[cellIndex - 1].children[0].children[0]
       .children[0].children[1].innerText;
   var playerKey = makePlayerKey(playerStr);
-  console.log(playerKey);
   var toggleTD = table.rows[rowIndex].insertCell(cellIndex);
   var div = document.createElement("div");
   var input = document.createElement("input");
@@ -401,9 +405,27 @@ function addToggle(side, cellIndex, table, rowIndex) {
   toggleTD.appendChild(div);
 
   input.addEventListener("change", function(e) {
-    console.log(e.target.getAttribute("playerKey"));
-    console.log(e.target.checked);
+    var tagetPlayer = e.target.getAttribute("playerKey");
+    var remove = !e.target.checked;
+    var list = [];
+    list = getFilteredPlayerList(remove, side, playerKey);
+    leftPlayerFilteredList = list;
+    scoreLeft = 0;
+    scoreRight = 0;
+    showProjections(list, side);
   });
+}
+function getFilteredPlayerList(remove, side, playerKey) {
+  if (remove) {
+    var newList = [];
+    for (var i = 0; i < leftPlayerFilteredList.length; i++) {
+      if (leftPlayerFilteredList[i].playerID !== playerKey) {
+        newList.push(leftPlayerFilteredList[i]);
+      }
+    }
+    return newList;
+  } else {
+  }
 }
 
 //adds headers for new column that will be inserted for toggles
@@ -445,7 +467,6 @@ function getPlayersTwoTables() {
       row[playerIndex + 1] != "INJ"
     ) {
       playersLeft.push(playerLeft);
-      addToggle("left", playerIndex + 1, tableLeft, i);
     }
   }
 
@@ -488,6 +509,13 @@ function getProjections(playersString, side) {
     },
     function(response) {
       var data = response.data;
+      if (side === "left") {
+        leftPlayerList = response.data;
+        leftPlayerFilteredList = response.data;
+      } else if (side === "right") {
+        rightPlayerList = response.data;
+        rightPlayerFilteredList = response.data;
+      }
       showProjections(data, side);
     }
   );

@@ -339,7 +339,7 @@ function getPlayersOneTable() {
     ) {
       playersLeft.push(playerLeft);
       addToggle("left", playerIndex + 1, table, i);
-      if (row[playerIndex + 1] != "INJ") {
+      if (row[playerIndex + 1] === "INJ") {
         injuredPlayersLeft.push(playerLeft);
       }
     }
@@ -359,7 +359,7 @@ function getPlayersOneTable() {
     ) {
       playersRight.push(playerRight);
       addToggle("right", rightToggleIndex, table, i);
-      if (row[playerIndex + 1] != "INJ") {
+      if (row[playerIndex + 1] === "INJ") {
         injuredPlayersRight.push(playerRight);
       }
     }
@@ -367,11 +367,11 @@ function getPlayersOneTable() {
 
   leftString = playersLeft.join(",") + ",";
   //console.log("leftString: ", leftString);
-  getProjections(leftString, "left");
+  getProjections(leftString, "left", injuredPlayersLeft);
 
   rightString = playersRight.join(",") + ",";
   //console.log("rightString: ", rightString);
-  getProjections(rightString, "right");
+  getProjections(rightString, "right", injuredPlayersRight);
 
   console.log("single table players loaded");
 }
@@ -399,15 +399,16 @@ function addToggle(side, cellIndex, table, rowIndex) {
   var input = document.createElement("input");
   input.setAttribute("type", "checkbox");
   input.setAttribute("playerKey", playerKey);
+
   input.checked = true;
   div.appendChild(input);
   toggleTD.appendChild(div);
 
   input.addEventListener("change", function(e) {
-    var tagetPlayer = e.target.getAttribute("playerKey");
+    var targetPlayer = e.target.getAttribute("playerKey");
     var remove = !e.target.checked;
     var list = [];
-    list = getFilteredPlayerList(remove, side, playerKey);
+    list = getFilteredPlayerList(remove, side, targetPlayer);
     if (side === "left") {
       leftPlayerFilteredList = list;
     } else if (side === "right") {
@@ -418,6 +419,8 @@ function addToggle(side, cellIndex, table, rowIndex) {
     showProjections(list, side);
   });
 }
+
+//removes or adds given player from filtered list from corresponding side and returns new list
 function getFilteredPlayerList(remove, side, playerKey) {
   var newList = [];
   if (remove) {
@@ -535,13 +538,28 @@ function getProjections(playersString, side, injuredPlayers) {
     function(response) {
       var data = response.data;
       if (side === "left") {
-        leftPlayerList = response.data;
-        leftPlayerFilteredList = response.data;
+        leftPlayerList = data;
+        leftPlayerFilteredList = data;
+        for (var i = 0; i < injuredPlayers.length; i++) {
+          leftPlayerFilteredList = getFilteredPlayerList(
+            true,
+            side,
+            injuredPlayers[i]
+          );
+        }
+        showProjections(leftPlayerFilteredList, side);
       } else if (side === "right") {
-        rightPlayerList = response.data;
-        rightPlayerFilteredList = response.data;
+        rightPlayerList = data;
+        rightPlayerFilteredList = data;
+        for (var i = 0; i < injuredPlayers.length; i++) {
+          rightPlayerFilteredList = getFilteredPlayerList(
+            true,
+            side,
+            injuredPlayers[i]
+          );
+        }
+        showProjections(rightPlayerFilteredList, side);
       }
-      showProjections(data, side);
     }
   );
 }

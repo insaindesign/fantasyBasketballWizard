@@ -313,7 +313,7 @@ function getNoteIndex(row) {
 function getPlayersOneTable() {
   //console.log("loading single table players...");
   var num_rows = table.rows.length;
-  addToggleColumnHeader(1);
+  addToggleColumnHeader();
   var playersLeft = [];
   var playersRight = [];
   var injuredPlayersLeft = [];
@@ -475,7 +475,7 @@ function getFilteredPlayerList(remove, side, playerKey) {
 }
 
 //adds headers for new column that will be inserted for toggles
-function addToggleColumnHeader(numTables) {
+function addToggleColumnHeader() {
   if (numTables === 1) {
     //header for left side
     var leftToggleTH = table.rows[0].insertCell(2);

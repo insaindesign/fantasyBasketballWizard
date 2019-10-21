@@ -11,7 +11,8 @@
     "scripts": ["js/background.js"],
     "persistent": false
   },
-  "content_scripts": [{
+  "content_scripts": [
+    {
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*"],
       "js": ["js/yahoo/teamPage.js", "js/yahoo/playerNote.js"]
     },
@@ -24,7 +25,9 @@
       "js": ["js/yahoo/researchPage.js"]
     },
     {
-      "matches": ["https://basketball.fantasysports.yahoo.com/nba/*/buzzindex*"],
+      "matches": [
+        "https://basketball.fantasysports.yahoo.com/nba/*/buzzindex*"
+      ],
       "js": ["js/yahoo/transactionTrendsPage.js"]
     },
     {
@@ -36,7 +39,5 @@
       "js": ["js/yahoo/playersPage.js"]
     }
   ],
-  "permissions": [
-    "*://www.sportswzrd.com/*"
-  ]
+  "permissions": ["*://www.sportswzrd.com/*"]
 }

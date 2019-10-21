@@ -1,4 +1,4 @@
-Teams = [
+const Teams = [
   "Atl",
   "Bos",
   "Bkn",
@@ -30,6 +30,7 @@ Teams = [
   "Uta",
   "Was"
 ];
+var teams = Teams.join(",") + ",";
 
 season_start = "2019-10-21";
 
@@ -41,7 +42,7 @@ var yyyy = today.getFullYear();
 
 today = yyyy + "-" + mm + "-" + dd;
 
-week_to_date = {
+const week_to_date = {
   "1": "2019-10-21",
   "2": "2019-10-28",
   "3": "2019-11-4",
@@ -71,31 +72,21 @@ week_to_date = {
   "27": "2020-4-27"
 };
 
-Schedule = {};
-
-teams = Teams.join(",") + ",";
-
-//console.log("teams: ", teams);
-
+//globals
+var Schedule = {};
 var leftName;
 var rightName;
-
 var statsLeft = [];
 var statsRight = [];
-
 var pTable;
-
 var header;
-
 var scoreLeft = 0;
 var scoreRight = 0;
-
 var numTables = 0;
 var tableSingle;
 var tableLeft;
 var tableRight;
 var tables = [];
-
 var leftPlayerList = [];
 var leftPlayerFilteredList = [];
 var rightPlayerList = [];
@@ -321,10 +312,12 @@ function getNoteIndex(row) {
 
 function getPlayersOneTable() {
   console.log("loading single table players...");
-  num_rows = table.rows.length;
+  var num_rows = table.rows.length;
   addToggleColumnHeader(1);
-  playersLeft = [];
-  playersRight = [];
+  var playersLeft = [];
+  var playersRight = [];
+  var injuredPlayersLeft = [];
+  var injuredPlayersRight = [];
   for (var i = 1; i < num_rows; i++) {
     row = table.rows[i].innerText.split("\n");
 
@@ -346,6 +339,9 @@ function getPlayersOneTable() {
     ) {
       playersLeft.push(playerLeft);
       addToggle("left", playerIndex + 1, table, i);
+      if (row[playerIndex + 1] != "INJ") {
+        injuredPlayersLeft.push(playerLeft);
+      }
     }
 
     row = row.slice(noteIndex + 2, row.length);
@@ -363,6 +359,9 @@ function getPlayersOneTable() {
     ) {
       playersRight.push(playerRight);
       addToggle("right", rightToggleIndex, table, i);
+      if (row[playerIndex + 1] != "INJ") {
+        injuredPlayersRight.push(playerRight);
+      }
     }
   }
 
@@ -527,7 +526,7 @@ function getPlayersTwoTables() {
   console.log("two table players loaded");
 }
 
-function getProjections(playersString, side) {
+function getProjections(playersString, side, injuredPlayers) {
   chrome.runtime.sendMessage(
     {
       endpoint: "getplayers",

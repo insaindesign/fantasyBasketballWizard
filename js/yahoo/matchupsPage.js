@@ -409,23 +409,49 @@ function addToggle(side, cellIndex, table, rowIndex) {
     var remove = !e.target.checked;
     var list = [];
     list = getFilteredPlayerList(remove, side, playerKey);
-    leftPlayerFilteredList = list;
+    if (side === "left") {
+      leftPlayerFilteredList = list;
+    } else if (side === "right") {
+      rightPlayerFilteredList = list;
+    }
     scoreLeft = 0;
     scoreRight = 0;
     showProjections(list, side);
   });
 }
 function getFilteredPlayerList(remove, side, playerKey) {
+  var newList = [];
   if (remove) {
-    var newList = [];
-    for (var i = 0; i < leftPlayerFilteredList.length; i++) {
-      if (leftPlayerFilteredList[i].playerID !== playerKey) {
-        newList.push(leftPlayerFilteredList[i]);
+    if (side === "left") {
+      for (var i = 0; i < leftPlayerFilteredList.length; i++) {
+        if (leftPlayerFilteredList[i].playerID !== playerKey) {
+          newList.push(leftPlayerFilteredList[i]);
+        }
+      }
+    } else if (side === "right") {
+      for (var i = 0; i < rightPlayerFilteredList.length; i++) {
+        if (rightPlayerList[i].playerID !== playerKey) {
+          newList.push(rightPlayerList[i]);
+        }
       }
     }
-    return newList;
   } else {
+    var playerToAdd;
+    if (side === "left") {
+      newList = leftPlayerFilteredList;
+      playerToAdd = leftPlayerList.find(function(element) {
+        return element.playerID === playerKey;
+      });
+      newList.push(playerToAdd);
+    } else if (side === "right") {
+      newList = rightPlayerFilteredList;
+      playerToAdd = rightPlayerList.find(function(element) {
+        return element.playerID === playerKey;
+      });
+      newList.push(playerToAdd);
+    }
   }
+  return newList;
 }
 
 //adds headers for new column that will be inserted for toggles

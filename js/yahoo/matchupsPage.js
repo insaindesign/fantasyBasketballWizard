@@ -383,15 +383,27 @@ function getRightToggleIndex(table) {
     }
   }
 }
+
 //adds a single toggle
 function addToggle(side, cellIndex, table, rowIndex) {
+  var playerStr =
+    table.rows[rowIndex].cells[cellIndex - 1].children[0].children[0]
+      .children[0].children[1].innerText;
+  var playerKey = makePlayerKey(playerStr);
+  console.log(playerKey);
   var toggleTD = table.rows[rowIndex].insertCell(cellIndex);
   var div = document.createElement("div");
   var input = document.createElement("input");
   input.setAttribute("type", "checkbox");
-  input.setAttribute("checked", true);
+  input.setAttribute("playerKey", playerKey);
+  input.checked = true;
   div.appendChild(input);
   toggleTD.appendChild(div);
+
+  input.addEventListener("change", function(e) {
+    console.log(e.target.getAttribute("playerKey"));
+    console.log(e.target.checked);
+  });
 }
 
 //adds headers for new column that will be inserted for toggles

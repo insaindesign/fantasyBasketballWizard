@@ -230,7 +230,7 @@ function getProjectionsColor(ratio) {
   if (ratio <= 2.1) {
     return "#3bff3b";
   }
-  if (ratio <= 4.5) {
+  if (ratio <= 1000) {
     return "#18f204";
   } else return "#dee8f7";
 }

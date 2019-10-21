@@ -409,22 +409,23 @@ function addToggle(side, cellIndex, table, rowIndex) {
   div.appendChild(input);
   toggleTD.appendChild(div);
 
-  input.addEventListener("change", function(e) {
-    var targetPlayer = e.target.getAttribute("playerKey");
-    var remove = !e.target.checked;
-    var list = [];
-    list = getFilteredPlayerList(remove, side, targetPlayer);
-    if (side === "left") {
-      leftPlayerFilteredList = list;
-    } else if (side === "right") {
-      rightPlayerFilteredList = list;
-    }
-    scoreLeft = 0;
-    scoreRight = 0;
-    showProjections(list, side);
-  });
+  input.addEventListener("change", event => onCheckboxChange(event, side));
 }
 
+function onCheckboxChange(event, side) {
+  var targetPlayer = event.target.getAttribute("playerKey");
+  var remove = !event.target.checked;
+  var list = [];
+  list = getFilteredPlayerList(remove, side, targetPlayer);
+  if (side === "left") {
+    leftPlayerFilteredList = list;
+  } else if (side === "right") {
+    rightPlayerFilteredList = list;
+  }
+  scoreLeft = 0;
+  scoreRight = 0;
+  showProjections(list, side);
+}
 //removes or adds given player from filtered list from corresponding side and returns new list
 function getFilteredPlayerList(remove, side, playerKey) {
   var newList = [];

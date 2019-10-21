@@ -393,16 +393,16 @@ function addToggles(side, index, table, rowIndex) {
 
 function addHeaderToggles(numTables) {
   if (numTables === 1) {
-    var toggleTH = table.rows[0].insertCell(2);
+    var leftToggleTH = table.rows[0].insertCell(2);
     var div = document.createElement("div");
     div.innerText = "prj";
-    toggleTH.appendChild(div);
-    rightHeaderIndex = getRightToggleIndex(table);
+    leftToggleTH.appendChild(div);
 
-    toggleTH = table.rows[0].insertCell(rightHeaderIndex);
-    var secondDiv = document.createElement("div");
-    secondDiv.innerText = "prj";
-    toggleTH.appendChild(secondDiv);
+    rightHeaderIndex = getRightToggleIndex(table);
+    rightToggleTH = table.rows[0].insertCell(rightHeaderIndex);
+    var div2 = document.createElement("div");
+    div2.innerText = "prj";
+    rightToggleTH.appendChild(div2);
   }
 
   //console.log(table.rows[0].cells[rightHeaderIndex]);

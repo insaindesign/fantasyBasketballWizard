@@ -391,13 +391,16 @@ function addToggles(side, index, table, rowIndex) {
   toggleTD.appendChild(div);
 }
 
+//adds headers for new column that will be inserted for toggles
 function addToggleColumnHeader(numTables) {
   if (numTables === 1) {
+    //header for left side
     var leftToggleTH = table.rows[0].insertCell(2);
     var div = document.createElement("div");
     div.innerText = "prj";
     leftToggleTH.appendChild(div);
 
+    //header for right side
     rightHeaderIndex = getRightToggleIndex(table);
     rightToggleTH = table.rows[0].insertCell(rightHeaderIndex);
     var div2 = document.createElement("div");

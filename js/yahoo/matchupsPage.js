@@ -340,7 +340,7 @@ function getPlayersOneTable() {
       playerLeft.length > 0
     ) {
       playersLeft.push(playerLeft);
-      addToggles("left", playerIndex + 1, table, i);
+      addToggle("left", playerIndex + 1, table, i);
     }
 
     row = row.slice(noteIndex + 2, row.length);
@@ -357,7 +357,7 @@ function getPlayersOneTable() {
       playerRight.length > 0
     ) {
       playersRight.push(playerRight);
-      addToggles("right", rightToggleIndex, table, i);
+      addToggle("right", rightToggleIndex, table, i);
     }
   }
 
@@ -381,8 +381,9 @@ function getRightToggleIndex(table) {
     }
   }
 }
-function addToggles(side, index, table, rowIndex) {
-  var toggleTD = table.rows[rowIndex].insertCell(index);
+//adds a single toggle
+function addToggle(side, cellIndex, table, rowIndex) {
+  var toggleTD = table.rows[rowIndex].insertCell(cellIndex);
   var div = document.createElement("div");
   var input = document.createElement("input");
   input.setAttribute("type", "checkbox");
@@ -432,7 +433,7 @@ function getPlayersTwoTables() {
       row[playerIndex + 1] != "INJ"
     ) {
       playersLeft.push(playerLeft);
-      addToggles("left", playerIndex + 1, tableLeft, i);
+      addToggle("left", playerIndex + 1, tableLeft, i);
     }
   }
 

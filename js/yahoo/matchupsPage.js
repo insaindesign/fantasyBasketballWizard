@@ -319,7 +319,7 @@ function getPlayersOneTable() {
   var injuredPlayersLeft = [];
   var injuredPlayersRight = [];
   for (var i = 1; i < num_rows; i++) {
-    row = table.rows[i].innerText.split("\n");
+    var row = table.rows[i].innerText.split("\n");
 
     if (row.includes("--")) {
       continue;
@@ -328,7 +328,7 @@ function getPlayersOneTable() {
     //console.log("row: ", row);
 
     var noteIndex = getNoteIndex(row.slice(0, row.length / 2 - 1));
-    playerIndex = noteIndex + 1;
+    var playerIndex = noteIndex + 1;
     var playerLeft = row[playerIndex].split(" - ")[0];
     playerLeft = serializePlayer(playerLeft);
 

@@ -91,7 +91,7 @@ var leftPlayerList = [];
 var leftPlayerFilteredList = [];
 var rightPlayerList = [];
 var rightPlayerFilteredList = [];
-
+var categories;
 function defineLayoutBySearch() {
   tables = document.querySelectorAll('[id^="statTable"]');
   numTables = tables.length;
@@ -136,9 +136,9 @@ function findMatchupsTable() {
 }
 
 function initTable() {
-  console.log("copying table...");
+  //console.log("copying table...");
   //find stats headers
-  mTable = findMatchupsTable();
+  var mTable = findMatchupsTable();
   categories = mTable.tHead.innerText;
   categories = categories.split("\n");
   categories = categories.filter(function(str) {
@@ -151,10 +151,24 @@ function initTable() {
   header = document.getElementById("matchup-wall-header");
 
   header.appendChild(pTable);
-
+  pTable.style.marginTop = "10px";
+  addTitles();
   //console.log("table copied");
 }
-
+function addTitles() {
+  pTable.rows[0].cells[0].innerText = "WZRD Projections†";
+  var p = document.createElement("p");
+  var proj = document.createElement("span");
+  var formula = document.createElement("span");
+  proj.innerText = "†Projections: ";
+  proj.style.fontWeight = "600";
+  formula.innerText =
+    "# of games this week * Yahoo! projected averages per game";
+  p.appendChild(proj);
+  p.appendChild(formula);
+  p.setAttribute("class", "Ta-c C-grey Mt-10");
+  pTable.insertAdjacentElement("afterend", p);
+}
 function getProjectionsColor(ratio) {
   if (ratio == 0) {
     return "white";
@@ -400,7 +414,7 @@ function addToggle(side, cellIndex, table, rowIndex, empty) {
   if (empty) {
     var toggleTD = table.rows[rowIndex].insertCell(cellIndex + 1);
     var div = document.createElement("div");
-    div.innerText = " - ";
+    div.innerText = " ";
     toggleTD.appendChild(div);
     return;
   }
@@ -907,7 +921,10 @@ function isDateSelected() {
     }
   }
 }
-if (!isDateSelected()) {
+if (
+  !isDateSelected() &&
+  !document.getElementsByTagName("body")[0].innerText.includes("Orig Proj")
+) {
   defineLayout();
   initTable();
   getGamesRemaining(teams);

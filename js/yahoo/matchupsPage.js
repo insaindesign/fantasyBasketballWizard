@@ -448,8 +448,7 @@ function onCheckboxChange(event, side) {
   } else if (side === "right") {
     rightPlayerFilteredList = list;
   }
-  scoreLeft = 0;
-  scoreRight = 0;
+
   showProjections(list, side);
 }
 //removes or adds given player from filtered list from corresponding side and returns new list
@@ -616,7 +615,8 @@ function updateScores(scoreLeft, scoreRight) {
 
 function showProjections(data, side) {
   //console.log("showProjections -- ", side, ": ", data);
-
+  scoreLeft = 0;
+  scoreRight = 0;
   //add text
   for (cat = 0; cat < categories.length; cat++) {
     if (side == "left") {

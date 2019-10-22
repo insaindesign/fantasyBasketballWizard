@@ -30,36 +30,38 @@ Teams = [
   "Uta",
   "Was"
 ];
-let notes = document.getElementsByClassName("playernote");
 var visited = [];
+function addPlayerNotes() {
+  let notes = document.getElementsByClassName("playernote");
 
-for (note of notes) {
-  note.addEventListener("click", function(e) {
-    key = makePlayerKey(
-      e.target.parentElement.parentElement.children[1].innerText
-    );
+  for (note of notes) {
+    note.addEventListener("click", function(e) {
+      key = makePlayerKey(
+        e.target.parentElement.parentElement.children[1].innerText
+      );
 
-    //first time opening this players modal
-    if (!visited.includes(key)) {
-      visited.push(key);
-      setTimeout(() => {
-        let modal = document.getElementsByClassName(
-          "yui3-ysplayernote-content"
-        )[0];
-        chrome.runtime.sendMessage(
-          { endpoint: "getplayers", players: key + "," },
-          function(response) {
-            if (response.data.length === 0) {
-              return;
+      //first time opening this players modal
+      if (!visited.includes(key)) {
+        visited.push(key);
+        setTimeout(() => {
+          let modal = document.getElementsByClassName(
+            "yui3-ysplayernote-content"
+          )[0];
+          chrome.runtime.sendMessage(
+            { endpoint: "getplayers", players: key + "," },
+            function(response) {
+              if (response.data.length === 0) {
+                return;
+              }
+              var data = response.data;
+              let statBox = modal.getElementsByClassName("seasonstats")[0];
+              appendFullStats(statBox, data);
             }
-            var data = response.data;
-            let statBox = modal.getElementsByClassName("seasonstats")[0];
-            appendFullStats(statBox, data);
-          }
-        );
-      }, 800);
-    }
-  });
+          );
+        }, 800);
+      }
+    });
+  }
 }
 const appendFullStats = (statbox, data) => {
   let stats = data[0];
@@ -114,3 +116,5 @@ const makePlayerKey = str => {
     }
   }
 };
+
+addPlayerNotes();

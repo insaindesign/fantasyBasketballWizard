@@ -511,13 +511,13 @@ countStats = function() {
   }
 
   header_cell = table.rows[1].cells[col].innerText;
+  
 
-  //console.log("header cell: ", header_cell);
 
   while (header_cell.length > 0) {
     //console.log("col: ", table.rows[1].cells[col].innerText);
     //column is (x/y)
-    if (header_cell.includes("/")) {
+    if (header_cell.includes("M/A")) {
       while (!cellText.includes(week_row_name)) {
         if (!cellText.includes("Injured")) {
           values = table.rows[row].cells[col + offset].innerText.split("/");
@@ -587,27 +587,60 @@ countStats = function() {
         col++;
       }
     }
-    //column is %
-    else if (header_cell.includes("%")) {
-      //console.log("%!");
+    else if (header_cell.includes("3PT%") && header_prev_cell.includes("3PTM") && header_prev2_cell.includes("3PTA")){
+      //console.log("3PT% detected");
+      label_col = get_label_col();
       while (!cellText.includes(week_row_name)) {
         value = table.rows[row].cells[col].innerText;
-        if (!isNaN(value) && value.length > 0) {
-          num += parseFloat(value);
-          den += 1;
+        games_row = table.rows[row].cells[games_col].innerText.split("/")[1];
+        if (value != '-' && !isNaN(value) && value.length > 0){
+          num += parseFloat(table.rows[row].cells[col - 1].innerText);
+          den += parseFloat(table.rows[row].cells[col - 2].innerText);
+          weekly_num += num * games_row;
+          weekly_den += den * games_row;
+    
         }
         row++;
-        cellText = table.rows[row].cells[get_label_col()].innerText;
+        cellText = table.rows[row].cells[label_col].innerText;
       }
 
-      avg = String(round_float(num / den));
-      if (avg.includes(".")) {
-        avg = "." + avg.split(".")[1];
+      avg = num / den, 3;
+      weekly_stats = weekly_num / weekly_den, 3;
+
+      if (offset) {
+        write = col + 1;
+      } else {
+        write = col;
       }
 
-      write = col;
-    } else {
-      //console.log("col: ", col);
+      stats_all.cells[write].innerText = round_float(avg, 3);
+      stats_week.cells[write].innerText = round_float(weekly_stats, 3);
+
+    }
+    else if (header_cell.includes("A/T")){
+      console.log("A/T detected")
+      label_col = get_label_col();
+      while (!cellText.includes(week_row_name)) {
+        row++;
+        cellText = table.rows[row].cells[label_col].innerText;
+      }
+
+      if (offset) {
+        write = col + 1;
+      } else {
+        write = col;
+      }
+
+      stats_all.cells[write].innerText = "-";
+      stats_week.cells[write].innerText = "-";
+    }
+    //column is %
+    else if (header_cell.includes("%")) {
+      //console.log("% detected");
+    
+    } 
+    else {
+      console.log("header_cell else: ", header_cell);
       weekly_stats = 0;
       while (!cellText.includes(week_row_name)) {
         if (!cellText.includes("Injured")) {
@@ -647,7 +680,10 @@ countStats = function() {
     den_week = 0;
     row = get_first_row();
     col++;
+    console.log("header_cell: ", header_cell);
     header_cell = table.rows[1].cells[col].innerText;
+    header_prev_cell = table.rows[1].cells[col-1].innerText;
+    header_prev2_cell = table.rows[1].cells[col-2].innerText;
   }
 };
 

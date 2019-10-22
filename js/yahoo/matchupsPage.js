@@ -463,8 +463,8 @@ function getFilteredPlayerList(remove, side, playerKey) {
       }
     } else if (side === "right") {
       for (var i = 0; i < rightPlayerFilteredList.length; i++) {
-        if (rightPlayerList[i].playerID !== playerKey) {
-          newList.push(rightPlayerList[i]);
+        if (rightPlayerFilteredList[i].playerID !== playerKey) {
+          newList.push(rightPlayerFilteredList[i]);
         }
       }
     }

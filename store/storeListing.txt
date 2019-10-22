@@ -1,12 +1,12 @@
 ** #1 Fantasy Basketball Chrome Extension **
 
-Fantasy Basketball Wizard Chrome Extension is FOR Fantasy Basketball lovers, created BY Fantasy Basketball lovers. We designed the extension make your life easier and to help you win your league. This extension adds Fantasy Wizard tools directly into your webpage!
+Fantasy Basketball WZRD Chrome Extension is FOR Fantasy Basketball lovers, created BY Fantasy Basketball lovers. We designed the extension make your life easier and to help you win your league. This extension adds Fantasy Wizard tools directly into your webpage!
 
 Features:
 
 Highlights:
 • Yahoo and ESPN support for 2019 - 2020 season
-• Fantasy Wizard tools added directly into the ESPN and Yahoo Fantasy Basketball webpages
+• Fantasy WZRD tools added directly into the ESPN and Yahoo Fantasy Basketball webpages
 • Weekly Matchups Projections
 • Individual player’s number of games for the week - (View on any week for the entire season)
 • LIVE updates to games remaining for the week for each player

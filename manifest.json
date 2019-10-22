@@ -1,18 +1,17 @@
 {
   "manifest_version": 2,
-  "name": "Fantasy Basketball Wizard",
+  "name": "Fantasy Basketball WZRD",
   "version": "4.0",
-  "description": "Fantasy Basketball Wizard gives ESPN & Yahoo Fantasy Basketball players extra tools to help them succeed.",
+  "description": "Fantasy Basketball WZRD will help ESPN & Yahoo Fantasy Basketball win their league.",
   "browser_action": {
-    "default_icon": "frontend/icon.png",
+    "default_icon": "frontend/images/BasketballWizard.png",
     "default_popup": "frontend/popup.html"
   },
   "background": {
     "scripts": ["js/background.js"],
     "persistent": false
   },
-  "content_scripts": [
-    {
+  "content_scripts": [{
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*"],
       "js": ["js/yahoo/teamPage.js", "js/yahoo/playerNote.js"]
     },

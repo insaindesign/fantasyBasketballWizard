@@ -1,51 +1,55 @@
 body {
-    width: 300px;
-    background-image: url('images/BasketballWizard.png');
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: center;
-    background-size: 150px 150px;
-    background-color: rgba(255, 255, 255, 0.85);
-    background-blend-mode: lighten;
+  width: 300px;
+  background-image: url("images/BasketballWizard.png");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: 150px 150px;
+  background-color: rgba(255, 255, 255, 0.85);
+  background-blend-mode: lighten;
 }
 
 .basketball-bg {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 50%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
 }
 
 .center {
-    text-align: center;
+  text-align: center;
 }
 
 .detail-text {
-    font-style: italic;
+  font-style: italic;
 }
 
 .footer {
-    text-align: center;
-    padding: 2px;
+  text-align: center;
+  padding: 2px;
 }
 
 .footer:hover {
-    background-color: #ededed;
+  background-color: #ededed;
 }
 
 .footer-text {
-    color: #4286f4;
-    font-weight: bold;
+  color: #4286f4;
+  font-weight: bold;
 }
 
 .espn-header {
-    color: #f44141;
-    text-align: center;
-    font-weight: bold;
-    font-size: 16px;
+  color: #f44141;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
 }
 
 .yahoo-header {
-    color: #5f42f4;
-    text-align: center;
+  color: #5f42f4;
+  text-align: center;
+}
+
+.links {
+  margin-bottom: 10px;
 }

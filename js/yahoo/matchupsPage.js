@@ -1,4 +1,4 @@
-Teams = [
+const Teams = [
   "Atl",
   "Bos",
   "Bkn",
@@ -30,6 +30,7 @@ Teams = [
   "Uta",
   "Was"
 ];
+var teams = Teams.join(",") + ",";
 
 season_start = "2019-10-21";
 
@@ -41,7 +42,7 @@ var yyyy = today.getFullYear();
 
 today = yyyy + "-" + mm + "-" + dd;
 
-week_to_date = {
+const week_to_date = {
   "1": "2019-10-21",
   "2": "2019-10-28",
   "3": "2019-11-4",
@@ -71,42 +72,103 @@ week_to_date = {
   "27": "2020-4-27"
 };
 
-Schedule = {};
-
-teams = Teams.join(",") + ",";
-
-//console.log("teams: ", teams);
-
+//globals
+var Schedule = {};
 var leftName;
 var rightName;
-
 var statsLeft = [];
 var statsRight = [];
-
 var pTable;
+var header;
+var scoreLeft = 0;
+var scoreRight = 0;
+var numTables = 0;
+var tableSingle;
+var tableLeft;
+var tableRight;
+var tables = [];
+var leftPlayerList = [];
+var leftPlayerFilteredList = [];
+var rightPlayerList = [];
+var rightPlayerFilteredList = [];
+var categories;
+function defineLayoutBySearch() {
+  tables = document.querySelectorAll('[id^="statTable"]');
+  numTables = tables.length;
 
-//init stats table
-table = document.getElementById("statTable3");
-
-if (table == null) {
-  setTimeout(function() {
-    var matchup = document.getElementById("matchup");
-    //console.log("first table null");
-    table = matchup.childNodes[0];
-    //console.log("new table: ", table);
-  }, 1000);
+  if (tables.length == 0) {
+    setTimeout(function() {
+      var matchup = document.getElementById("matchup");
+      //console.log("first table null");
+      table = matchup.childNodes[0];
+      //console.log("new table: ", table);
+    }, 1000);
+  }
 }
 
-//find stats headers
-header = table.rows[0].innerText.split("\n");
-categories = header.slice(1, header.length / 2 - 1);
-categories = categories
-  .join("")
-  .split("\t")
-  .join(" ")
-  .trim()
-  .split(" ");
+function defineLayout() {
+  table = document.getElementById("statTable3");
 
+  if (table) {
+    numTables = 1;
+    //console.log("one table found");
+    return;
+  }
+
+  tableLeft = document.getElementById("statTable0");
+  tableRight = document.getElementById("statTable1");
+
+  if (tableLeft) {
+    numTables = 2;
+    //console.log("two tables found");
+    return;
+  }
+}
+
+function findMatchupsTable() {
+  header = document.getElementById("matchup-wall-header");
+  hNodes = header.childNodes;
+  for (h = 0; h < hNodes.length; h++) {
+    if (hNodes[h].localName == "table") {
+      return hNodes[h];
+    }
+  }
+}
+
+function initTable() {
+  //console.log("copying table...");
+  //find stats headers
+  var mTable = findMatchupsTable();
+  categories = mTable.tHead.innerText;
+  categories = categories.split("\n");
+  categories = categories.filter(function(str) {
+    return /\S/.test(str);
+  });
+  categories = categories.filter(e => e !== "Team");
+  categories = categories.filter(e => e !== "Score");
+
+  pTable = mTable.cloneNode(true);
+  header = document.getElementById("matchup-wall-header");
+
+  header.appendChild(pTable);
+  pTable.style.marginTop = "10px";
+  addTitles();
+  //console.log("table copied");
+}
+function addTitles() {
+  pTable.rows[0].cells[0].innerText = "WZRD Projections†";
+  var p = document.createElement("p");
+  var proj = document.createElement("span");
+  var formula = document.createElement("span");
+  proj.innerText = "†Projections: ";
+  proj.style.fontWeight = "600";
+  formula.innerText =
+    "# of games this week * Yahoo! projected averages per game";
+  p.appendChild(proj);
+  p.appendChild(formula);
+  p.setAttribute("class", "Ta-c C-grey Mt-10");
+  pTable.insertAdjacentElement("afterend", p);
+}
 function getProjectionsColor(ratio) {
   if (ratio == 0) {
     return "white";
@@ -173,7 +235,7 @@ function getProjectionsColor(ratio) {
   if (ratio <= 2.1) {
     return "#3bff3b";
   }
-  if (ratio <= 4.5) {
+  if (ratio <= 1000) {
     return "#18f204";
   } else return "#dee8f7";
 }
@@ -200,8 +262,8 @@ function getLeagueID() {
 }
 
 function getGamesRemaining(team) {
+  //console.log("fetching NBA stats...");
   var dateString;
-  var leagueIDString = "leagueID=" + getLeagueID();
   url = window.location.href;
   if (url.includes("week=") && !url.includes("date=totals")) {
     dateString = getDateFromURL(url);
@@ -214,149 +276,33 @@ function getGamesRemaining(team) {
 
   //console.log("initialized dateString");
 
-  console.log("dateString: ", dateString);
+  //console.log("dateString: ", dateString);
 
-  var url =
-    "https://www.sportswzrd.com/gamesremaining/?pageName=yMatchupsPage&teams=" +
-    team +
-    "&format=json&date=" +
-    dateString +
-    "&" +
-    leagueIDString;
   //console.log("url: ", url);
-  fetch(url)
-    .then(function(response) {
-      if (response.status !== 200) {
-        //console.log('Called to backend failed: ' + response.status);
-        return;
+  chrome.runtime.sendMessage(
+    {
+      endpoint: "gamesremaining",
+      pageName: "yMatchupsPage",
+      teams: team,
+      leagueID: getLeagueID(),
+      date: dateString
+    },
+    function(response) {
+      //console.log("data: ", data);
+      //console.log("games: ", games);
+      var data = response.data;
+      for (var t = 0; t < Teams.length; t++) {
+        team = Teams[t];
+        Schedule[team.toUpperCase()] = data[t];
       }
-
-      response.json().then(function(data) {
-        //console.log("data: ", data);
-        //console.log("games: ", games);
-        for (var t = 0; t < Teams.length; t++) {
-          team = Teams[t];
-          Schedule[team.toUpperCase()] = data[t];
-        }
-        getPlayers();
-      });
-    })
-    .catch(function(err) {
-      //console.log('Fetch Error :-S', err);
-    });
-}
-
-function initTable() {
-  teamNames = document.evaluate(
-    '//a[@class="F-link"]',
-    document,
-    null,
-    XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
-    null
-  );
-  //console.log("teams: ", );
-  nameLeft = teamNames.snapshotItem(0).innerHTML;
-  nameRight = teamNames.snapshotItem(1).innerHTML;
-
-  matchup = document.getElementById("matchup-wall-header");
-  pTable = document.createElement("table");
-  pTable.setAttribute("id", "projections-table");
-  pTable.setAttribute(
-    "class",
-    "Table-plain Table Table-px-sm Table-mid Datatable Ta-center Tz-xxs Bdrbot"
-  );
-  var rowLeft = document.createElement("tr");
-  var rowRight = document.createElement("tr");
-  var rowHeader = document.createElement("tr");
-
-  rowHeader.setAttribute("class", "First Last");
-
-  //insert left team name
-  var cell = document.createElement("td");
-
-  cell.innerHTML = nameLeft;
-  cell.style.color = "#black";
-
-  cell.style.fontWeight = "bold";
-  rowLeft.appendChild(cell);
-
-  //insert right team name
-  var cell = document.createElement("td");
-
-  cell.innerHTML = nameRight;
-  cell.style.color = "#black";
-
-  cell.style.fontWeight = "bold";
-  rowRight.appendChild(cell);
-
-  //insert "projections" cell
-  var cell = document.createElement("td");
-  cell.innerText = "Wizard Projections";
-  cell.style.color = "#8a0491";
-  cell.style.fontWeight = "bold";
-  rowHeader.appendChild(cell);
-
-  for (var cat = 0; cat < categories.length; cat++) {
-    //add cells to header
-    var cell = document.createElement("th");
-    cell.innerText = categories[cat];
-    cell.style.fontWeight = "bold";
-    rowHeader.appendChild(cell);
-
-    //add cells to top row
-    var cell = document.createElement("td");
-    cell.innerText = " ";
-
-    rowLeft.appendChild(cell);
-
-    //add cells to bottom row
-    var cell = document.createElement("td");
-    cell.innerText = " ";
-    rowRight.appendChild(cell);
-  }
-
-  pTable.append(rowHeader);
-  pTable.appendChild(rowLeft);
-  pTable.appendChild(rowRight);
-
-  matchup.appendChild(pTable);
-}
-
-function getFormattedQueryFromURL() {
-  var url = window.location.href;
-  var start = url.indexOf("date");
-
-  var end = url.indexOf("&", start);
-
-  var str = url.substring(start + 5, end);
-  if (str == "totals" || start == -1) {
-    var weekNum = "weekNum=";
-    weekNum += document
-      .getElementsByClassName("flyout-title")[0]
-      .innerText.split(" ")[1];
-    //console.log(weekNum);
-    return weekNum;
-  }
-  return "date=" + str;
-}
-
-function getGamesToday() {
-  var query = getFormattedQueryFromURL();
-  var url = "https://www.sportswzrd.com/gamestoday/?" + "&format=json&" + query;
-  fetch(url)
-    .then(function(response) {
-      if (response.status !== 200) {
-        //console.log('Called to backend failed: ' + response.status);
-        return;
+      //console.log("NBA stats retrieved");
+      if (numTables == 1) {
+        getPlayersOneTable();
+      } else {
+        getPlayersTwoTables();
       }
-
-      response.json().then(function(data) {
-        displayGamesToday(data);
-      });
-    })
-    .catch(function(err) {
-      //console.log('Fetch Error :-S', err);
-    });
+    }
+  );
 }
 
 function serializePlayer(p) {
@@ -378,19 +324,196 @@ function getNoteIndex(row) {
   return noteIndex;
 }
 
-function getPlayers() {
-  num_rows = table.rows.length;
-
-  playersLeft = [];
-  playersRight = [];
+function getPlayersOneTable() {
+  //console.log("loading single table players...");
+  var num_rows = table.rows.length;
+  addToggleColumnHeader();
+  var playersLeft = [];
+  var playersRight = [];
+  var injuredPlayersLeft = [];
+  var injuredPlayersRight = [];
   for (var i = 1; i < num_rows; i++) {
-    row = table.rows[i].innerText.split("\n");
+    var row = table.rows[i].innerText.split("\n");
 
-    if (row.includes("--") || row.includes("IL")) {
+    if (row.includes("--")) {
       continue;
     }
 
     //console.log("row: ", row);
+
+    var noteIndex = getNoteIndex(row.slice(0, row.length / 2 - 1));
+    var playerIndex = noteIndex + 1;
+    var playerLeft = row[playerIndex].split(" - ")[0];
+    playerLeft = serializePlayer(playerLeft);
+
+    if (playerLeft != "O" && playerLeft.length > 0) {
+      if (playerLeft.includes("Empty")) {
+        addToggle("left", playerIndex + 1, table, i, true);
+      } else {
+        playersLeft.push(playerLeft);
+        addToggle("left", playerIndex + 1, table, i);
+        //or playerLeft=="0"
+        if (row[playerIndex + 1] === "INJ") {
+          injuredPlayersLeft.push(playerLeft);
+        }
+      }
+    }
+
+    row = row.slice(noteIndex + 2, row.length);
+
+    noteIndex = getNoteIndex(row);
+    playerIndex = noteIndex + 1;
+    var playerRight = "";
+    if (playerIndex === 0) {
+      playerRight = "Empty";
+    } else {
+      playerRight = row[playerIndex].split(" - ")[0];
+      playerRight = serializePlayer(playerRight);
+      var rightToggleIndex = getRightToggleIndex(table);
+    }
+
+    if (playerRight != "O" && playerRight.length > 0) {
+      if (playerRight.includes("Empty")) {
+        addToggle("right", rightToggleIndex - 1, table, i, true);
+      } else {
+        playersRight.push(playerRight);
+        addToggle("right", rightToggleIndex, table, i);
+        //or playerRight == "O"
+        if (row[playerIndex + 1] === "INJ") {
+          injuredPlayersRight.push(playerRight);
+        }
+      }
+    }
+  }
+
+  leftString = playersLeft.join(",") + ",";
+  //console.log("leftString: ", leftString);
+  getProjections(leftString, "left", injuredPlayersLeft);
+
+  rightString = playersRight.join(",") + ",";
+  //console.log("rightString: ", rightString);
+  getProjections(rightString, "right", injuredPlayersRight);
+
+  //console.log("single table players loaded");
+}
+
+//gets index of column of the 2nd occurrence of "player" + 1.
+// call before adding a toggle or it will be misalinged
+function getRightToggleIndex(table) {
+  let headerRow = table.rows[0];
+  for (let i = 2; i < headerRow.cells.length; i++) {
+    let cell = headerRow.cells[i];
+    if (cell.innerText === "Player") {
+      return i + 1;
+    }
+  }
+}
+
+//adds a single toggle
+function addToggle(side, cellIndex, table, rowIndex, empty) {
+  if (empty) {
+    var toggleTD = table.rows[rowIndex].insertCell(cellIndex + 1);
+    var div = document.createElement("div");
+    div.innerText = " ";
+    toggleTD.appendChild(div);
+    return;
+  }
+  var playerStr = "";
+  playerStr =
+    table.rows[rowIndex].cells[cellIndex - 1].children[0].children[0]
+      .children[0].children[1].innerText;
+  var isInjured = table.rows[rowIndex].cells[
+    cellIndex - 1
+  ].children[0].children[0].innerText.includes("INJ");
+  var playerKey = makePlayerKey(playerStr);
+  var toggleTD = table.rows[rowIndex].insertCell(cellIndex);
+  var div = document.createElement("div");
+  var input = document.createElement("input");
+  input.setAttribute("type", "checkbox");
+  input.setAttribute("playerKey", playerKey);
+  input.checked = !isInjured;
+  div.appendChild(input);
+  toggleTD.appendChild(div);
+
+  input.addEventListener("change", event => onCheckboxChange(event, side));
+}
+
+function onCheckboxChange(event, side) {
+  var targetPlayer = event.target.getAttribute("playerKey");
+  var remove = !event.target.checked;
+  var list = [];
+  list = getFilteredPlayerList(remove, side, targetPlayer);
+  if (side === "left") {
+    leftPlayerFilteredList = list;
+  } else if (side === "right") {
+    rightPlayerFilteredList = list;
+  }
+
+  showProjections(list, side);
+}
+//removes or adds given player from filtered list from corresponding side and returns new list
+function getFilteredPlayerList(remove, side, playerKey) {
+  var newList = [];
+  if (remove) {
+    if (side === "left") {
+      for (var i = 0; i < leftPlayerFilteredList.length; i++) {
+        if (leftPlayerFilteredList[i].playerID !== playerKey) {
+          newList.push(leftPlayerFilteredList[i]);
+        }
+      }
+    } else if (side === "right") {
+      for (var i = 0; i < rightPlayerFilteredList.length; i++) {
+        if (rightPlayerFilteredList[i].playerID !== playerKey) {
+          newList.push(rightPlayerFilteredList[i]);
+        }
+      }
+    }
+  } else {
+    var playerToAdd;
+    if (side === "left") {
+      newList = leftPlayerFilteredList;
+      playerToAdd = leftPlayerList.find(function(element) {
+        return element.playerID === playerKey;
+      });
+      newList.push(playerToAdd);
+    } else if (side === "right") {
+      newList = rightPlayerFilteredList;
+      playerToAdd = rightPlayerList.find(function(element) {
+        return element.playerID === playerKey;
+      });
+      newList.push(playerToAdd);
+    }
+  }
+  return newList;
+}
+
+//adds headers for new column that will be inserted for toggles
+function addToggleColumnHeader() {
+  if (numTables === 1) {
+    //header for left side
+    var leftToggleTH = table.rows[0].insertCell(2);
+    var div = document.createElement("div");
+    div.innerText = "prj";
+    leftToggleTH.appendChild(div);
+
+    //header for right side
+    rightHeaderIndex = getRightToggleIndex(table);
+    rightToggleTH = table.rows[0].insertCell(rightHeaderIndex);
+    var div2 = document.createElement("div");
+    div2.innerText = "prj";
+    rightToggleTH.appendChild(div2);
+  }
+}
+function getPlayersTwoTables() {
+  //console.log("loading two table players...");
+  playersLeft = [];
+  playersRight = [];
+
+  for (i = 1; i < tableLeft.rows.length; i++) {
+    row = tableLeft.rows[i].innerText.split("\n");
+    if (row.includes("--") || row.includes("IL")) {
+      continue;
+    }
 
     noteIndex = getNoteIndex(row.slice(0, row.length / 2 - 1));
     playerIndex = noteIndex + 1;
@@ -404,10 +527,15 @@ function getPlayers() {
     ) {
       playersLeft.push(playerLeft);
     }
+  }
 
-    row = row.slice(noteIndex + 2, row.length);
+  for (i = 1; i < tableRight.rows.length; i++) {
+    row = tableRight.rows[i].innerText.split("\n");
+    if (row.includes("--") || row.includes("IL")) {
+      continue;
+    }
 
-    noteIndex = getNoteIndex(row);
+    noteIndex = getNoteIndex(row.slice(0, row.length / 2 - 1));
     playerIndex = noteIndex + 1;
     playerRight = row[playerIndex].split(" - ")[0];
     playerRight = serializePlayer(playerRight);
@@ -428,56 +556,108 @@ function getPlayers() {
   rightString = playersRight.join(",") + ",";
   //console.log("rightString: ", rightString);
   getProjections(rightString, "right");
+
+  //console.log("two table players loaded");
 }
 
-function getProjections(playersString, side) {
-  var url = "https://www.sportswzrd.com/getplayers/?players=" + playersString;
-  fetch(url)
-    .then(function(response) {
-      if (response.status !== 200) {
-        //console.log('Called to backend failed: ' + response.status);
-        return;
+function getProjections(playersString, side, injuredPlayers) {
+  chrome.runtime.sendMessage(
+    {
+      endpoint: "getplayers",
+      players: playersString
+    },
+    function(response) {
+      var data = response.data;
+      if (side === "left") {
+        leftPlayerList = data;
+        leftPlayerFilteredList = data;
+        if (injuredPlayers) {
+          for (var i = 0; i < injuredPlayers.length; i++) {
+            leftPlayerFilteredList = getFilteredPlayerList(
+              true,
+              side,
+              injuredPlayers[i]
+            );
+          }
+        }
+        showProjections(leftPlayerFilteredList, side);
+      } else if (side === "right") {
+        rightPlayerList = data;
+        rightPlayerFilteredList = data;
+        if (injuredPlayers) {
+          for (var i = 0; i < injuredPlayers.length; i++) {
+            rightPlayerFilteredList = getFilteredPlayerList(
+              true,
+              side,
+              injuredPlayers[i]
+            );
+          }
+        }
+        showProjections(rightPlayerFilteredList, side);
       }
+    }
+  );
+}
 
-      response.json().then(function(data) {
-        showProjections(data, side);
-        //console.log(data);
-      });
-    })
-    .catch(function(err) {
-      //console.log('Fetch Error :-S', err);
-    });
+function incrementScore(ratio) {
+  if (ratio > 1) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+function updateScores(scoreLeft, scoreRight) {
+  len = pTable.rows[1].cells.length - 1;
+  pTable.rows[1].cells[len].innerText = String(scoreLeft);
+  pTable.rows[2].cells[len].innerText = String(scoreRight);
 }
 
 function showProjections(data, side) {
   //console.log("showProjections -- ", side, ": ", data);
-
+  scoreLeft = 0;
+  scoreRight = 0;
   //add text
   for (cat = 0; cat < categories.length; cat++) {
     if (side == "left") {
       stat = calculateStats(data, categories[cat]);
+      if (stat === "NaN" || stat === "undefined") {
+        stat = ".000";
+      }
       pTable.rows[1].cells[cat + 1].innerText = stat;
-      statsLeft.push(stat);
+      //statsLeft.push(stat);
     }
     if (side == "right") {
       stat = calculateStats(data, categories[cat]);
+      if (stat === "NaN" || stat === "undefined") {
+        stat = ".000";
+      }
       pTable.rows[2].cells[cat + 1].innerText = stat;
-      statsRight.push(stat);
+      //statsRight.push(stat);
     }
   }
 
   //add colors
   for (cat = 1; cat < categories.length + 1; cat++) {
+    //left colors
     num = parseFloat(pTable.rows[1].cells[cat].innerHTML);
     den = parseFloat(pTable.rows[2].cells[cat].innerHTML);
+
     if (categories[cat - 1] == "TO") {
       ratio = den / num;
     } else {
       ratio = num / den;
     }
-    color = getProjectionsColor(ratio);
+    if (categories[cat - 1].includes("*")) {
+      color = "#f5f8fc";
+    } else {
+      color = getProjectionsColor(ratio);
+      scoreLeft += incrementScore(ratio);
+    }
+
     pTable.rows[1].cells[cat].style.backgroundColor = color;
 
+    //right colors
     num = parseFloat(pTable.rows[2].cells[cat].innerHTML);
     den = parseFloat(pTable.rows[1].cells[cat].innerHTML);
     if (categories[cat - 1] == "TO") {
@@ -485,16 +665,20 @@ function showProjections(data, side) {
     } else {
       ratio = num / den;
     }
-    color = getProjectionsColor(ratio);
+    if (categories[cat - 1].includes("*")) {
+      color = "#f5f8fc";
+    } else {
+      color = getProjectionsColor(ratio);
+      scoreRight += incrementScore(ratio);
+    }
+
     pTable.rows[2].cells[cat].style.backgroundColor = color;
   }
 
-  if (side == "left") {
-    //console.log("left: ", statsLeft);
-  }
-  if (side == "right") {
-    //console.log("right: ", statsRight);
-  }
+  //console.log("left: ", scoreLeft);
+  //console.log("right: ", scoreRight);
+
+  updateScores(scoreLeft, scoreRight);
 }
 
 function calculateStats(data, cat) {
@@ -513,6 +697,32 @@ function calculateStats(data, cat) {
     }
     return parseFloat(fgm / fga).toFixed(3);
   }
+  if (cat == "FGM") {
+    var fgm = 0;
+    for (var i = 0; i < data.length; i++) {
+      fgm +=
+        parseFloat(data[i]["fgmpg"]) *
+        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+    }
+    return parseFloat(fgm).toFixed(1);
+  }
+  if (cat == "FGM/A*") {
+    var fgm = 0;
+    var fga = 0;
+    for (var i = 0; i < data.length; i++) {
+      fgm +=
+        parseFloat(data[i]["fgmpg"]) *
+        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+      fga +=
+        parseFloat(data[i]["fgapg"]) *
+        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+    }
+
+    fgm = fgm.toFixed(0);
+    fga = fga.toFixed(0);
+
+    return fgm + "/" + fga;
+  }
   if (cat == "FT%") {
     var ftm = 0;
     var fta = 0;
@@ -526,6 +736,41 @@ function calculateStats(data, cat) {
     }
     return parseFloat(ftm / fta).toFixed(3);
   }
+  if (cat == "FTM") {
+    var ftm = 0;
+    for (var i = 0; i < data.length; i++) {
+      ftm +=
+        parseFloat(data[i]["ftmpg"]) *
+        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+    }
+    return parseFloat(ftm).toFixed(1);
+  }
+  if (cat == "FTA") {
+    var fta = 0;
+    for (var i = 0; i < data.length; i++) {
+      fta +=
+        parseFloat(data[i]["ftapg"]) *
+        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+    }
+    return parseFloat(fta).toFixed(1);
+  }
+  if (cat == "FTM/A*") {
+    var ftm = 0;
+    var fta = 0;
+    for (var i = 0; i < data.length; i++) {
+      ftm +=
+        parseFloat(data[i]["ftmpg"]) *
+        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+      fta +=
+        parseFloat(data[i]["ftapg"]) *
+        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+    }
+
+    ftm = ftm.toFixed(0);
+    fta = fta.toFixed(0);
+
+    return ftm + "/" + fta;
+  }
   if (cat == "PTS") {
     var pts = 0;
     for (var i = 0; i < data.length; i++) {
@@ -534,6 +779,24 @@ function calculateStats(data, cat) {
         parseFloat(Schedule[data[i]["team"]].split("/")[1]);
     }
     return parseFloat(pts).toFixed(1);
+  }
+  if (cat == "OREB") {
+    var reb = 0;
+    for (var i = 0; i < data.length; i++) {
+      reb +=
+        parseFloat(data[i]["orpg"]) *
+        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+    }
+    return parseFloat(reb).toFixed(1);
+  }
+  if (cat == "DREB") {
+    var reb = 0;
+    for (var i = 0; i < data.length; i++) {
+      reb +=
+        parseFloat(data[i]["drpg"]) *
+        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+    }
+    return parseFloat(reb).toFixed(1);
   }
   if (cat == "REB") {
     var reb = 0;
@@ -580,7 +843,20 @@ function calculateStats(data, cat) {
     }
     return parseFloat(to).toFixed(1);
   }
-  if (cat == "3PTM") {
+  if (cat == "3PT%") {
+    var threepm = 0;
+    var threepa = 0;
+    for (var i = 0; i < data.length; i++) {
+      threepm +=
+        parseFloat(data[i]["threepm"]) *
+        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+      threepa +=
+        parseFloat(data[i]["threepa"]) *
+        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+    }
+    return parseFloat(threepm / threepa).toFixed(3);
+  }
+  if (cat == "3PTM*" || cat == "3PTM") {
     var threes = 0;
     for (var i = 0; i < data.length; i++) {
       threes +=
@@ -589,34 +865,67 @@ function calculateStats(data, cat) {
     }
     return parseFloat(threes).toFixed(1);
   }
+  if (cat == "3PTA") {
+    var threesa = 0;
+    for (var i = 0; i < data.length; i++) {
+      threesa +=
+        parseFloat(data[i]["threepa"]) *
+        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+    }
+    return parseFloat(threesa).toFixed(1);
+  }
+  if (cat == "DD") {
+    var dd = 0;
+    for (var i = 0; i < data.length; i++) {
+      dd +=
+        parseFloat(data[i]["ddpg"]) *
+        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+    }
+    return parseFloat(dd).toFixed(1);
+  }
+  if (cat == "TD") {
+    var td = 0;
+    for (var i = 0; i < data.length; i++) {
+      td +=
+        parseFloat(data[i]["tdpg"]) *
+        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+    }
+    return parseFloat(td).toFixed(1);
+  }
+  if (cat == "A/T") {
+    var apg = 0;
+    var topg = 0;
+    for (var i = 0; i < data.length; i++) {
+      apg +=
+        parseFloat(data[i]["apg"]) *
+        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+      topg +=
+        parseFloat(data[i]["topg"]) *
+        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+    }
+    return parseFloat(apg / topg).toFixed(1);
+  }
+
+  return "N/A";
 }
 
-function displayGamesToday(data) {
-  var div = document.createElement("p");
-  div.innerText = " NBA games today: " + data;
-  div.setAttribute("class", "Ta-c C-grey Mt-10");
-  div.style.color = "#0078FF";
-  div.style.fontSize = "13px";
-  div.style.marginTop = "0px";
-  var className =
-    "felo-matchup-button yfa-rapid-beacon yfa-rapid-module-felo-matchup-button F-link Cur-p Fz-m";
-  var parentDiv = document.getElementsByClassName(className)[0].parentNode;
-  parentDiv.appendChild(div);
+function isDateSelected() {
+  var bar = document.getElementById("yspmaincontent").children[0].children[0]
+    .children[0].children[1].children[0].children[0];
+  for (var i = 1; i < bar.children.length; i++) {
+    if (
+      bar.children[i].getAttribute("class").includes("Selected") &&
+      !bar.children[i].innerText.includes("Matchup Totals")
+    ) {
+      return true;
+    }
+  }
 }
-
 if (
-  categories
-    .toString()
-    .replace(/\s/g, "")
-    .replace(/,/g, "") == "FG%FT%3PTMPTSREBASTSTBLKTO"
+  !isDateSelected() &&
+  !document.getElementsByTagName("body")[0].innerText.includes("Orig Proj")
 ) {
+  defineLayout();
   initTable();
-  //console.log("9cat league");
   getGamesRemaining(teams);
-}
-
-try {
-  getGamesToday();
-} catch (err) {
-  //console.log("error displaying games today");
 }

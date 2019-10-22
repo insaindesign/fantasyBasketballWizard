@@ -10,19 +10,49 @@ chrome.runtime.onMessage.addListener(function(
   sendResponse,
   callback
 ) {
-  let url = request.url;
+  let {
+    endpoint,
+    date,
+    teams,
+    pageName,
+    leagueID,
+    query,
+    players,
+    week
+  } = request;
+  let domain = "https://www.sportswzrd.com";
+  let queryString = "format=json&";
+  switch (endpoint) {
+    case "gamesremaining": {
+      queryString += `teams=${teams}&date=${date}&pageName=${pageName}&leagueID=${leagueID}`;
+      queryString += week ? "&weekNum=" + week : "";
+      break;
+    }
+    case "getplayers": {
+      queryString += `players=${players}`;
+      break;
+    }
+    case "gamestoday": {
+      queryString += `${query}`;
+      break;
+    }
+    case "getweek": {
+      queryString += `date=${date}&pageName=${pageName}&leagueID=${leagueID}`;
+    }
+  }
+  let url = `${domain}/${endpoint}/?${queryString}`;
   fetch(url)
     .then(function(response) {
       if (response.status !== 200) {
         console.log("response status: " + response.status);
-        return;
+        return false;
       }
       response.json().then(function(data) {
         sendResponse({ data: data });
       });
     })
     .catch(function(err) {
-      console.log("EXCEPTION", err);
+      console.log("fetch failed", err);
       return false;
     });
   return true;

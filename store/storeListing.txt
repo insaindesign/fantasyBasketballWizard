@@ -1,30 +1,35 @@
 ** #1 Fantasy Basketball Chrome Extension **
 
-Fantasy Basketball Wizard Chrome Extension is FOR Fantasy Basketball lovers, created BY Fantasy Basketball lovers. We designed the extension make your life easier and to help you win your league. This extension adds Fantasy Wizard tools directly into your webpage!
+NEW and improved Fantasy Basketball WZRD 4.0!
+
+Fantasy Basketball WZRD Chrome Extension is FOR Fantasy Basketball lovers, created BY Fantasy Basketball lovers. We designed the extension make your life easier and to help you win your league. This extension adds Fantasy Wizard tools directly into your webpage!
 
 Features:
 
 Highlights:
 • Yahoo and ESPN support for 2019 - 2020 season
-• Fantasy Wizard tools added directly into the ESPN and Yahoo Fantasy Basketball webpages
+• Fantasy WZRD tools added directly into the ESPN and Yahoo Fantasy Basketball webpages
 • Weekly Matchups Projections
+• Include/Exclude Players from Projections
 • Individual player’s number of games for the week - (View on any week for the entire season)
 • LIVE updates to games remaining for the week for each player
 • Total games for the week on multiple pages
-• Actively updated! New features and updates released often!
 • ESPN’s website redesign compatible for 2018-2019 season
 • Games remaining for the week
 • Number of games on tonights NBA Schedule on Yahoo Matchups page
-• Updated colors
+• Actively updated! New features and updates released often!
+• And many more!
+
+
 
 Yahoo:
-• Leagues supported: Standard 9-Category
+• Weekly Matchup Projections for many categories and league formats
 • Pages supported: Team pages, Matchups, Research
 • Total team averages
 • Daily projections on team page
 
 ESPN:
-• Leagues supported: Standard 9-Category, Daily / Weekly, points
+• Leagues supported: Many categories/, Daily / Weekly, points
 • Pages supported: Team pages, Free Agents / Players, Most Added / Dropped, Fantasy Cast
 
 **Contact us for custom league configurations**
@@ -33,6 +38,12 @@ Enjoy!
 
 
 == Release notes ==
+Version 4.0 (Oct, 22, 2019)
+- Include/Exclude players from matchup projections (Yahoo!)
+- Weekly matchup projections for many categories (Yahoo! and ESPN)
+- Full 9 Category stat line on all player popup windows (Yahoo)
+- TONS of bug fixes and improvements (Yahoo and ESPN)
+
 Version 3.7 (October 8, 2019)
 - ESPN fully functional
 - Matchups page for Yahoo

@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Fantasy Basketball WZRD",
-  "version": "4.0",
+  "version": "4.0.1",
   "description": "Fantasy Basketball WZRD will help ESPN & Yahoo Fantasy Basketball win their league.",
   "browser_action": {
     "default_icon": "frontend/images/BasketballWizard.png",
@@ -11,7 +11,8 @@
     "scripts": ["js/background.js"],
     "persistent": false
   },
-  "content_scripts": [{
+  "content_scripts": [
+    {
       "matches": ["https://basketball.fantasysports.yahoo.com/nba/*"],
       "js": ["js/yahoo/teamPage.js", "js/yahoo/playerNote.js"]
     },

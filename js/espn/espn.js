@@ -2387,9 +2387,32 @@ function requestProjectionsFromServer() {
     chrome.runtime.sendMessage(
       { endpoint: "getplayers", players: playersRequestStrings[i] },
       function(response) {
-        var projection = calculateProjections(response.data, categories);
+        var players = response.data;
+
+        var teamOneSize = document.getElementsByClassName('Table2__right-aligned Table2__table-fixed Table2__Table--fixed--left Table2__table')[0].children[4].children.length - 1;
+        var teamTwoSize = document.getElementsByClassName('Table2__right-aligned Table2__table-fixed Table2__Table--fixed--left Table2__table')[1].children[4].children.length - 1;
+        //Check if league has IR
+        var checkTeamOneIR = document.getElementsByClassName('Table2__right-aligned Table2__table-fixed Table2__Table--fixed--left Table2__table')[0].children[4].children[teamOneSize].children[0].innerHTML;
+        var checkTeamTwoIR = document.getElementsByClassName('Table2__right-aligned Table2__table-fixed Table2__Table--fixed--left Table2__table')[1].children[4].children[teamTwoSize].children[0].innerHTML;
+        //Check if there is a player in IR spot
+        var checkTeamOneIR2 = document.getElementsByClassName('Table2__right-aligned Table2__table-fixed Table2__Table--fixed--left Table2__table')[0].children[4].children[teamOneSize].children[1].innerHTML;
+        var checkTeamTwoIR2 = document.getElementsByClassName('Table2__right-aligned Table2__table-fixed Table2__Table--fixed--left Table2__table')[1].children[4].children[teamOneSize].children[1].innerHTML;
+        
+        //Remove IR player if league has IR and spot is filled 
+        if (players[0].playerID == teamChecker) {
+          if(checkTeamOneIR.indexOf('Injured Reserve') != -1 && checkTeamOneIR2.indexOf('Player') == -1){
+            players.pop();
+          }
+        }
+        else{
+            if(checkTeamTwoIR.indexOf('Injured Reserve') != -1 && checkTeamTwoIR2.indexOf('Player') == -1){
+              players.pop();
+          }
+        }
+
+        var projection = calculateProjections(players, categories);
         //Used to determine teamOne or teamTwo
-        if (response.data[0].playerID == teamChecker) {
+        if (players[0].playerID == teamChecker) {
           projection.push("TeamOne");
         } else {
           projection.push("TeamTwo");

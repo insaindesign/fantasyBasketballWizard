@@ -92,6 +92,9 @@ var leftPlayerFilteredList = [];
 var rightPlayerList = [];
 var rightPlayerFilteredList = [];
 var categories;
+var leftPrevStats = {};
+var rightPrevStats = {};
+
 function defineLayoutBySearch() {
   tables = document.querySelectorAll('[id^="statTable"]');
   numTables = tables.length;
@@ -139,6 +142,7 @@ function initTable() {
   //console.log("copying table...");
   //find stats headers
   var mTable = findMatchupsTable();
+  copyPrevTableStats(mTable);
   categories = mTable.tHead.innerText;
   categories = categories.split("\n");
   categories = categories.filter(function(str) {
@@ -155,6 +159,14 @@ function initTable() {
   addTitles();
   //console.log("table copied");
 }
+function copyPrevTableStats(mTable){
+  for (var t = 1; t < mTable.rows[0].cells.length-1; t++){
+    leftPrevStats[mTable.rows[0].cells[t].innerText] = parseFloat(mTable.rows[1].cells[t].innerText);
+    rightPrevStats[mTable.rows[0].cells[t].innerText] = parseFloat(mTable.rows[2].cells[t].innerText);
+  }
+  console.log("left prev stats: ", leftPrevStats);
+  console.log("right prev stats: ", rightPrevStats);
+}
 function addTitles() {
   pTable.rows[0].cells[0].innerText = "WZRD Projections†";
   var p = document.createElement("p");
@@ -162,8 +174,7 @@ function addTitles() {
   var formula = document.createElement("span");
   proj.innerText = "†Projections: ";
   proj.style.fontWeight = "600";
-  formula.innerText =
-    "# of games this week * Yahoo! projected averages per game";
+  formula.innerText = "# of games this week * avg stats per game";
   p.appendChild(proj);
   p.appendChild(formula);
   p.setAttribute("class", "Ta-c C-grey Mt-10");
@@ -613,24 +624,41 @@ function updateScores(scoreLeft, scoreRight) {
   pTable.rows[2].cells[len].innerText = String(scoreRight);
 }
 
+function handleStatVal(v){
+    if (isNaN(v))
+    return 0;
+}
+
 function showProjections(data, side) {
   //console.log("showProjections -- ", side, ": ", data);
-  scoreLeft = 0;
-  scoreRight = 0;
+  var scoreLeft = 0;
+  var scoreRight = 0;
+  var prev;
   //add text
   for (cat = 0; cat < categories.length; cat++) {
     if (side == "left") {
       stat = calculateStats(data, categories[cat]);
+
       if (stat === "NaN" || stat === "undefined") {
         stat = ".000";
       }
-      pTable.rows[1].cells[cat + 1].innerText = stat;
+      prev = leftPrevStats[categories[cat]];
+      if (!isNaN(prev) && stat != ".000" && !categories[cat].includes('%') && !categories[cat].includes('/')){
+        console.log("new: ", stat);
+        console.log("prev: ", prev);
+          stat = parseFloat(stat) + prev;
+      }
+      pTable.rows[1].cells[cat + 1].innerText = stat;  
       //statsLeft.push(stat);
     }
     if (side == "right") {
       stat = calculateStats(data, categories[cat]);
       if (stat === "NaN" || stat === "undefined") {
         stat = ".000";
+      }
+      prev = rightPrevStats[categories[cat]];
+      if (!isNaN(prev) && stat != ".000" && !categories[cat].includes('%') && !categories[cat].includes('/')){
+          stat = parseFloat(stat) + prev;
       }
       pTable.rows[2].cells[cat + 1].innerText = stat;
       //statsRight.push(stat);
@@ -690,10 +718,10 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       fgm +=
         parseFloat(data[i]["fgmpg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
       fga +=
         parseFloat(data[i]["fgapg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
     return parseFloat(fgm / fga).toFixed(3);
   }
@@ -702,7 +730,7 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       fgm +=
         parseFloat(data[i]["fgmpg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
     return parseFloat(fgm).toFixed(1);
   }
@@ -712,10 +740,10 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       fgm +=
         parseFloat(data[i]["fgmpg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
       fga +=
         parseFloat(data[i]["fgapg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
 
     fgm = fgm.toFixed(0);
@@ -729,10 +757,10 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       ftm +=
         parseFloat(data[i]["ftmpg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
       fta +=
         parseFloat(data[i]["ftapg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
     return parseFloat(ftm / fta).toFixed(3);
   }
@@ -741,7 +769,7 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       ftm +=
         parseFloat(data[i]["ftmpg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
     return parseFloat(ftm).toFixed(1);
   }
@@ -750,7 +778,7 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       fta +=
         parseFloat(data[i]["ftapg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
     return parseFloat(fta).toFixed(1);
   }
@@ -760,10 +788,10 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       ftm +=
         parseFloat(data[i]["ftmpg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
       fta +=
         parseFloat(data[i]["ftapg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
 
     ftm = ftm.toFixed(0);
@@ -776,7 +804,7 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       pts +=
         parseFloat(data[i]["ppg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
     return parseFloat(pts).toFixed(1);
   }
@@ -785,7 +813,7 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       reb +=
         parseFloat(data[i]["orpg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
     return parseFloat(reb).toFixed(1);
   }
@@ -794,7 +822,7 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       reb +=
         parseFloat(data[i]["drpg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
     return parseFloat(reb).toFixed(1);
   }
@@ -803,7 +831,7 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       reb +=
         parseFloat(data[i]["rpg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
     return parseFloat(reb).toFixed(1);
   }
@@ -812,7 +840,7 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       ast +=
         parseFloat(data[i]["apg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
     return parseFloat(ast).toFixed(1);
   }
@@ -821,7 +849,7 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       stl +=
         parseFloat(data[i]["spg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
     return parseFloat(stl).toFixed(1);
   }
@@ -830,7 +858,7 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       blk +=
         parseFloat(data[i]["bpg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
     return parseFloat(blk).toFixed(1);
   }
@@ -839,7 +867,7 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       to +=
         parseFloat(data[i]["topg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
     return parseFloat(to).toFixed(1);
   }
@@ -849,10 +877,10 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       threepm +=
         parseFloat(data[i]["threepm"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
       threepa +=
         parseFloat(data[i]["threepa"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
     return parseFloat(threepm / threepa).toFixed(3);
   }
@@ -861,7 +889,7 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       threes +=
         parseFloat(data[i]["threepm"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
     return parseFloat(threes).toFixed(1);
   }
@@ -870,7 +898,7 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       threesa +=
         parseFloat(data[i]["threepa"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
     return parseFloat(threesa).toFixed(1);
   }
@@ -879,7 +907,7 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       dd +=
         parseFloat(data[i]["ddpg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
     return parseFloat(dd).toFixed(1);
   }
@@ -888,7 +916,7 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       td +=
         parseFloat(data[i]["tdpg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
     return parseFloat(td).toFixed(1);
   }
@@ -898,10 +926,10 @@ function calculateStats(data, cat) {
     for (var i = 0; i < data.length; i++) {
       apg +=
         parseFloat(data[i]["apg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
       topg +=
         parseFloat(data[i]["topg"]) *
-        parseFloat(Schedule[data[i]["team"]].split("/")[1]);
+        parseFloat(Schedule[data[i]["team"]].split("/")[0]);
     }
     return parseFloat(apg / topg).toFixed(1);
   }

@@ -683,7 +683,7 @@ function updatePercentageStats(cat, stat, side) {
   
 }
 function showProjections(data, side) {
-  //console.log("showProjections -- ", side, ": ", data);
+  console.log("showProjections -- ", side, ": ", data);
   var scoreLeft = 0;
   var scoreRight = 0;
   var prev;
@@ -703,18 +703,23 @@ function showProjections(data, side) {
       }
       else if (categories[cat].includes('/')){
 
-        //console.log("cat: ", categories[cat]);
+        console.log("cat: ", categories[cat]);
         newNum = stat.split('/')[0];
         newDen = stat.split('/')[1];
 
-        //console.log("remainingNum: ", newNum);
-        //console.log("remainingDen: ", newDen);
+        console.log("remainingNum: ", newNum);
+        console.log("remainingDen: ", newDen);
 
         prevNum = leftPrevStats[categories[cat]].split('/')[0];
         prevDen = leftPrevStats[categories[cat]].split('/')[1];
 
-        //console.log("prevNum: ", prevNum);
-        //console.log("prevDen: ", prevDen);
+        if(prevNum == '-'){
+          prevNum = '0';
+          prevDen = '0';
+        }
+
+        console.log("prevNum: ", prevNum);
+        console.log("prevDen: ", prevDen);
 
         newNum = parseInt(newNum) + parseInt(prevNum);
         newDen = parseInt(newDen) + parseInt(prevDen);
@@ -755,6 +760,11 @@ function showProjections(data, side) {
 
         prevNum = rightPrevStats[categories[cat]].split('/')[0];
         prevDen = rightPrevStats[categories[cat]].split('/')[1];
+
+        if(prevNum == '-'){
+          prevNum = '0';
+          prevDen = '0';
+        }
 
         //console.log("prevNum: ", prevNum);
         //console.log("prevDen: ", prevDen);

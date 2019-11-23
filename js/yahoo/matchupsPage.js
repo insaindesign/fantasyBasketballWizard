@@ -177,7 +177,7 @@ function addTitles() {
   var formula = document.createElement("span");
   proj.innerText = "†Projections: ";
   proj.style.fontWeight = "600";
-  formula.innerText = "# of games this week * avg stats per game";
+  formula.innerText = "# of games this week * avg stats per game. Projections are dynamic and update throughout the week.";
   p.appendChild(proj);
   p.appendChild(formula);
   p.setAttribute("class", "Ta-c C-grey Mt-10");

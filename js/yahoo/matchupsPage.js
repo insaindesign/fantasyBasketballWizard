@@ -94,6 +94,8 @@ var rightPlayerFilteredList = [];
 var categories;
 var leftPrevStats = {};
 var rightPrevStats = {};
+var leftNewStats = {};
+var rightNewStats = {};
 
 function defineLayoutBySearch() {
   tables = document.querySelectorAll('[id^="statTable"]');
@@ -161,8 +163,9 @@ function initTable() {
 }
 function copyPrevTableStats(mTable){
   for (var t = 1; t < mTable.rows[0].cells.length-1; t++){
-    leftPrevStats[mTable.rows[0].cells[t].innerText] = parseFloat(mTable.rows[1].cells[t].innerText);
-    rightPrevStats[mTable.rows[0].cells[t].innerText] = parseFloat(mTable.rows[2].cells[t].innerText);
+    var cat = mTable.rows[0].cells[t].innerText;
+    leftPrevStats[cat] = mTable.rows[1].cells[t].innerText;
+    rightPrevStats[cat] = mTable.rows[2].cells[t].innerText;
   }
   console.log("left prev stats: ", leftPrevStats);
   console.log("right prev stats: ", rightPrevStats);
@@ -628,7 +631,57 @@ function handleStatVal(v){
     if (isNaN(v))
     return 0;
 }
-
+function updatePercentageStats(cat, stat, side) {
+  if (cat.includes('FGM/A')){
+    stat = parseFloat(stat.split('/')[0]) / parseFloat(stat.split('/')[1]);
+    stat = stat.toFixed(3);
+    if (side == "left"){
+      leftNewStats['FG%'] = stat;
+    }
+    if (side == "right"){
+      rightNewStats['FG%'] = stat;
+    }
+    //console.log('FGM/A updated');
+    //console.log(cat, stat, side);
+    return;
+  }
+  if (cat.includes('FTM/A')){
+    stat = parseFloat(stat.split('/')[0]) / parseFloat(stat.split('/')[1]);
+    stat = stat.toFixed(3);
+    if (side == "left"){
+      leftNewStats['FT%'] = stat;
+    }
+    if (side == "right"){
+      rightNewStats['FT%'] = stat;
+    }
+    //console.log('FGM/A updated');
+    //console.log(cat, stat, side);
+    return;
+  }
+  if (cat.includes('3PTM')){
+    if (side == "left"){
+      leftNewStats['3PTM'] = stat;
+    }
+    if (side == "right"){
+      rightNewStats['3PTM'] = stat;
+    }
+    try {
+      leftNewStats['3PT%'] = leftNewStats['3PTM'] / leftNewStats['3PTA'];
+      rightNewStats['3PT%'] = rightNewStats['3PTM'] / rightNewStats['3PTA'];
+    } catch {}
+    return;
+  }
+  if (cat.includes('3PTA')){
+    if (side == "left"){
+      leftNewStats['3PTA'] = stat;
+    }
+    if (side == "right"){
+      rightNewStats['3PTA'] = stat;
+    }
+    return;
+  }
+  
+}
 function showProjections(data, side) {
   //console.log("showProjections -- ", side, ": ", data);
   var scoreLeft = 0;
@@ -646,7 +699,38 @@ function showProjections(data, side) {
       if (!isNaN(prev) && stat != ".000" && !categories[cat].includes('%') && !categories[cat].includes('/')){
         console.log("new: ", stat);
         console.log("prev: ", prev);
-          stat = parseFloat(stat) + prev;
+          stat = parseFloat(stat) + parseFloat(prev);
+      }
+      else if (categories[cat].includes('/')){
+
+        //console.log("cat: ", categories[cat]);
+        newNum = stat.split('/')[0];
+        newDen = stat.split('/')[1];
+
+        //console.log("remainingNum: ", newNum);
+        //console.log("remainingDen: ", newDen);
+
+        prevNum = leftPrevStats[categories[cat]].split('/')[0];
+        prevDen = leftPrevStats[categories[cat]].split('/')[1];
+
+        //console.log("prevNum: ", prevNum);
+        //console.log("prevDen: ", prevDen);
+
+        newNum = parseInt(newNum) + parseInt(prevNum);
+        newDen = parseInt(newDen) + parseInt(prevDen);
+
+        stat = newNum + "/" + newDen;
+
+        updatePercentageStats(categories[cat], stat, side);
+
+      }
+      else if (categories[cat].includes('%')){
+        if (categories[cat].includes('FG')){
+          stat = leftNewStats['FG%'];
+        } 
+        else if (categories[cat].includes('FT')){
+          stat = leftNewStats['FT%'];
+        }
       }
       pTable.rows[1].cells[cat + 1].innerText = stat;  
       //statsLeft.push(stat);
@@ -658,7 +742,38 @@ function showProjections(data, side) {
       }
       prev = rightPrevStats[categories[cat]];
       if (!isNaN(prev) && stat != ".000" && !categories[cat].includes('%') && !categories[cat].includes('/')){
-          stat = parseFloat(stat) + prev;
+          stat = parseFloat(stat) + parseFloat(prev);
+      }
+      else if (categories[cat].includes('/')){
+
+        //console.log("cat: ", categories[cat]);
+        newNum = stat.split('/')[0];
+        newDen = stat.split('/')[1];
+
+        //console.log("remainingNum: ", newNum);
+        //console.log("remainingDen: ", newDen);
+
+        prevNum = rightPrevStats[categories[cat]].split('/')[0];
+        prevDen = rightPrevStats[categories[cat]].split('/')[1];
+
+        //console.log("prevNum: ", prevNum);
+        //console.log("prevDen: ", prevDen);
+
+        newNum = parseInt(newNum) + parseInt(prevNum);
+        newDen = parseInt(newDen) + parseInt(prevDen);
+
+        stat = newNum + "/" + newDen;
+
+        updatePercentageStats(categories[cat], stat, side);
+
+      }
+      else if (categories[cat].includes('%')){
+        if (categories[cat].includes('FG')){
+          stat = rightNewStats['FG%'];
+        } 
+        else if (categories[cat].includes('FT')){
+          stat = rightNewStats['FT%'];
+        }
       }
       pTable.rows[2].cells[cat + 1].innerText = stat;
       //statsRight.push(stat);
